@@ -174,10 +174,11 @@
     .page-select-box:hover { background: #fff; transform: scale(1.1); }
     .page-select-box input { transform: scale(1.4); cursor: pointer; border-radius: 4px; accent-color: var(--brand-blue); margin: 0;}
     
-    .page-actions { position: absolute; top: 10px; right: 10px; display: none; flex-direction: column; align-items: flex-end; gap: 6px; background: var(--bg-panel); border: 1px solid var(--border-color); padding: 6px; border-radius: var(--radius-sm); z-index: 10; box-shadow: var(--shadow-soft); max-width: max-content;}
+    /* FIX: CHUYỂN TOÀN BỘ CÁC ICON PAGE-ACTIONS VÀO 1 HÀNG */
+    .page-actions { position: absolute; top: 10px; right: 10px; display: none; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px; background: var(--bg-panel); border: 1px solid var(--border-color); padding: 4px; border-radius: var(--radius-sm); z-index: 10; box-shadow: var(--shadow-soft); max-width: calc(100% - 20px);}
     
     #page-container:not(.scroll-mode) .page-card:hover .page-actions { display: flex; }
-    #page-container.scroll-mode .page-actions { display: flex; max-width: 100%; top: -15px; right: 15px; flex-direction: row; flex-wrap: wrap; justify-content: flex-end;}
+    #page-container.scroll-mode .page-actions { display: flex; max-width: 100%; top: -15px; right: 15px; }
     
     #page-container:not(.scroll-mode) .scroll-only { display: none !important; }
     #page-container.scroll-mode .grid-only { display: none !important; }
@@ -261,7 +262,6 @@
       #edit-toolbar { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px; }
       
       .page-card { width: 100%; margin: 0 auto; display: flex; flex-direction: column; padding-top: 15px;}
-      
       .page-actions { position: static; display: flex !important; flex-direction: row; justify-content: center; flex-wrap: wrap; background: transparent; border: none; box-shadow: none; margin-bottom: 10px; padding: 0; gap: 6px;}
       .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 999;}
       
@@ -342,6 +342,14 @@
     <div id="edit-toolbar" class="sticky-top">
       <button class="btn btn-sm btn-outline-secondary fw-bold shadow-sm" onclick="toggleEditMode()"><i data-lucide="layout-grid" class="me-1" size="16"></i> <span data-i18n="btn_back">Trở về</span></button>
       
+      <!-- Xuất File Di chuyển sang trái ở chế độ Edit -->
+      <button class="btn btn-sm btn-primary shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#exportModal" title="Xuất File"><i data-lucide="download" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_export">Xuất File</span></button>
+      
+      <!-- Lịch sử (Undo/Redo) -->
+      <div class="vr mx-2 d-none d-md-block" style="background-color: var(--border-color);"></div>
+      <button class="btn btn-sm btn-light border shadow-sm px-2" onclick="undo()" title="Hoàn tác (Ctrl+Z)"><i data-lucide="undo" size="16"></i></button>
+      <button class="btn btn-sm btn-light border shadow-sm px-2 ms-1" onclick="redo()" title="Làm lại (Ctrl+Y)"><i data-lucide="redo" size="16"></i></button>
+
       <div class="vr mx-2 d-none d-md-block" style="background-color: var(--border-color);"></div>
 
       <div class="d-flex align-items-center p-1 rounded border shadow-sm" style="background: var(--bg-panel-alt);">
@@ -357,34 +365,26 @@
         <button id="tool-underline" class="btn btn-sm text-decoration-underline border-0" style="color: var(--text-main);" title="Gạch chân">U</button>
       </div>
 
+      <!-- Bổ sung Màu Đen và Vàng -->
       <div class="d-flex align-items-center p-1 rounded border shadow-sm px-2 mt-2 mt-md-0" style="background: var(--bg-panel-alt);">
         <small class="fw-bold me-2 d-none d-lg-inline" style="color: var(--text-muted);" data-i18n="text_color">Chữ:</small>
         <div class="color-dot bg-dark" onclick="setColor('#000000', 'color')" title="Đen"></div>
         <div class="color-dot bg-danger" onclick="setColor('#ef4444', 'color')" title="Đỏ"></div>
         <div class="color-dot" style="background-color: var(--brand-blue);" onclick="setColor('#0b50a1', 'color')" title="Xanh dương"></div>
+        <div class="color-dot" style="background-color: #eab308;" onclick="setColor('#eab308', 'color')" title="Vàng"></div>
         <input type="color" id="tool-color" class="form-control form-control-color p-0 border-0 ms-1 me-2 rounded" style="width: 24px; height: 24px; background: transparent;" value="#000000" title="Chọn màu chữ">
         
         <div class="vr mx-2" style="background-color: var(--border-color);"></div>
         <small class="fw-bold me-2 d-none d-lg-inline" style="color: var(--text-muted);" data-i18n="bg_color">Nền:</small>
         <div class="color-dot bg-transparent text-center border border-danger d-flex align-items-center justify-content-center" onclick="setColor('transparent', 'bg')" title="Xóa nền"><i data-lucide="x" size="12" class="text-danger"></i></div>
         <div class="color-dot bg-white border border-secondary" onclick="setColor('#ffffff', 'bg')" title="Trắng"></div>
+        <div class="color-dot bg-dark" onclick="setColor('#000000', 'bg')" title="Đen"></div>
+        <div class="color-dot" style="background-color: #eab308;" onclick="setColor('#eab308', 'bg')" title="Vàng"></div>
         <input type="color" id="tool-bg-color" class="form-control form-control-color p-0 border-0 ms-1 rounded" style="width: 24px; height: 24px; background: transparent;" value="#ffffff" title="Chọn màu tự chọn">
       </div>
 
       <div class="ms-auto d-flex align-items-center gap-2 mt-2 mt-md-0 flex-wrap">
-        <div class="d-flex align-items-center gap-1 border-end pe-2 me-1">
-            <button class="btn btn-sm btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_select_all">Chọn tất cả</span></button>
-            <button class="btn btn-sm btn-outline-primary shadow-sm px-2" onclick="batchDuplicate()" title="Nhân bản trang chọn"><i data-lucide="copy" size="16"></i></button>
-            <button class="btn btn-sm btn-outline-info shadow-sm px-2" onclick="batchRotateLeft()" title="Xoay trái trang chọn"><i data-lucide="rotate-ccw" size="16"></i></button>
-            <button class="btn btn-sm btn-outline-info shadow-sm px-2" onclick="batchRotateRight()" title="Xoay phải trang chọn"><i data-lucide="rotate-cw" size="16"></i></button>
-            <button class="btn btn-sm btn-outline-danger shadow-sm px-2" onclick="batchDelete()" title="Xóa trang chọn"><i data-lucide="trash-2" size="16"></i></button>
-        </div>
-
-        <button class="btn btn-sm btn-outline-success shadow-sm" data-bs-toggle="modal" data-bs-target="#mergeExcelModal" title="Gộp Excel"><i data-lucide="sheet" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_merge_excel">Gộp Excel</span></button>
-        <button class="btn btn-sm btn-warning shadow-sm text-dark" data-bs-toggle="modal" data-bs-target="#cloneModal" title="Nhân bản"><i data-lucide="copy" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_clone_file">Nhân bản File</span></button>
-        <button class="btn btn-sm btn-info text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" data-bs-toggle="modal" data-bs-target="#splitModal" title="Tách File"><i data-lucide="scissors" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_split">Tách File</span></button>
-        <button class="btn btn-sm btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#exportModal" title="Xuất File"><i data-lucide="download" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_export">Xuất File</span></button>
-        <div class="vr mx-1 d-none d-md-block" style="background-color: var(--border-color);"></div>
+        <!-- Khi vô giao diện chỉnh sửa thì ẩn: Chọn tất cả, nhân bản, xoay, xóa trên thẻ -->
         <button class="btn btn-sm btn-outline-danger shadow-sm" onclick="resetApp()" title="Làm Mới"><i data-lucide="refresh-cw" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_refresh">Làm Mới</span></button>
       </div>
     </div>
@@ -717,10 +717,6 @@
       msg_confirm_reset: "Bạn có chắc muốn xóa toàn bộ trang hiện tại để tạo mới?",
       page_label: "Trang",
       btn_edit: "Sửa",
-      btn_text: "Chữ",
-      btn_shape: "Khung",
-      btn_scan: "Làm phẳng",
-      btn_ocr: "Đọc",
       prompt_move_page: "Nhập số thứ tự vị trí trang muốn chuyển đến (1 đến {max}):",
       toast_title: "Đang tải lên và xử lý...",
       global_drop_text: "Thả tài liệu vào đây để tự động thêm",
@@ -802,10 +798,6 @@
       msg_confirm_reset: "Are you sure you want to delete all current pages to create a new one?",
       page_label: "Page",
       btn_edit: "Edit",
-      btn_text: "Text",
-      btn_shape: "Shape",
-      btn_scan: "Flatten",
-      btn_ocr: "OCR",
       prompt_move_page: "Enter position to move to (1 to {max}):",
       toast_title: "Uploading and processing...",
       global_drop_text: "Drop document here to add",
@@ -871,6 +863,114 @@
     applyLanguage(currentLang);
   });
 
+  // ================= LỊCH SỬ THAO TÁC (UNDO / REDO) =================
+  let historyStack = [];
+  let historyIndex = -1;
+  let isRestoring = false;
+
+  function captureState() {
+      if(isRestoring) return;
+      const state = {
+          pages: JSON.parse(JSON.stringify(workspacePages)),
+          overlays: {}
+      };
+      workspacePages.forEach(p => {
+          const box = document.getElementById(`box-${p.id}`);
+          if (box) {
+              const els = box.querySelectorAll('.text-overlay, .shape-overlay, .img-overlay');
+              const arr = [];
+              els.forEach(el => {
+                  const clone = el.cloneNode(true);
+                  clone.querySelectorAll('.drag-handle, .delete-handle, .rotate-handle, .resize-handle').forEach(h => h.remove());
+                  const type = el.classList.contains('text-overlay') ? 'text' :
+                               el.classList.contains('shape-overlay') ? 'shape' : 'image';
+                  arr.push({
+                      type: type,
+                      style: el.style.cssText,
+                      content: type === 'text' ? clone.innerHTML : (type === 'image' ? clone.querySelector('img').src : ''),
+                      angle: el.dataset.angle || 0
+                  });
+              });
+              state.overlays[p.id] = arr;
+          }
+      });
+      
+      if (historyIndex < historyStack.length - 1) {
+          historyStack = historyStack.slice(0, historyIndex + 1);
+      }
+      historyStack.push(state);
+      if (historyStack.length > 25) {
+          historyStack.shift();
+      } else {
+          historyIndex++;
+      }
+  }
+
+  async function restoreState(index) {
+      if(index < 0 || index >= historyStack.length) return;
+      isRestoring = true;
+      historyIndex = index;
+      const state = historyStack[index];
+      
+      let currentPagesStr = JSON.stringify(workspacePages);
+      let statePagesStr = JSON.stringify(state.pages);
+      
+      if (currentPagesStr === statePagesStr) {
+          workspacePages.forEach(p => {
+              const box = document.getElementById(`box-${p.id}`);
+              if (box) {
+                  box.querySelectorAll('.text-overlay, .shape-overlay, .img-overlay').forEach(el => el.remove());
+                  const overlays = state.overlays[p.id] || [];
+                  overlays.forEach(o => {
+                      const el = document.createElement('div');
+                      el.className = o.type + '-overlay';
+                      el.style.cssText = o.style;
+                      el.dataset.angle = o.angle;
+                      if (o.type === 'text') { el.innerHTML = o.content; el.contentEditable = true; } 
+                      else if (o.type === 'image') { const img = document.createElement('img'); img.src = o.content; el.appendChild(img); }
+                      createHandles(el, box, o.type);
+                      box.appendChild(el);
+                  });
+              }
+          });
+      } else {
+          workspacePages = JSON.parse(statePagesStr);
+          pageContainer.innerHTML = '';
+          sidebarGrid.innerHTML = '';
+          showLoader("Đang khôi phục...");
+          await appendPagesToWorkspace(workspacePages, true);
+          workspacePages.forEach(p => {
+              const box = document.getElementById(`box-${p.id}`);
+              if (box) {
+                  box.querySelectorAll('.text-overlay, .shape-overlay, .img-overlay').forEach(el => el.remove());
+                  const overlays = state.overlays[p.id] || [];
+                  overlays.forEach(o => {
+                      const el = document.createElement('div');
+                      el.className = o.type + '-overlay';
+                      el.style.cssText = o.style;
+                      el.dataset.angle = o.angle;
+                      if (o.type === 'text') { el.innerHTML = o.content; el.contentEditable = true; } 
+                      else if (o.type === 'image') { const img = document.createElement('img'); img.src = o.content; el.appendChild(img); }
+                      createHandles(el, box, o.type);
+                      box.appendChild(el);
+                  });
+              }
+          });
+          hideLoader();
+      }
+      
+      setActiveElement(null);
+      isRestoring = false;
+  }
+
+  function undo() { if (historyIndex > 0) restoreState(historyIndex - 1); }
+  function redo() { if (historyIndex < historyStack.length - 1) restoreState(historyIndex + 1); }
+
+  document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
+      if (e.ctrlKey && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
+  });
+
   // ================= GLOBAL DRAG & DROP =================
   let globalDragCounter = 0;
   window.isInternalDrag = false;
@@ -907,32 +1007,36 @@
     if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để nhân bản!"); return; }
     showLoader("Đang nhân bản...");
     for(let i = ids.length - 1; i >= 0; i--) {
-        await duplicatePage(ids[i]);
+        await duplicatePage(ids[i], true);
     }
+    captureState();
     hideLoader();
-  }
-
-  function batchRotateRight() {
-    const ids = getSelectedIds();
-    if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để xoay!"); return; }
-    ids.forEach(id => rotatePageRight(id));
   }
 
   function batchRotateLeft() {
     const ids = getSelectedIds();
     if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để xoay!"); return; }
-    ids.forEach(id => rotatePageLeft(id));
+    ids.forEach(id => rotatePageLeft(id, true));
+    setTimeout(() => captureState(), 300);
+  }
+
+  function batchRotateRight() {
+    const ids = getSelectedIds();
+    if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để xoay!"); return; }
+    ids.forEach(id => rotatePageRight(id, true));
+    setTimeout(() => captureState(), 300);
   }
 
   function batchDelete() {
     const ids = getSelectedIds();
     if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để xóa!"); return; }
     if(!confirm(`Xác nhận xóa ${ids.length} trang đã chọn?`)) return;
-    ids.forEach(id => removePage(id));
+    ids.forEach(id => removePage(id, true));
     document.querySelectorAll('.page-selector:checked').forEach(cb => cb.checked = false);
+    setTimeout(() => captureState(), 300);
   }
 
-  async function duplicatePage(pageId) {
+  async function duplicatePage(pageId, skipHistory = false) {
     const idx = workspacePages.findIndex(p => p.id === pageId);
     if (idx === -1) return;
     
@@ -949,20 +1053,17 @@
            <input type="checkbox" class="page-selector form-check-input shadow-sm" data-id="${clonedItem.id}">
         </div>
         <div class="page-actions">
-          <div class="d-flex flex-wrap gap-1 justify-content-end mb-1 scroll-only w-100">
-            <button class="btn btn-primary btn-sm shadow-sm fw-bold" onclick="addTextToPage('${clonedItem.id}')"><i data-lucide="type" size="14"></i> <span class="d-none d-md-inline">${t('btn_text')}</span></button>
-            <button class="btn btn-success btn-sm shadow-sm fw-bold" onclick="addShapeToPage('${clonedItem.id}')"><i data-lucide="square" size="14"></i> <span class="d-none d-md-inline">${t('btn_shape')}</span></button>
-            <button class="btn btn-dark btn-sm text-white shadow-sm" onclick="openScanModal('${clonedItem.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i> <span class="d-none d-md-inline">${t('btn_scan')}</span></button>
-            <button class="btn btn-info btn-sm text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${clonedItem.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i> <span class="d-none d-md-inline">${t('btn_ocr')}</span></button>
-          </div>
-          <div class="d-flex flex-nowrap gap-1">
-            <button class="btn btn-warning btn-sm shadow-sm grid-only text-dark" onclick="enterEditMode('${clonedItem.id}')" title="${t('btn_edit')}"><i data-lucide="edit-3" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-secondary shadow-sm" onclick="promptMovePage('${clonedItem.id}')" title="Chuyển đến trang..."><i data-lucide="move" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-secondary shadow-sm" onclick="duplicatePage('${clonedItem.id}')" title="Nhân bản trang này"><i data-lucide="copy" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-primary shadow-sm" onclick="rotatePageLeft('${clonedItem.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-primary shadow-sm" onclick="rotatePageRight('${clonedItem.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-danger shadow-sm" onclick="removePage('${clonedItem.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
-          </div>
+            <button class="btn btn-primary btn-sm shadow-sm scroll-only p-1" onclick="addTextToPage('${clonedItem.id}')" title="Thêm Chữ"><i data-lucide="type" size="14"></i></button>
+            <button class="btn btn-success btn-sm shadow-sm scroll-only p-1" onclick="addShapeToPage('${clonedItem.id}')" title="Thêm Khung"><i data-lucide="square" size="14"></i></button>
+            <button class="btn btn-dark btn-sm text-white shadow-sm scroll-only p-1" onclick="openScanModal('${clonedItem.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i></button>
+            <button class="btn btn-info btn-sm text-white shadow-sm scroll-only p-1" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${clonedItem.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i></button>
+            <div class="vr mx-1 scroll-only" style="background-color: var(--border-color);"></div>
+            <button class="btn btn-warning btn-sm shadow-sm grid-only text-dark p-1" onclick="enterEditMode('${clonedItem.id}')" title="${t('btn_edit')}"><i data-lucide="edit-3" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="promptMovePage('${clonedItem.id}')" title="Chuyển đến trang..."><i data-lucide="move" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="duplicatePage('${clonedItem.id}')" title="Nhân bản"><i data-lucide="copy" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageLeft('${clonedItem.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageRight('${clonedItem.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-danger shadow-sm p-1" onclick="removePage('${clonedItem.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
         </div>
         <div class="canvas-wrapper" id="wrapper-${clonedItem.id}">
           <div class="pdf-page-box" id="box-${clonedItem.id}"></div>
@@ -998,6 +1099,8 @@
       document.querySelectorAll('.page-actions').forEach(el => el.style.display = 'flex');
       card.querySelector('.page-select-box').style.display = 'none';
     }
+    
+    if(!skipHistory) captureState();
   }
 
   // ================= LOGIC GỘP EXCEL =================
@@ -1125,13 +1228,13 @@
       scrollSpeed: 20,
       forceFallback: true, 
       fallbackTolerance: 3,
-      onEnd: (e) => syncOrder(e, 'main') 
+      onEnd: (e) => { syncOrder(e, 'main'); captureState(); }
     });
     sortSide = new Sortable(sidebarGrid, { 
       animation: 150, 
       scroll: true,
       forceFallback: true,
-      onEnd: (e) => syncOrder(e, 'side') 
+      onEnd: (e) => { syncOrder(e, 'side'); captureState(); }
     });
   }
   
@@ -1247,7 +1350,10 @@
     pDesc.innerText = `Đang vẽ lên màn hình...`;
     pBar.style.width = '95%';
     
-    if(newPages.length > 0) await appendPagesToWorkspace(newPages);
+    if(newPages.length > 0) {
+        await appendPagesToWorkspace(newPages);
+        captureState();
+    }
     
     pBar.style.width = '100%';
     pDesc.innerText = `Hoàn tất!`;
@@ -1320,7 +1426,7 @@
     annotations.forEach(el => targetBox.appendChild(el));
   }
 
-  async function appendPagesToWorkspace(newPages) {
+  async function appendPagesToWorkspace(newPages, isRestoring = false) {
     for (let i = 0; i < newPages.length; i++) {
       const item = newPages[i];
       
@@ -1331,20 +1437,17 @@
            <input type="checkbox" class="page-selector form-check-input shadow-sm" data-id="${item.id}">
         </div>
         <div class="page-actions">
-          <div class="d-flex flex-wrap gap-1 justify-content-end mb-1 scroll-only w-100">
-            <button class="btn btn-primary btn-sm shadow-sm fw-bold" onclick="addTextToPage('${item.id}')"><i data-lucide="type" size="14"></i> <span class="d-none d-md-inline">${t('btn_text')}</span></button>
-            <button class="btn btn-success btn-sm shadow-sm fw-bold" onclick="addShapeToPage('${item.id}')"><i data-lucide="square" size="14"></i> <span class="d-none d-md-inline">${t('btn_shape')}</span></button>
-            <button class="btn btn-dark btn-sm text-white shadow-sm" onclick="openScanModal('${item.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i> <span class="d-none d-md-inline">${t('btn_scan')}</span></button>
-            <button class="btn btn-info btn-sm text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${item.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i> <span class="d-none d-md-inline">${t('btn_ocr')}</span></button>
-          </div>
-          <div class="d-flex flex-nowrap gap-1">
-            <button class="btn btn-warning btn-sm shadow-sm grid-only text-dark" onclick="enterEditMode('${item.id}')" title="${t('btn_edit')}"><i data-lucide="edit-3" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-secondary shadow-sm" onclick="promptMovePage('${item.id}')" title="Chuyển đến trang..."><i data-lucide="move" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-secondary shadow-sm" onclick="duplicatePage('${item.id}')" title="Nhân bản trang này"><i data-lucide="copy" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-primary shadow-sm" onclick="rotatePageLeft('${item.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-primary shadow-sm" onclick="rotatePageRight('${item.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-danger shadow-sm" onclick="removePage('${item.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
-          </div>
+            <button class="btn btn-primary btn-sm shadow-sm scroll-only p-1" onclick="addTextToPage('${item.id}')" title="Thêm Chữ"><i data-lucide="type" size="14"></i></button>
+            <button class="btn btn-success btn-sm shadow-sm scroll-only p-1" onclick="addShapeToPage('${item.id}')" title="Thêm Khung"><i data-lucide="square" size="14"></i></button>
+            <button class="btn btn-dark btn-sm text-white shadow-sm scroll-only p-1" onclick="openScanModal('${item.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i></button>
+            <button class="btn btn-info btn-sm text-white shadow-sm scroll-only p-1" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${item.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i></button>
+            <div class="vr mx-1 scroll-only" style="background-color: var(--border-color);"></div>
+            <button class="btn btn-warning btn-sm shadow-sm grid-only text-dark p-1" onclick="enterEditMode('${item.id}')" title="${t('btn_edit')}"><i data-lucide="edit-3" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="promptMovePage('${item.id}')" title="Chuyển đến trang..."><i data-lucide="move" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="duplicatePage('${item.id}')" title="Nhân bản"><i data-lucide="copy" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageLeft('${item.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageRight('${item.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-danger shadow-sm p-1" onclick="removePage('${item.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
         </div>
         <div class="canvas-wrapper" id="wrapper-${item.id}">
           <div class="pdf-page-box" id="box-${item.id}"></div>
@@ -1359,7 +1462,6 @@
       
       const sideCard = document.createElement('div');
       sideCard.className = "side-page-item"; sideCard.id = `side-${item.id}`;
-      // THÊM SỰ KIỆN CLICK CHUYỂN TRANG
       sideCard.onclick = (e) => {
           if(!e.target.closest('.side-page-actions')) scrollToPage(item.id);
       };
@@ -1375,7 +1477,7 @@
       sidebarGrid.appendChild(sideCard);
       await renderSingleCanvas(item, document.getElementById(`side-box-${item.id}`), 0.3);
       
-      if (i % 3 === 0) await new Promise(r => setTimeout(r, 30)); 
+      if (!isRestoring && i % 3 === 0) await new Promise(r => setTimeout(r, 30)); 
     }
     
     updatePageLabels();
@@ -1411,19 +1513,18 @@
     
     updatePageLabels();
     scrollToPage(pageId);
+    captureState();
   }
 
-  // Cải tiến Xoay mượt mà không dùng loader
-  function rotatePageRight(id) { rotatePage(id, 90); }
-  function rotatePageLeft(id) { rotatePage(id, -90); }
+  function rotatePageRight(id, skipHistory = false) { rotatePage(id, 90, skipHistory); }
+  function rotatePageLeft(id, skipHistory = false) { rotatePage(id, -90, skipHistory); }
   
-  function rotatePage(id, angle) {
+  function rotatePage(id, angle, skipHistory = false) {
     const item = workspacePages.find(p => p.id === id);
     if(item) {
       const mainBox = document.getElementById(`box-${item.id}`);
       const sideBox = document.getElementById(`side-box-${item.id}`);
       
-      // Làm mờ để cho cảm giác đang xử lý thay vì bật loader toàn màn hình
       if (mainBox) mainBox.style.opacity = '0.5';
       if (sideBox) sideBox.style.opacity = '0.5';
 
@@ -1433,14 +1534,15 @@
         await renderSingleCanvas(item, mainBox, cScale);
         await renderSingleCanvas(item, sideBox, 0.3);
         
-        // Khôi phục hiển thị
         if (mainBox) mainBox.style.opacity = '1';
         if (sideBox) sideBox.style.opacity = '1';
+        
+        if(!skipHistory) captureState();
       }, 10);
     }
   }
 
-  function removePage(id) {
+  function removePage(id, skipHistory = false) {
     const idx = workspacePages.findIndex(p => p.id === id);
     if(idx > -1) {
       const c = document.getElementById(`card-${id}`);
@@ -1456,6 +1558,7 @@
         if(s) s.remove();
         updatePageLabels();
         checkEmptyState();
+        if(!skipHistory) captureState();
       }, 200);
     }
   }
@@ -1466,6 +1569,7 @@
 
     setTimeout(() => {
         workspacePages = []; pdfJsCache = {}; fileIdCounter = 0; activeElement = null;
+        historyStack = []; historyIndex = -1;
         pageContainer.innerHTML = ''; 
         sidebarGrid.innerHTML = '';
         document.getElementById('loaded-files-list').innerHTML = `<div class="text-muted small fst-italic">${t('empty_files')}</div>`;
@@ -1520,7 +1624,10 @@
     const del = document.createElement('div'); del.className = 'delete-handle'; del.innerHTML = delIcon; del.contentEditable = false;
     const rot = document.createElement('div'); rot.className = 'rotate-handle'; rot.innerHTML = rotIcon; rot.contentEditable = false;
     
-    const removeOverlay = (e) => { e.preventDefault(); e.stopPropagation(); el.style.opacity='0'; setTimeout(()=> { el.remove(); setActiveElement(null); }, 150); };
+    const removeOverlay = (e) => { 
+        e.preventDefault(); e.stopPropagation(); el.style.opacity='0'; 
+        setTimeout(()=> { el.remove(); setActiveElement(null); captureState(); }, 150); 
+    };
     del.onmousedown = removeOverlay;
     del.addEventListener('touchstart', removeOverlay, {passive: false});
 
@@ -1532,8 +1639,13 @@
         el.appendChild(resize);
         makeResizable(el, resize, box);
     }
-    if (type === 'text') { el.onfocus = () => setActiveElement(el, 'text'); } 
-    else { el.onclick = () => setActiveElement(el, type); }
+    
+    if (type === 'text') { 
+        el.onfocus = () => setActiveElement(el, 'text'); 
+        el.onblur = () => captureState();
+    } else { 
+        el.onclick = () => setActiveElement(el, type); 
+    }
   }
 
   function addTextToPage(pageId) {
@@ -1543,6 +1655,7 @@
     el.style.left = '10%'; el.style.top = '10%'; el.style.color = '#ef4444'; el.style.backgroundColor = 'transparent'; el.style.fontSize = '24px'; el.style.fontFamily = "'Roboto', sans-serif"; el.style.textDecoration = "none";
     createHandles(el, box, 'text');
     box.appendChild(el); el.focus();
+    captureState();
   }
 
   function addShapeToPage(pageId) {
@@ -1552,6 +1665,7 @@
     el.style.left = '10%'; el.style.top = '10%'; el.style.width = '20%'; el.style.height = '8%'; el.style.backgroundColor = '#ffffff'; 
     createHandles(el, box, 'shape');
     box.appendChild(el); setActiveElement(el, 'shape');
+    captureState();
   }
 
   function addImageToPage(box, base64Src, leftPct, topPct) {
@@ -1560,6 +1674,7 @@
     el.appendChild(img);
     createHandles(el, box, 'image');
     box.appendChild(el); setActiveElement(el, 'image');
+    captureState();
   }
 
   function makeDraggable(el, handle, container) {
@@ -1571,7 +1686,7 @@
       el.style.left = (((startLeft + (cx - startX)) / container.offsetWidth) * 100) + '%';
       el.style.top = (((startTop + (cy - startY)) / container.offsetHeight) * 100) + '%';
     };
-    const eDrag = () => { isDragging = false; };
+    const eDrag = () => { if(isDragging) { isDragging = false; captureState(); } };
     handle.onmousedown = sDrag; document.addEventListener('mousemove', mDrag); document.addEventListener('mouseup', eDrag);
     handle.addEventListener('touchstart', sDrag, {passive:false}); document.addEventListener('touchmove', mDrag, {passive:false}); document.addEventListener('touchend', eDrag);
   }
@@ -1585,7 +1700,7 @@
       el.style.width = (((startWidth + (cx - startX)) / container.offsetWidth) * 100) + '%';
       if(el.classList.contains('shape-overlay')) el.style.height = (((startHeight + (cy - startY)) / container.offsetHeight) * 100) + '%';
     };
-    const eRes = () => { isResizing = false; };
+    const eRes = () => { if(isResizing) { isResizing = false; captureState(); } };
     handle.onmousedown = sRes; document.addEventListener('mousemove', mRes); document.addEventListener('mouseup', eRes);
     handle.addEventListener('touchstart', sRes, {passive:false}); document.addEventListener('touchmove', mRes, {passive:false}); document.addEventListener('touchend', eRes);
   }
@@ -1612,7 +1727,7 @@
       el.style.transform = `rotate(${newRotation}deg)`;
       el.dataset.angle = newRotation;
     };
-    const eRot = () => { isRotating = false; };
+    const eRot = () => { if(isRotating) { isRotating = false; captureState(); } };
     handle.onmousedown = sRot; document.addEventListener('mousemove', mRot); document.addEventListener('mouseup', eRot);
     handle.addEventListener('touchstart', sRot, {passive:false}); document.addEventListener('touchmove', mRot, {passive:false}); document.addEventListener('touchend', eRot);
   }
@@ -1683,9 +1798,10 @@
     } else if (type === 'bg') {
       activeElement.style.backgroundColor = hex; if(hex !== 'transparent') document.getElementById('tool-bg-color').value = hex;
     }
+    captureState();
   }
 
-  document.getElementById('tool-color').oninput = (e) => setColor(e.target.value, 'color'); document.getElementById('tool-bg-color').oninput = (e) => setColor(e.target.value, 'bg'); document.getElementById('tool-font').onchange = (e) => { if(activeElement && activeElement.classList.contains('text-overlay')) activeElement.style.fontFamily = e.target.value; }; document.getElementById('tool-size').oninput = (e) => { if(activeElement && activeElement.classList.contains('text-overlay')) activeElement.style.fontSize = e.target.value + 'px'; }; document.getElementById('tool-bold').onclick = () => { if(activeElement && activeElement.classList.contains('text-overlay')) { activeElement.style.fontWeight = activeElement.style.fontWeight === 'bold' ? 'normal' : 'bold'; setActiveElement(activeElement, 'text'); } }; document.getElementById('tool-italic').onclick = () => { if(activeElement && activeElement.classList.contains('text-overlay')) { activeElement.style.fontStyle = activeElement.style.fontStyle === 'italic' ? 'normal' : 'italic'; setActiveElement(activeElement, 'text'); } }; document.getElementById('tool-underline').onclick = () => { if(activeElement && activeElement.classList.contains('text-overlay')) { activeElement.style.textDecoration = activeElement.style.textDecoration.includes('underline') ? 'none' : 'underline'; setActiveElement(activeElement, 'text'); } }; 
+  document.getElementById('tool-color').oninput = (e) => setColor(e.target.value, 'color'); document.getElementById('tool-bg-color').oninput = (e) => setColor(e.target.value, 'bg'); document.getElementById('tool-font').onchange = (e) => { if(activeElement && activeElement.classList.contains('text-overlay')) { activeElement.style.fontFamily = e.target.value; captureState(); } }; document.getElementById('tool-size').oninput = (e) => { if(activeElement && activeElement.classList.contains('text-overlay')) { activeElement.style.fontSize = e.target.value + 'px'; captureState(); } }; document.getElementById('tool-bold').onclick = () => { if(activeElement && activeElement.classList.contains('text-overlay')) { activeElement.style.fontWeight = activeElement.style.fontWeight === 'bold' ? 'normal' : 'bold'; setActiveElement(activeElement, 'text'); captureState(); } }; document.getElementById('tool-italic').onclick = () => { if(activeElement && activeElement.classList.contains('text-overlay')) { activeElement.style.fontStyle = activeElement.style.fontStyle === 'italic' ? 'normal' : 'italic'; setActiveElement(activeElement, 'text'); captureState(); } }; document.getElementById('tool-underline').onclick = () => { if(activeElement && activeElement.classList.contains('text-overlay')) { activeElement.style.textDecoration = activeElement.style.textDecoration.includes('underline') ? 'none' : 'underline'; setActiveElement(activeElement, 'text'); captureState(); } }; 
 
   // ================= AI OCR ================= //
   async function callGemini(base64Image, promptText) {
@@ -1979,6 +2095,7 @@
         alert("Có lỗi xảy ra khi lưu: " + err.message);
       } finally {
         hideLoader();
+        captureState();
       }
     }
     
@@ -2061,7 +2178,6 @@
           newPage.drawRectangle({ x: drawX, y: drawY, width: objW, height: objH, color: PDFLib.rgb(rgb.r, rgb.g, rgb.b), rotate: PDFLib.degrees(-angleDeg) });
         }
         for (const node of box.querySelectorAll('.text-overlay')) {
-          // Lấy đúng phần nội dung text, bỏ qua nội dung của các handle ẩn (như icon SVG)
           const clone = node.cloneNode(true);
           clone.querySelectorAll('.drag-handle, .delete-handle, .rotate-handle, .resize-handle').forEach(h => h.remove());
           let pureText = clone.innerText.trim(); 
