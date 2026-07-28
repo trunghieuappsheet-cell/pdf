@@ -375,7 +375,8 @@
         <div class="d-flex align-items-center gap-1 border-end pe-2 me-1">
             <button class="btn btn-sm btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_select_all">Chọn tất cả</span></button>
             <button class="btn btn-sm btn-outline-primary shadow-sm px-2" onclick="batchDuplicate()" title="Nhân bản trang chọn"><i data-lucide="copy" size="16"></i></button>
-            <button class="btn btn-sm btn-outline-info shadow-sm px-2" onclick="batchRotate()" title="Xoay trang chọn"><i data-lucide="rotate-cw" size="16"></i></button>
+            <button class="btn btn-sm btn-outline-info shadow-sm px-2" onclick="batchRotateLeft()" title="Xoay trái trang chọn"><i data-lucide="rotate-ccw" size="16"></i></button>
+            <button class="btn btn-sm btn-outline-info shadow-sm px-2" onclick="batchRotateRight()" title="Xoay phải trang chọn"><i data-lucide="rotate-cw" size="16"></i></button>
             <button class="btn btn-sm btn-outline-danger shadow-sm px-2" onclick="batchDelete()" title="Xóa trang chọn"><i data-lucide="trash-2" size="16"></i></button>
         </div>
 
@@ -418,7 +419,8 @@
         <div class="d-flex align-items-center gap-1 border-end pe-2 me-1">
             <button class="btn btn-custom btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i></button>
             <button class="btn btn-custom btn-outline-primary shadow-sm px-2" onclick="batchDuplicate()" title="Nhân bản trang chọn"><i data-lucide="copy" size="16"></i></button>
-            <button class="btn btn-custom btn-outline-info shadow-sm px-2" onclick="batchRotate()" title="Xoay trang chọn"><i data-lucide="rotate-cw" size="16"></i></button>
+            <button class="btn btn-custom btn-outline-info shadow-sm px-2" onclick="batchRotateLeft()" title="Xoay trái trang chọn"><i data-lucide="rotate-ccw" size="16"></i></button>
+            <button class="btn btn-custom btn-outline-info shadow-sm px-2" onclick="batchRotateRight()" title="Xoay phải trang chọn"><i data-lucide="rotate-cw" size="16"></i></button>
             <button class="btn btn-custom btn-outline-danger shadow-sm px-2" onclick="batchDelete()" title="Xóa trang chọn"><i data-lucide="trash-2" size="16"></i></button>
         </div>
 
@@ -910,10 +912,16 @@
     hideLoader();
   }
 
-  function batchRotate() {
+  function batchRotateRight() {
     const ids = getSelectedIds();
     if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để xoay!"); return; }
     ids.forEach(id => rotatePageRight(id));
+  }
+
+  function batchRotateLeft() {
+    const ids = getSelectedIds();
+    if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để xoay!"); return; }
+    ids.forEach(id => rotatePageLeft(id));
   }
 
   function batchDelete() {
@@ -2053,7 +2061,7 @@
           newPage.drawRectangle({ x: drawX, y: drawY, width: objW, height: objH, color: PDFLib.rgb(rgb.r, rgb.g, rgb.b), rotate: PDFLib.degrees(-angleDeg) });
         }
         for (const node of box.querySelectorAll('.text-overlay')) {
-          // Lấy đúng phần nội dung text, bỏ qua nội dung của các handle ẩn
+          // Lấy đúng phần nội dung text, bỏ qua nội dung của các handle ẩn (như icon SVG)
           const clone = node.cloneNode(true);
           clone.querySelectorAll('.drag-handle, .delete-handle, .rotate-handle, .resize-handle').forEach(h => h.remove());
           let pureText = clone.innerText.trim(); 
