@@ -143,7 +143,7 @@
     
     .main-area { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
     
-    .main-header { padding: 1rem 1.5rem; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
+    .main-header { padding: 1rem 1.5rem; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1030; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
     .main-title-wrap h4 { font-weight: 700; color: var(--brand-blue); margin: 0; font-size: 1.2rem; letter-spacing: -0.5px;}
     .main-title-wrap p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
 
@@ -161,7 +161,7 @@
     .main-empty-state:hover, .main-empty-state.dragover { border-color: var(--brand-blue); box-shadow: var(--shadow-soft); }
     .icon-circle { background-color: var(--bg-active); padding: 1rem; border-radius: 50%; margin-bottom: 1rem; }
     
-    #page-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; padding: 30px; }
+    #page-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; padding: 30px; transition: opacity 0.3s; }
     #page-container.scroll-mode { display: flex; flex-direction: column; align-items: center; background: var(--bg-body); padding: 40px 20px; }
     #page-container.scroll-mode .page-card { width: 100%; max-width: 850px; cursor: default; box-shadow: var(--shadow-soft); margin-bottom: 40px; border: none;}
     
@@ -169,12 +169,11 @@
     .page-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--brand-blue);}
     .page-card.sortable-ghost { opacity: 0.4; }
     
-    /* FIX: CHECKBOX CHUYỂN XUỐNG GÓC DƯỚI BÊN TRÁI */
-    .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 999; display: block; background: rgba(255,255,255,0.85); padding: 6px 8px; border-radius: 8px; box-shadow: var(--shadow-soft); transition: 0.2s; }
+    /* GÓC TRÁI DƯỚI CHO CHECKBOX VÀ CHỈNH LẠI Z-INDEX CHUẨN MỰC */
+    .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 20; display: block; background: rgba(255,255,255,0.85); padding: 6px 8px; border-radius: 8px; box-shadow: var(--shadow-soft); transition: 0.2s; }
     .page-select-box:hover { background: #fff; transform: scale(1.1); }
     .page-select-box input { transform: scale(1.4); cursor: pointer; border-radius: 4px; accent-color: var(--brand-blue); margin: 0;}
     
-    /* FIX: CHUYỂN TOÀN BỘ CÁC ICON PAGE-ACTIONS VÀO 1 HÀNG */
     .page-actions { position: absolute; top: 10px; right: 10px; display: none; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px; background: var(--bg-panel); border: 1px solid var(--border-color); padding: 4px; border-radius: var(--radius-sm); z-index: 10; box-shadow: var(--shadow-soft); max-width: calc(100% - 20px);}
     
     #page-container:not(.scroll-mode) .page-card:hover .page-actions { display: flex; }
@@ -187,7 +186,7 @@
     .pdf-page-box { position: relative; display: inline-block; line-height: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: opacity 0.2s ease;}
     .pdf-page-box canvas { width: 100%; max-width: 100%; height: auto; display: block; touch-action: none;}
 
-    #edit-toolbar { background: var(--bg-panel); padding: 12px 25px; box-shadow: var(--shadow-soft); border-bottom: 1px solid var(--border-color); display: none; flex-wrap: wrap; gap: 15px; align-items: center;}
+    #edit-toolbar { background: var(--bg-panel); padding: 12px 25px; box-shadow: var(--shadow-soft); border-bottom: 1px solid var(--border-color); display: none; flex-wrap: wrap; gap: 15px; align-items: center; z-index: 1030;}
     #edit-toolbar.active { display: flex; }
     
     .text-overlay { position: absolute; min-width: 20px; min-height: 20px; padding: 2px 4px; outline: none; white-space: pre-wrap; word-wrap: break-word; cursor: text; border: 1px dashed transparent; background: transparent; line-height: 1.2; z-index: 50; transition: opacity 0.15s;}
@@ -263,7 +262,7 @@
       
       .page-card { width: 100%; margin: 0 auto; display: flex; flex-direction: column; padding-top: 15px;}
       .page-actions { position: static; display: flex !important; flex-direction: row; justify-content: center; flex-wrap: wrap; background: transparent; border: none; box-shadow: none; margin-bottom: 10px; padding: 0; gap: 6px;}
-      .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 999;}
+      .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 20;}
       
       #page-container { grid-template-columns: 1fr; padding: 15px;}
     }
@@ -342,14 +341,6 @@
     <div id="edit-toolbar" class="sticky-top">
       <button class="btn btn-sm btn-outline-secondary fw-bold shadow-sm" onclick="toggleEditMode()"><i data-lucide="layout-grid" class="me-1" size="16"></i> <span data-i18n="btn_back">Trở về</span></button>
       
-      <!-- Xuất File Di chuyển sang trái ở chế độ Edit -->
-      <button class="btn btn-sm btn-primary shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#exportModal" title="Xuất File"><i data-lucide="download" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_export">Xuất File</span></button>
-      
-      <!-- Lịch sử (Undo/Redo) -->
-      <div class="vr mx-2 d-none d-md-block" style="background-color: var(--border-color);"></div>
-      <button class="btn btn-sm btn-light border shadow-sm px-2" onclick="undo()" title="Hoàn tác (Ctrl+Z)"><i data-lucide="undo" size="16"></i></button>
-      <button class="btn btn-sm btn-light border shadow-sm px-2 ms-1" onclick="redo()" title="Làm lại (Ctrl+Y)"><i data-lucide="redo" size="16"></i></button>
-
       <div class="vr mx-2 d-none d-md-block" style="background-color: var(--border-color);"></div>
 
       <div class="d-flex align-items-center p-1 rounded border shadow-sm" style="background: var(--bg-panel-alt);">
@@ -365,7 +356,7 @@
         <button id="tool-underline" class="btn btn-sm text-decoration-underline border-0" style="color: var(--text-main);" title="Gạch chân">U</button>
       </div>
 
-      <!-- Bổ sung Màu Đen và Vàng -->
+      <!-- Vùng chọn màu và Lịch sử Undo/Redo -->
       <div class="d-flex align-items-center p-1 rounded border shadow-sm px-2 mt-2 mt-md-0" style="background: var(--bg-panel-alt);">
         <small class="fw-bold me-2 d-none d-lg-inline" style="color: var(--text-muted);" data-i18n="text_color">Chữ:</small>
         <div class="color-dot bg-dark" onclick="setColor('#000000', 'color')" title="Đen"></div>
@@ -381,11 +372,16 @@
         <div class="color-dot bg-dark" onclick="setColor('#000000', 'bg')" title="Đen"></div>
         <div class="color-dot" style="background-color: #eab308;" onclick="setColor('#eab308', 'bg')" title="Vàng"></div>
         <input type="color" id="tool-bg-color" class="form-control form-control-color p-0 border-0 ms-1 rounded" style="width: 24px; height: 24px; background: transparent;" value="#ffffff" title="Chọn màu tự chọn">
+
+        <!-- Lịch sử (Undo/Redo) di chuyển vào đây -->
+        <div class="vr mx-2" style="background-color: var(--border-color);"></div>
+        <button class="btn btn-sm btn-light border shadow-sm px-2" onclick="undo()" title="Hoàn tác (Ctrl+Z)"><i data-lucide="undo" size="15"></i></button>
+        <button class="btn btn-sm btn-light border shadow-sm px-2 ms-1" onclick="redo()" title="Làm lại (Ctrl+Y)"><i data-lucide="redo" size="15"></i></button>
       </div>
 
       <div class="ms-auto d-flex align-items-center gap-2 mt-2 mt-md-0 flex-wrap">
-        <!-- Khi vô giao diện chỉnh sửa thì ẩn: Chọn tất cả, nhân bản, xoay, xóa trên thẻ -->
         <button class="btn btn-sm btn-outline-danger shadow-sm" onclick="resetApp()" title="Làm Mới"><i data-lucide="refresh-cw" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_refresh">Làm Mới</span></button>
+        <button class="btn btn-sm btn-primary shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#exportModal" title="Xuất File"><i data-lucide="download" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_export">Xuất File</span></button>
       </div>
     </div>
 
@@ -427,8 +423,8 @@
         <button class="btn btn-custom btn-outline-success shadow-sm" data-bs-toggle="modal" data-bs-target="#mergeExcelModal"><i data-lucide="sheet" size="16" class="me-1"></i> <span data-i18n="btn_merge_excel">Gộp Excel</span></button>
         <button class="btn btn-custom btn-warning shadow-sm text-dark" data-bs-toggle="modal" data-bs-target="#cloneModal"><i data-lucide="copy" size="16" class="me-1"></i> <span data-i18n="btn_clone_file">Nhân bản File</span></button>
         <button class="btn btn-custom btn-info text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" data-bs-toggle="modal" data-bs-target="#splitModal"><i data-lucide="scissors" size="16" class="me-1"></i> <span data-i18n="btn_split">Tách File</span></button>
-        <button class="btn btn-custom btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#exportModal"><i data-lucide="download" size="16" class="me-1"></i> <span data-i18n="btn_export">Xuất File</span></button>
         <button class="btn btn-custom btn-outline-danger shadow-sm" onclick="resetApp()"><i data-lucide="refresh-cw" size="16" class="me-1"></i> <span data-i18n="btn_refresh">Làm Mới</span></button>
+        <button class="btn btn-custom btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#exportModal"><i data-lucide="download" size="16" class="me-1"></i> <span data-i18n="btn_export">Xuất File</span></button>
       </div>
     </div>
 
@@ -915,49 +911,38 @@
       let currentPagesStr = JSON.stringify(workspacePages);
       let statePagesStr = JSON.stringify(state.pages);
       
-      if (currentPagesStr === statePagesStr) {
-          workspacePages.forEach(p => {
-              const box = document.getElementById(`box-${p.id}`);
-              if (box) {
-                  box.querySelectorAll('.text-overlay, .shape-overlay, .img-overlay').forEach(el => el.remove());
-                  const overlays = state.overlays[p.id] || [];
-                  overlays.forEach(o => {
-                      const el = document.createElement('div');
-                      el.className = o.type + '-overlay';
-                      el.style.cssText = o.style;
-                      el.dataset.angle = o.angle;
-                      if (o.type === 'text') { el.innerHTML = o.content; el.contentEditable = true; } 
-                      else if (o.type === 'image') { const img = document.createElement('img'); img.src = o.content; el.appendChild(img); }
-                      createHandles(el, box, o.type);
-                      box.appendChild(el);
-                  });
-              }
-          });
-      } else {
+      if (currentPagesStr !== statePagesStr) {
+          // Ngăn chớp đen: dùng hiệu ứng mờ
+          pageContainer.style.opacity = '0.3';
+          pageContainer.style.pointerEvents = 'none';
+
           workspacePages = JSON.parse(statePagesStr);
           pageContainer.innerHTML = '';
           sidebarGrid.innerHTML = '';
-          showLoader("Đang khôi phục...");
+          
           await appendPagesToWorkspace(workspacePages, true);
-          workspacePages.forEach(p => {
-              const box = document.getElementById(`box-${p.id}`);
-              if (box) {
-                  box.querySelectorAll('.text-overlay, .shape-overlay, .img-overlay').forEach(el => el.remove());
-                  const overlays = state.overlays[p.id] || [];
-                  overlays.forEach(o => {
-                      const el = document.createElement('div');
-                      el.className = o.type + '-overlay';
-                      el.style.cssText = o.style;
-                      el.dataset.angle = o.angle;
-                      if (o.type === 'text') { el.innerHTML = o.content; el.contentEditable = true; } 
-                      else if (o.type === 'image') { const img = document.createElement('img'); img.src = o.content; el.appendChild(img); }
-                      createHandles(el, box, o.type);
-                      box.appendChild(el);
-                  });
-              }
-          });
-          hideLoader();
+
+          pageContainer.style.opacity = '1';
+          pageContainer.style.pointerEvents = 'auto';
       }
+      
+      workspacePages.forEach(p => {
+          const box = document.getElementById(`box-${p.id}`);
+          if (box) {
+              box.querySelectorAll('.text-overlay, .shape-overlay, .img-overlay').forEach(el => el.remove());
+              const overlays = state.overlays[p.id] || [];
+              overlays.forEach(o => {
+                  const el = document.createElement('div');
+                  el.className = o.type + '-overlay';
+                  el.style.cssText = o.style;
+                  el.dataset.angle = o.angle;
+                  if (o.type === 'text') { el.innerHTML = o.content; el.contentEditable = true; } 
+                  else if (o.type === 'image') { const img = document.createElement('img'); img.src = o.content; el.appendChild(img); }
+                  createHandles(el, box, o.type);
+                  box.appendChild(el);
+              });
+          }
+      });
       
       setActiveElement(null);
       isRestoring = false;
@@ -1751,7 +1736,6 @@
     if(card) {
       const mainArea = document.querySelector('.main-area');
       const toolbarHeight = document.getElementById('edit-toolbar').offsetHeight || 0;
-      // Bỏ hiệu ứng cuộn, cuộn tức thì (auto) để nhanh hơn
       mainArea.scrollTo({ top: card.offsetTop - toolbarHeight - 20, behavior: 'auto' });
     }
     document.querySelectorAll('.side-page-item').forEach(el => el.classList.remove('active'));
