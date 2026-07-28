@@ -44,8 +44,7 @@
       }
     };
     
-    // ĐIỀN LINK WEB APP API MỚI TẠO VÀO ĐÂY
-    // Link dưới đây là URL cũ của bạn, hãy thay bằng URL Deploy mới (chứa doPost API)
+    // LINK WEB APP CỦA BẠN (GIỮ NGUYÊN)
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxuRwVMXERmL4CbS0JwY-3ivlUNtCDnKagGbUqjiGtDtquFf4yPWZoZbTt5Wa1Xa0jpeg/exec";
   </script>
   <script async src="https://cdn.jsdelivr.net/gh/wallat/compiled-opencvjs/v4.2.0/opencv.js" type="text/javascript"></script>
@@ -368,9 +367,16 @@
       </div>
 
       <div class="ms-auto d-flex align-items-center gap-2 mt-2 mt-md-0 flex-wrap">
+        <!-- Nhóm nút Thao tác hàng loạt (Batch Actions) -->
+        <div class="d-flex align-items-center gap-1 border-end pe-2 me-1">
+            <button class="btn btn-sm btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_select_all">Chọn tất cả</span></button>
+            <button class="btn btn-sm btn-outline-primary shadow-sm px-2" onclick="batchDuplicate()" title="Nhân bản trang chọn"><i data-lucide="copy" size="16"></i></button>
+            <button class="btn btn-sm btn-outline-info shadow-sm px-2" onclick="batchRotate()" title="Xoay trang chọn"><i data-lucide="rotate-cw" size="16"></i></button>
+            <button class="btn btn-sm btn-outline-danger shadow-sm px-2" onclick="batchDelete()" title="Xóa trang chọn"><i data-lucide="trash-2" size="16"></i></button>
+        </div>
+
         <button class="btn btn-sm btn-outline-success shadow-sm" data-bs-toggle="modal" data-bs-target="#mergeExcelModal" title="Gộp Excel"><i data-lucide="sheet" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_merge_excel">Gộp Excel</span></button>
-        <button class="btn btn-sm btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_select_all">Chọn tất cả</span></button>
-        <button class="btn btn-sm btn-warning shadow-sm text-dark" data-bs-toggle="modal" data-bs-target="#cloneModal" title="Nhân bản"><i data-lucide="copy" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_clone">Nhân bản</span></button>
+        <button class="btn btn-sm btn-warning shadow-sm text-dark" data-bs-toggle="modal" data-bs-target="#cloneModal" title="Nhân bản"><i data-lucide="copy" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_clone_file">Nhân bản File</span></button>
         <button class="btn btn-sm btn-info text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" data-bs-toggle="modal" data-bs-target="#splitModal" title="Tách File"><i data-lucide="scissors" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_split">Tách File</span></button>
         <button class="btn btn-sm btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#exportModal" title="Xuất File"><i data-lucide="download" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_export">Xuất File</span></button>
         <div class="vr mx-1 d-none d-md-block" style="background-color: var(--border-color);"></div>
@@ -404,10 +410,17 @@
          </div>
       </div>
 
-      <div id="grid-main-buttons" class="d-flex gap-2 flex-wrap">
+      <div id="grid-main-buttons" class="d-flex gap-2 flex-wrap ms-auto">
+        <!-- Nhóm nút Thao tác hàng loạt (Batch Actions) -->
+        <div class="d-flex align-items-center gap-1 border-end pe-2 me-1">
+            <button class="btn btn-custom btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i></button>
+            <button class="btn btn-custom btn-outline-primary shadow-sm px-2" onclick="batchDuplicate()" title="Nhân bản trang chọn"><i data-lucide="copy" size="16"></i></button>
+            <button class="btn btn-custom btn-outline-info shadow-sm px-2" onclick="batchRotate()" title="Xoay trang chọn"><i data-lucide="rotate-cw" size="16"></i></button>
+            <button class="btn btn-custom btn-outline-danger shadow-sm px-2" onclick="batchDelete()" title="Xóa trang chọn"><i data-lucide="trash-2" size="16"></i></button>
+        </div>
+
         <button class="btn btn-custom btn-outline-success shadow-sm" data-bs-toggle="modal" data-bs-target="#mergeExcelModal"><i data-lucide="sheet" size="16" class="me-1"></i> <span data-i18n="btn_merge_excel">Gộp Excel</span></button>
-        <button class="btn btn-custom btn-outline-secondary shadow-sm" onclick="selectAllPages()"><i data-lucide="check-square" size="16" class="me-1"></i> <span data-i18n="btn_select_all">Chọn tất cả</span></button>
-        <button class="btn btn-custom btn-warning shadow-sm text-dark" data-bs-toggle="modal" data-bs-target="#cloneModal"><i data-lucide="copy" size="16" class="me-1"></i> <span data-i18n="btn_clone">Nhân bản</span></button>
+        <button class="btn btn-custom btn-warning shadow-sm text-dark" data-bs-toggle="modal" data-bs-target="#cloneModal"><i data-lucide="copy" size="16" class="me-1"></i> <span data-i18n="btn_clone_file">Nhân bản File</span></button>
         <button class="btn btn-custom btn-info text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" data-bs-toggle="modal" data-bs-target="#splitModal"><i data-lucide="scissors" size="16" class="me-1"></i> <span data-i18n="btn_split">Tách File</span></button>
         <button class="btn btn-custom btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#exportModal"><i data-lucide="download" size="16" class="me-1"></i> <span data-i18n="btn_export">Xuất File</span></button>
         <button class="btn btn-custom btn-outline-danger shadow-sm" onclick="resetApp()"><i data-lucide="refresh-cw" size="16" class="me-1"></i> <span data-i18n="btn_refresh">Làm Mới</span></button>
@@ -558,7 +571,7 @@
         <textarea id="clone-names" class="form-control" rows="5" placeholder="Ban_Sao_1&#10;Ban_Sao_2"></textarea>
       </div>
       <div class="modal-footer border-0">
-        <button type="button" class="btn btn-warning w-100 py-2 fw-bold shadow-sm" onclick="executeClone()" data-i18n="btn_execute_clone">Nhân bản & Tải Xuống (Zip)</button>
+        <button type="button" class="btn btn-warning w-100 py-2 fw-bold shadow-sm" onclick="executeCloneFile()" data-i18n="btn_execute_clone_file">Nhân bản & Tải Xuống (Zip)</button>
       </div>
     </div>
   </div>
@@ -661,7 +674,7 @@
       btn_select_all: "Chọn tất cả",
       btn_refresh: "Làm Mới",
       btn_split: "Tách File",
-      btn_clone: "Nhân bản",
+      btn_clone_file: "Nhân bản File",
       empty_doc_title: "Chưa có tài liệu nào",
       empty_doc_desc: "Kéo thả PDF, Word, Excel, PPT, Ảnh vào đây<br>hoặc click để chọn file từ máy",
       modal_merge_excel_title: "Gộp file Excel",
@@ -681,7 +694,7 @@
       modal_clone_title: "Nhân bản file PDF",
       clone_copies_label: "Số lượng bản sao cần tạo:",
       clone_names_label: "Tên file mong muốn (mỗi tên 1 dòng):",
-      btn_execute_clone: "Nhân bản & Tải Xuống (Zip)",
+      btn_execute_clone_file: "Nhân bản File & Tải Xuống (Zip)",
       modal_export_title: "Tùy chọn Xuất & Tải về",
       export_info_all: "Đang xuất: <strong>Tất cả trang</strong>",
       export_info_selected: "Đang xuất: <strong>{count} trang đã chọn</strong>",
@@ -704,6 +717,7 @@
       btn_shape: "Khung",
       btn_scan: "Làm phẳng",
       btn_ocr: "Đọc",
+      btn_eraser: "Tẩy chữ",
       prompt_move_page: "Nhập số thứ tự vị trí trang muốn chuyển đến (1 đến {max}):",
       toast_title: "Đang tải lên và xử lý...",
       global_drop_text: "Thả tài liệu vào đây để tự động thêm",
@@ -746,7 +760,7 @@
       btn_select_all: "Select All",
       btn_refresh: "Refresh",
       btn_split: "Split File",
-      btn_clone: "Clone",
+      btn_clone_file: "Clone File",
       empty_doc_title: "No document yet",
       empty_doc_desc: "Drop PDF, Word, Excel, PPT, Image here<br>or click to select file",
       modal_merge_excel_title: "Merge Excel Files",
@@ -766,7 +780,7 @@
       modal_clone_title: "Clone PDF File",
       clone_copies_label: "Number of copies to create:",
       clone_names_label: "Desired filenames (one per line):",
-      btn_execute_clone: "Clone & Download (Zip)",
+      btn_execute_clone_file: "Clone File & Download (Zip)",
       modal_export_title: "Export Options",
       export_info_all: "Exporting: <strong>All pages</strong>",
       export_info_selected: "Exporting: <strong>{count} selected pages</strong>",
@@ -789,6 +803,7 @@
       btn_shape: "Shape",
       btn_scan: "Flatten",
       btn_ocr: "OCR",
+      btn_eraser: "Eraser",
       prompt_move_page: "Enter position to move to (1 to {max}):",
       toast_title: "Uploading and processing...",
       global_drop_text: "Drop document here to add",
@@ -878,6 +893,113 @@
     document.getElementById('global-drop-zone').classList.remove('active');
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) { handleFiles(e.dataTransfer.files); }
   });
+
+  // ================= BATCH ACTIONS (THAO TÁC HÀNG LOẠT) =================
+  function getSelectedIds() {
+    const selectedCheckboxes = document.querySelectorAll('.page-selector:checked');
+    return Array.from(selectedCheckboxes).map(cb => cb.dataset.id);
+  }
+
+  async function batchDuplicate() {
+    const ids = getSelectedIds();
+    if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để nhân bản!"); return; }
+    showLoader("Đang nhân bản...");
+    // Reverse array to maintain relative order when inserting right after the original
+    for(let i = ids.length - 1; i >= 0; i--) {
+        await duplicatePage(ids[i]);
+    }
+    hideLoader();
+  }
+
+  function batchRotate() {
+    const ids = getSelectedIds();
+    if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để xoay!"); return; }
+    ids.forEach(id => rotatePageRight(id));
+  }
+
+  function batchDelete() {
+    const ids = getSelectedIds();
+    if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để xóa!"); return; }
+    if(!confirm(`Xác nhận xóa ${ids.length} trang đã chọn?`)) return;
+    // Call removePage which filters out array elements safely
+    ids.forEach(id => removePage(id));
+    
+    // Bỏ check tất cả sau khi xoá để tránh lỗi UI
+    document.querySelectorAll('.page-selector:checked').forEach(cb => cb.checked = false);
+  }
+
+  async function duplicatePage(pageId) {
+    const idx = workspacePages.findIndex(p => p.id === pageId);
+    if (idx === -1) return;
+    
+    const original = workspacePages[idx];
+    const newId = generateId();
+    const clonedItem = { ...original, id: newId };
+    
+    // Insert array
+    workspacePages.splice(idx + 1, 0, clonedItem);
+    
+    // Create Main Card Element
+    const card = document.createElement('div');
+    card.className = "page-card"; card.id = `card-${clonedItem.id}`;
+    card.innerHTML = `
+        <div class="page-select-box">
+           <input type="checkbox" class="page-selector form-check-input shadow-sm" data-id="${clonedItem.id}">
+        </div>
+        <div class="page-actions">
+          <div class="d-flex flex-wrap gap-1 justify-content-end mb-1 scroll-only w-100">
+            <button class="btn btn-primary btn-sm shadow-sm fw-bold" onclick="addTextToPage('${clonedItem.id}')"><i data-lucide="type" size="14"></i> <span class="d-none d-md-inline">${t('btn_text')}</span></button>
+            <button class="btn btn-success btn-sm shadow-sm fw-bold" onclick="addShapeToPage('${clonedItem.id}')"><i data-lucide="square" size="14"></i> <span class="d-none d-md-inline">${t('btn_shape')}</span></button>
+            <button class="btn btn-outline-secondary bg-white btn-sm shadow-sm fw-bold border" onclick="addEraserToPage('${clonedItem.id}')" title="Tẩy (Che chữ)"><i data-lucide="eraser" size="14"></i> <span class="d-none d-md-inline">${t('btn_eraser')}</span></button>
+            <button class="btn btn-dark btn-sm text-white shadow-sm" onclick="openScanModal('${clonedItem.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i> <span class="d-none d-md-inline">${t('btn_scan')}</span></button>
+            <button class="btn btn-info btn-sm text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${clonedItem.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i> <span class="d-none d-md-inline">${t('btn_ocr')}</span></button>
+          </div>
+          <div class="d-flex flex-nowrap gap-1">
+            <button class="btn btn-warning btn-sm shadow-sm grid-only text-dark" onclick="enterEditMode('${clonedItem.id}')" title="${t('btn_edit')}"><i data-lucide="edit-3" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-secondary shadow-sm" onclick="promptMovePage('${clonedItem.id}')" title="Chuyển đến trang..."><i data-lucide="move" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-secondary shadow-sm" onclick="duplicatePage('${clonedItem.id}')" title="Nhân bản trang này"><i data-lucide="copy" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-primary shadow-sm" onclick="rotatePageLeft('${clonedItem.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-primary shadow-sm" onclick="rotatePageRight('${clonedItem.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-danger shadow-sm" onclick="removePage('${clonedItem.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
+          </div>
+        </div>
+        <div class="canvas-wrapper" id="wrapper-${clonedItem.id}">
+          <div class="pdf-page-box" id="box-${clonedItem.id}"></div>
+        </div>
+        <div class="badge mt-3 fw-bold px-3 py-2 rounded-pill shadow-sm badge-count" style="background: var(--bg-panel-alt); color: var(--text-main); border: 1px solid var(--border-color);">${t('page_label')} X</div>
+    `;
+    const refNodeMain = pageContainer.children[idx + 1];
+    pageContainer.insertBefore(card, refNodeMain || null);
+
+    // Create Side Card Element
+    const sideCard = document.createElement('div');
+    sideCard.className = "side-page-item"; sideCard.id = `side-${clonedItem.id}`;
+    sideCard.onclick = (e) => { if(!e.target.closest('.side-page-actions')) scrollToPage(clonedItem.id); };
+    sideCard.innerHTML = `
+        <div class="side-page-actions">
+           <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageLeft('${clonedItem.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="13"></i></button>
+           <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageRight('${clonedItem.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="13"></i></button>
+           <button class="btn btn-light border p-0 text-danger" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); removePage('${clonedItem.id}')" title="Xóa"><i data-lucide="trash-2" size="13"></i></button>
+        </div>
+        <div class="side-canvas-wrapper" id="side-box-${clonedItem.id}"></div>
+        <div class="side-page-label">${t('page_label')} X</div>
+    `;
+    const refNodeSide = sidebarGrid.children[idx + 1];
+    sidebarGrid.insertBefore(sideCard, refNodeSide || null);
+
+    // Render Canvas
+    let cScale = window.innerWidth < 768 ? 1.0 : 1.5;
+    await renderSingleCanvas(clonedItem, document.getElementById(`box-${clonedItem.id}`), cScale);
+    setupDropZoneForPage(document.getElementById(`box-${clonedItem.id}`));
+    await renderSingleCanvas(clonedItem, document.getElementById(`side-box-${clonedItem.id}`), 0.3);
+
+    updatePageLabels();
+    lucide.createIcons();
+    if(isEditMode) {
+      document.querySelectorAll('.page-actions').forEach(el => el.style.display = 'flex');
+      card.querySelector('.page-select-box').style.display = 'none';
+    }
+  }
 
   // ================= LOGIC GỘP EXCEL =================
   async function executeMergeExcel() {
@@ -1098,7 +1220,6 @@
         } 
         else {
           pDesc.innerText = `Server đang chuyển đổi: ${file.name} (${Math.round(basePct + (100/files.length))}%)`;
-          // GỌI API THAY VÌ GOOGLE.SCRIPT.RUN
           const res = await callGasApi({
               action: 'convertFileToPdf',
               base64Data: base64Data,
@@ -1214,12 +1335,14 @@
           <div class="d-flex flex-wrap gap-1 justify-content-end mb-1 scroll-only w-100">
             <button class="btn btn-primary btn-sm shadow-sm fw-bold" onclick="addTextToPage('${item.id}')"><i data-lucide="type" size="14"></i> <span class="d-none d-md-inline">${t('btn_text')}</span></button>
             <button class="btn btn-success btn-sm shadow-sm fw-bold" onclick="addShapeToPage('${item.id}')"><i data-lucide="square" size="14"></i> <span class="d-none d-md-inline">${t('btn_shape')}</span></button>
+            <button class="btn btn-outline-secondary bg-white btn-sm shadow-sm fw-bold border" onclick="addEraserToPage('${item.id}')" title="Tẩy (Che nội dung cũ)"><i data-lucide="eraser" size="14"></i> <span class="d-none d-md-inline">${t('btn_eraser')}</span></button>
             <button class="btn btn-dark btn-sm text-white shadow-sm" onclick="openScanModal('${item.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i> <span class="d-none d-md-inline">${t('btn_scan')}</span></button>
             <button class="btn btn-info btn-sm text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${item.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i> <span class="d-none d-md-inline">${t('btn_ocr')}</span></button>
           </div>
           <div class="d-flex flex-nowrap gap-1">
             <button class="btn btn-warning btn-sm shadow-sm grid-only text-dark" onclick="enterEditMode('${item.id}')" title="${t('btn_edit')}"><i data-lucide="edit-3" size="14"></i></button>
             <button class="btn btn-light btn-sm text-secondary shadow-sm" onclick="promptMovePage('${item.id}')" title="Chuyển đến trang..."><i data-lucide="move" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-secondary shadow-sm" onclick="duplicatePage('${item.id}')" title="Nhân bản trang này"><i data-lucide="copy" size="14"></i></button>
             <button class="btn btn-light btn-sm text-primary shadow-sm" onclick="rotatePageLeft('${item.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="14"></i></button>
             <button class="btn btn-light btn-sm text-primary shadow-sm" onclick="rotatePageRight('${item.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="14"></i></button>
             <button class="btn btn-light btn-sm text-danger shadow-sm" onclick="removePage('${item.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
@@ -1260,7 +1383,10 @@
     updatePageLabels();
     initSortables();
     lucide.createIcons();
-    if(isEditMode) document.querySelectorAll('.page-actions').forEach(el => el.style.display = 'flex');
+    if(isEditMode) {
+      document.querySelectorAll('.page-actions').forEach(el => el.style.display = 'flex');
+      document.querySelectorAll('.page-select-box').forEach(el => el.style.display = 'none');
+    }
   }
 
   function promptMovePage(pageId) {
@@ -1411,6 +1537,28 @@
     if(!box) return;
     const el = document.createElement('div'); el.className = 'shape-overlay';
     el.style.left = '10%'; el.style.top = '10%'; el.style.width = '20%'; el.style.height = '8%'; el.style.backgroundColor = '#ffffff'; 
+    const drag = document.createElement('div'); drag.className = 'drag-handle'; drag.innerHTML = '☩ Kéo';
+    const resize = document.createElement('div'); resize.className = 'resize-handle';
+    const del = document.createElement('div'); del.className = 'delete-handle'; del.innerHTML = '✖ Xóa';
+    const rot = document.createElement('div'); rot.className = 'rotate-handle'; rot.innerHTML = '↻';
+    
+    const removeOverlay = (e) => { e.preventDefault(); e.stopPropagation(); el.style.opacity='0'; setTimeout(()=> { el.remove(); setActiveElement(null); }, 150); };
+    del.onmousedown = removeOverlay;
+    del.addEventListener('touchstart', removeOverlay, {passive: false});
+
+    el.appendChild(drag); el.appendChild(del); el.appendChild(rot); el.appendChild(resize); box.appendChild(el);
+    makeDraggable(el, drag, box); makeResizable(el, resize, box); makeRotatable(el, rot, box);
+    el.onclick = () => setActiveElement(el, 'shape');
+    setActiveElement(el, 'shape');
+  }
+
+  // TẨY TRẮNG (Xóa chữ trên PDF)
+  function addEraserToPage(pageId) {
+    const box = document.getElementById(`box-${pageId}`);
+    if(!box) return;
+    const el = document.createElement('div'); el.className = 'shape-overlay';
+    // Mặc định màu trắng, không có viền để đè lên nền giấy PDF
+    el.style.left = '10%'; el.style.top = '10%'; el.style.width = '15%'; el.style.height = '5%'; el.style.backgroundColor = '#ffffff'; el.style.border = 'none';
     const drag = document.createElement('div'); drag.className = 'drag-handle'; drag.innerHTML = '☩ Kéo';
     const resize = document.createElement('div'); resize.className = 'resize-handle';
     const del = document.createElement('div'); del.className = 'delete-handle'; del.innerHTML = '✖ Xóa';
@@ -2111,7 +2259,7 @@ async function saveScanResult() {
   }
 
   // ================= LOGIC NHÂN BẢN FILE =================
-  async function executeClone() {
+  async function executeCloneFile() {
     if (workspacePages.length === 0) return;
     const selectedCheckboxes = document.querySelectorAll('.page-selector:checked');
     let pagesToProcess = workspacePages;
