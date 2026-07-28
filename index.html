@@ -44,7 +44,7 @@
       }
     };
     
-    // LINK WEB APP CỦA BẠN (GIỮ NGUYÊN)
+    // LINK WEB APP API
     const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxuRwVMXERmL4CbS0JwY-3ivlUNtCDnKagGbUqjiGtDtquFf4yPWZoZbTt5Wa1Xa0jpeg/exec";
   </script>
   <script async src="https://cdn.jsdelivr.net/gh/wallat/compiled-opencvjs/v4.2.0/opencv.js" type="text/javascript"></script>
@@ -169,9 +169,12 @@
     .page-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--brand-blue);}
     .page-card.sortable-ghost { opacity: 0.4; }
     
+    /* FIX: CHECKBOX ĐƯỢC ƯU TIÊN HIỂN THỊ CAO NHẤT (Z-INDEX: 999) */
+    .page-select-box { position: absolute; top: 10px; left: 10px; z-index: 999; display: block; background: rgba(255,255,255,0.85); padding: 6px 8px; border-radius: 8px; box-shadow: var(--shadow-soft); transition: 0.2s; }
+    .page-select-box:hover { background: #fff; transform: scale(1.1); }
+    .page-select-box input { transform: scale(1.4); cursor: pointer; border-radius: 4px; accent-color: var(--brand-blue); margin: 0;}
+    
     .page-actions { position: absolute; top: 10px; right: 10px; display: none; flex-direction: column; align-items: flex-end; gap: 6px; background: var(--bg-panel); border: 1px solid var(--border-color); padding: 6px; border-radius: var(--radius-sm); z-index: 10; box-shadow: var(--shadow-soft); max-width: max-content;}
-    .page-select-box { position: absolute; top: 15px; left: 15px; z-index: 10; display: block; }
-    .page-select-box input { transform: scale(1.4); cursor: pointer; border-radius: 4px; accent-color: var(--brand-blue);}
     
     #page-container:not(.scroll-mode) .page-card:hover .page-actions { display: flex; }
     #page-container.scroll-mode .page-actions { display: flex; max-width: 100%; top: -15px; right: 15px; flex-direction: row; flex-wrap: wrap; justify-content: flex-end;}
@@ -183,6 +186,13 @@
     .pdf-page-box { position: relative; display: inline-block; line-height: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: opacity 0.2s ease;}
     .pdf-page-box canvas { width: 100%; max-width: 100%; height: auto; display: block; touch-action: none;}
     
+    /* CSS CHO LỚP TEXT NATIVE PDF ĐỂ CLICK VÀO SỬA */
+    .pdf-text-layer { position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; pointer-events: none; z-index: 48; line-height: 1;}
+    .pdf-text-layer.active { pointer-events: auto; }
+    .pdf-text-layer span { position: absolute; color: transparent; cursor: pointer; white-space: pre; transform-origin: 0% 0%; transition: background 0.2s;}
+    .pdf-text-layer.active span { background: rgba(59, 130, 246, 0.1); border: 1px dashed rgba(59, 130, 246, 0.4); }
+    .pdf-text-layer.active span:hover { background: rgba(59, 130, 246, 0.3); border: 1px dashed var(--brand-blue); color: rgba(0,0,0,0.6); }
+
     #edit-toolbar { background: var(--bg-panel); padding: 12px 25px; box-shadow: var(--shadow-soft); border-bottom: 1px solid var(--border-color); display: none; flex-wrap: wrap; gap: 15px; align-items: center;}
     #edit-toolbar.active { display: flex; }
     
@@ -233,7 +243,7 @@
 
     .file-badge { background: var(--bg-panel-alt); padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 8px; font-size: 12px; font-weight: 600; border: 1px solid var(--border-color); display: flex; align-items: center; color: var(--text-main);}
 
-    /* SCANNER STYLES - TAPSCANNER CLONE */
+    /* SCANNER STYLES */
     #scan-canvas-container { position: relative; display: inline-block; box-shadow: var(--shadow-soft); max-width: 100%; touch-action: none; background: var(--bg-panel-alt); border-radius: var(--radius-sm); border: 1px solid var(--border-color);}
     .corner-handle { position: absolute; width: 30px; height: 30px; background: transparent; border: 3px solid #0ea5e9; border-radius: 50%; cursor: crosshair; z-index: 100; transform: translate(-50%, -50%); touch-action: none; box-shadow: 0 0 10px rgba(0,0,0,0.5);}
     .corner-handle::after { content: ''; position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; background: #0ea5e9; border-radius: 50%; transform: translate(-50%, -50%); }
@@ -259,7 +269,6 @@
       .page-card { width: 100%; margin: 0 auto; display: flex; flex-direction: column; padding-top: 15px;}
       
       .page-actions { position: static; display: flex !important; flex-direction: row; justify-content: center; flex-wrap: wrap; background: transparent; border: none; box-shadow: none; margin-bottom: 10px; padding: 0; gap: 6px;}
-      .page-select-box { position: absolute; top: 10px; left: 10px; z-index: 20;}
       
       #page-container { grid-template-columns: 1fr; padding: 15px;}
     }
@@ -337,6 +346,12 @@
   <div class="main-area">
     <div id="edit-toolbar" class="sticky-top">
       <button class="btn btn-sm btn-outline-secondary fw-bold shadow-sm" onclick="toggleEditMode()"><i data-lucide="layout-grid" class="me-1" size="16"></i> <span data-i18n="btn_back">Trở về</span></button>
+      
+      <!-- NÚT BẬT TẮT CHẾ ĐỘ SỬA CHỮ PDF NATIVE -->
+      <button id="btn-native-edit" class="btn btn-sm btn-outline-primary fw-bold shadow-sm ms-2" onclick="toggleNativeEditMode()" title="Sửa nội dung chữ trên file PDF">
+         <i data-lucide="edit-2" class="me-1" size="16"></i> <span data-i18n="btn_edit_pdf">Sửa chữ PDF</span>
+      </button>
+      
       <div class="vr mx-2 d-none d-md-block" style="background-color: var(--border-color);"></div>
 
       <div class="d-flex align-items-center p-1 rounded border shadow-sm" style="background: var(--bg-panel-alt);">
@@ -633,7 +648,8 @@
     }
   });
 
-  // HÀM CALL API ĐỂ THAY THẾ CHO GOOGLE.SCRIPT.RUN BÊN TRONG FILE HTML GITHUB
+  window.isEditPdfTextMode = false;
+
   async function callGasApi(payload) {
     if(!GOOGLE_API_URL || GOOGLE_API_URL === "YOUR_WEB_APP_API_URL") {
         throw new Error("Vui lòng cập nhật biến GOOGLE_API_URL thành link Web App mới của bạn.");
@@ -675,6 +691,7 @@
       btn_refresh: "Làm Mới",
       btn_split: "Tách File",
       btn_clone_file: "Nhân bản File",
+      btn_edit_pdf: "Sửa chữ PDF",
       empty_doc_title: "Chưa có tài liệu nào",
       empty_doc_desc: "Kéo thả PDF, Word, Excel, PPT, Ảnh vào đây<br>hoặc click để chọn file từ máy",
       modal_merge_excel_title: "Gộp file Excel",
@@ -717,7 +734,6 @@
       btn_shape: "Khung",
       btn_scan: "Làm phẳng",
       btn_ocr: "Đọc",
-      btn_eraser: "Tẩy chữ",
       prompt_move_page: "Nhập số thứ tự vị trí trang muốn chuyển đến (1 đến {max}):",
       toast_title: "Đang tải lên và xử lý...",
       global_drop_text: "Thả tài liệu vào đây để tự động thêm",
@@ -761,6 +777,7 @@
       btn_refresh: "Refresh",
       btn_split: "Split File",
       btn_clone_file: "Clone File",
+      btn_edit_pdf: "Edit PDF Text",
       empty_doc_title: "No document yet",
       empty_doc_desc: "Drop PDF, Word, Excel, PPT, Image here<br>or click to select file",
       modal_merge_excel_title: "Merge Excel Files",
@@ -803,7 +820,6 @@
       btn_shape: "Shape",
       btn_scan: "Flatten",
       btn_ocr: "OCR",
-      btn_eraser: "Eraser",
       prompt_move_page: "Enter position to move to (1 to {max}):",
       toast_title: "Uploading and processing...",
       global_drop_text: "Drop document here to add",
@@ -904,7 +920,6 @@
     const ids = getSelectedIds();
     if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để nhân bản!"); return; }
     showLoader("Đang nhân bản...");
-    // Reverse array to maintain relative order when inserting right after the original
     for(let i = ids.length - 1; i >= 0; i--) {
         await duplicatePage(ids[i]);
     }
@@ -921,10 +936,7 @@
     const ids = getSelectedIds();
     if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để xóa!"); return; }
     if(!confirm(`Xác nhận xóa ${ids.length} trang đã chọn?`)) return;
-    // Call removePage which filters out array elements safely
     ids.forEach(id => removePage(id));
-    
-    // Bỏ check tất cả sau khi xoá để tránh lỗi UI
     document.querySelectorAll('.page-selector:checked').forEach(cb => cb.checked = false);
   }
 
@@ -936,10 +948,8 @@
     const newId = generateId();
     const clonedItem = { ...original, id: newId };
     
-    // Insert array
     workspacePages.splice(idx + 1, 0, clonedItem);
     
-    // Create Main Card Element
     const card = document.createElement('div');
     card.className = "page-card"; card.id = `card-${clonedItem.id}`;
     card.innerHTML = `
@@ -950,7 +960,6 @@
           <div class="d-flex flex-wrap gap-1 justify-content-end mb-1 scroll-only w-100">
             <button class="btn btn-primary btn-sm shadow-sm fw-bold" onclick="addTextToPage('${clonedItem.id}')"><i data-lucide="type" size="14"></i> <span class="d-none d-md-inline">${t('btn_text')}</span></button>
             <button class="btn btn-success btn-sm shadow-sm fw-bold" onclick="addShapeToPage('${clonedItem.id}')"><i data-lucide="square" size="14"></i> <span class="d-none d-md-inline">${t('btn_shape')}</span></button>
-            <button class="btn btn-outline-secondary bg-white btn-sm shadow-sm fw-bold border" onclick="addEraserToPage('${clonedItem.id}')" title="Tẩy (Che chữ)"><i data-lucide="eraser" size="14"></i> <span class="d-none d-md-inline">${t('btn_eraser')}</span></button>
             <button class="btn btn-dark btn-sm text-white shadow-sm" onclick="openScanModal('${clonedItem.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i> <span class="d-none d-md-inline">${t('btn_scan')}</span></button>
             <button class="btn btn-info btn-sm text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${clonedItem.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i> <span class="d-none d-md-inline">${t('btn_ocr')}</span></button>
           </div>
@@ -971,7 +980,6 @@
     const refNodeMain = pageContainer.children[idx + 1];
     pageContainer.insertBefore(card, refNodeMain || null);
 
-    // Create Side Card Element
     const sideCard = document.createElement('div');
     sideCard.className = "side-page-item"; sideCard.id = `side-${clonedItem.id}`;
     sideCard.onclick = (e) => { if(!e.target.closest('.side-page-actions')) scrollToPage(clonedItem.id); };
@@ -987,7 +995,6 @@
     const refNodeSide = sidebarGrid.children[idx + 1];
     sidebarGrid.insertBefore(sideCard, refNodeSide || null);
 
-    // Render Canvas
     let cScale = window.innerWidth < 768 ? 1.0 : 1.5;
     await renderSingleCanvas(clonedItem, document.getElementById(`box-${clonedItem.id}`), cScale);
     setupDropZoneForPage(document.getElementById(`box-${clonedItem.id}`));
@@ -1298,6 +1305,23 @@
     return btoa(result);
   }
 
+  // TÍNH NĂNG CHỈNH SỬA VĂN BẢN TRỰC TIẾP
+  function toggleNativeEditMode() {
+    window.isEditPdfTextMode = !window.isEditPdfTextMode;
+    const btn = document.getElementById('btn-native-edit');
+    if(window.isEditPdfTextMode) {
+        btn.classList.add('btn-primary');
+        btn.classList.remove('btn-outline-primary');
+        btn.style.color = '#fff';
+        document.querySelectorAll('.pdf-text-layer').forEach(el => el.classList.add('active'));
+    } else {
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-outline-primary');
+        btn.style.color = '';
+        document.querySelectorAll('.pdf-text-layer').forEach(el => el.classList.remove('active'));
+    }
+  }
+
   async function renderSingleCanvas(item, targetBox, scaleFactor) {
     if (!targetBox) return;
     const annotations = [];
@@ -1318,6 +1342,78 @@
     await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
 
     targetBox.appendChild(canvas);
+
+    // THÊM LỚP CHỮ GỐC ĐỂ CLICK SỬA DÀNH CHO BẢN PC/MAIN
+    if (scaleFactor >= 1.0) {
+        try {
+            const textContent = await page.getTextContent();
+            const textLayerDiv = document.createElement('div');
+            textLayerDiv.className = 'pdf-text-layer';
+            if(window.isEditPdfTextMode) textLayerDiv.classList.add('active');
+
+            textContent.items.forEach(textItem => {
+                if (!textItem.str.trim()) return;
+                const tx = pdfjsLib.Util.transform(viewport.transform, textItem.transform);
+                const fontHeight = Math.sqrt((tx[2] * tx[2]) + (tx[3] * tx[3]));
+                const left = tx[4];
+                const top = tx[5] - fontHeight * 0.85;
+
+                const span = document.createElement('span');
+                span.style.left = left + 'px';
+                span.style.top = top + 'px';
+                span.style.fontSize = fontHeight + 'px';
+                span.style.fontFamily = textItem.fontName || 'sans-serif';
+                span.textContent = textItem.str;
+                
+                span.onclick = (e) => {
+                    if(!window.isEditPdfTextMode) return;
+                    e.stopPropagation();
+                    
+                    const rect = targetBox.getBoundingClientRect();
+                    const spanRect = span.getBoundingClientRect();
+                    
+                    const leftPct = ((spanRect.left - rect.left) / rect.width) * 100;
+                    const topPct = ((spanRect.top - rect.top) / rect.height) * 100;
+                    const widthPct = (spanRect.width / rect.width) * 100;
+                    const heightPct = (spanRect.height / rect.height) * 100;
+
+                    // 1. Tạo hộp che trắng (Tẩy) đè lên đoạn gốc
+                    const eraser = document.createElement('div'); 
+                    eraser.className = 'shape-overlay';
+                    eraser.style.left = (leftPct - 0.5) + '%'; 
+                    eraser.style.top = (topPct - 0.5) + '%'; 
+                    eraser.style.width = (widthPct + 1) + '%'; 
+                    eraser.style.height = (heightPct + 1) + '%'; 
+                    eraser.style.backgroundColor = '#ffffff'; 
+                    eraser.style.border = 'none';
+                    createHandles(eraser, targetBox, 'shape');
+
+                    // 2. Tạo hộp chữ có nội dung tương tự để sửa
+                    const txt = document.createElement('div'); 
+                    txt.className = 'text-overlay'; 
+                    txt.contentEditable = true; 
+                    txt.innerHTML = textItem.str;
+                    txt.style.left = leftPct + '%'; 
+                    txt.style.top = topPct + '%'; 
+                    txt.style.color = '#000000'; 
+                    txt.style.backgroundColor = 'transparent'; 
+                    txt.style.fontSize = (spanRect.height * 0.9) + 'px'; 
+                    txt.style.fontFamily = "'Roboto', sans-serif"; 
+                    txt.style.textDecoration = "none";
+                    createHandles(txt, targetBox, 'text');
+
+                    span.style.display = 'none'; // Ẩn chữ gốc
+                    targetBox.appendChild(eraser);
+                    targetBox.appendChild(txt);
+                    
+                    txt.focus();
+                };
+                textLayerDiv.appendChild(span);
+            });
+            targetBox.appendChild(textLayerDiv);
+        } catch (e) { console.log('Không thể trích xuất chữ trang này', e); }
+    }
+
     annotations.forEach(el => targetBox.appendChild(el));
   }
 
@@ -1335,7 +1431,6 @@
           <div class="d-flex flex-wrap gap-1 justify-content-end mb-1 scroll-only w-100">
             <button class="btn btn-primary btn-sm shadow-sm fw-bold" onclick="addTextToPage('${item.id}')"><i data-lucide="type" size="14"></i> <span class="d-none d-md-inline">${t('btn_text')}</span></button>
             <button class="btn btn-success btn-sm shadow-sm fw-bold" onclick="addShapeToPage('${item.id}')"><i data-lucide="square" size="14"></i> <span class="d-none d-md-inline">${t('btn_shape')}</span></button>
-            <button class="btn btn-outline-secondary bg-white btn-sm shadow-sm fw-bold border" onclick="addEraserToPage('${item.id}')" title="Tẩy (Che nội dung cũ)"><i data-lucide="eraser" size="14"></i> <span class="d-none d-md-inline">${t('btn_eraser')}</span></button>
             <button class="btn btn-dark btn-sm text-white shadow-sm" onclick="openScanModal('${item.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i> <span class="d-none d-md-inline">${t('btn_scan')}</span></button>
             <button class="btn btn-info btn-sm text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${item.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i> <span class="d-none d-md-inline">${t('btn_ocr')}</span></button>
           </div>
@@ -1512,12 +1607,8 @@
     });
   }
 
-  function addTextToPage(pageId) {
-    const box = document.getElementById(`box-${pageId}`);
-    if(!box) return;
-    const el = document.createElement('div'); el.className = 'text-overlay'; el.contentEditable = true; el.innerHTML = 'TEXT';
-    el.style.left = '10%'; el.style.top = '10%'; el.style.color = '#ef4444'; el.style.backgroundColor = 'transparent'; el.style.fontSize = '24px'; el.style.fontFamily = "'Roboto', sans-serif"; el.style.textDecoration = "none";
-    
+  // HÀM HELPER CHUNG ĐỂ GẮN CÁC NÚT ĐIỀU KHIỂN
+  function createHandles(el, box, type) {
     const drag = document.createElement('div'); drag.className = 'drag-handle'; drag.innerHTML = '☩ Kéo'; drag.contentEditable = false;
     const del = document.createElement('div'); del.className = 'delete-handle'; del.innerHTML = '✖ Xóa'; del.contentEditable = false;
     const rot = document.createElement('div'); rot.className = 'rotate-handle'; rot.innerHTML = '↻'; rot.contentEditable = false;
@@ -1526,10 +1617,25 @@
     del.onmousedown = removeOverlay;
     del.addEventListener('touchstart', removeOverlay, {passive: false});
 
-    el.appendChild(drag); el.appendChild(del); el.appendChild(rot); box.appendChild(el);
+    el.appendChild(drag); el.appendChild(del); el.appendChild(rot);
     makeDraggable(el, drag, box); makeRotatable(el, rot, box);
-    el.onfocus = () => setActiveElement(el, 'text');
-    el.focus();
+    
+    if (type === 'shape' || type === 'image') {
+        const resize = document.createElement('div'); resize.className = 'resize-handle';
+        el.appendChild(resize);
+        makeResizable(el, resize, box);
+    }
+    if (type === 'text') { el.onfocus = () => setActiveElement(el, 'text'); } 
+    else { el.onclick = () => setActiveElement(el, type); }
+  }
+
+  function addTextToPage(pageId) {
+    const box = document.getElementById(`box-${pageId}`);
+    if(!box) return;
+    const el = document.createElement('div'); el.className = 'text-overlay'; el.contentEditable = true; el.innerHTML = 'TEXT';
+    el.style.left = '10%'; el.style.top = '10%'; el.style.color = '#ef4444'; el.style.backgroundColor = 'transparent'; el.style.fontSize = '24px'; el.style.fontFamily = "'Roboto', sans-serif"; el.style.textDecoration = "none";
+    createHandles(el, box, 'text');
+    box.appendChild(el); el.focus();
   }
 
   function addShapeToPage(pageId) {
@@ -1537,59 +1643,16 @@
     if(!box) return;
     const el = document.createElement('div'); el.className = 'shape-overlay';
     el.style.left = '10%'; el.style.top = '10%'; el.style.width = '20%'; el.style.height = '8%'; el.style.backgroundColor = '#ffffff'; 
-    const drag = document.createElement('div'); drag.className = 'drag-handle'; drag.innerHTML = '☩ Kéo';
-    const resize = document.createElement('div'); resize.className = 'resize-handle';
-    const del = document.createElement('div'); del.className = 'delete-handle'; del.innerHTML = '✖ Xóa';
-    const rot = document.createElement('div'); rot.className = 'rotate-handle'; rot.innerHTML = '↻';
-    
-    const removeOverlay = (e) => { e.preventDefault(); e.stopPropagation(); el.style.opacity='0'; setTimeout(()=> { el.remove(); setActiveElement(null); }, 150); };
-    del.onmousedown = removeOverlay;
-    del.addEventListener('touchstart', removeOverlay, {passive: false});
-
-    el.appendChild(drag); el.appendChild(del); el.appendChild(rot); el.appendChild(resize); box.appendChild(el);
-    makeDraggable(el, drag, box); makeResizable(el, resize, box); makeRotatable(el, rot, box);
-    el.onclick = () => setActiveElement(el, 'shape');
-    setActiveElement(el, 'shape');
-  }
-
-  // TẨY TRẮNG (Xóa chữ trên PDF)
-  function addEraserToPage(pageId) {
-    const box = document.getElementById(`box-${pageId}`);
-    if(!box) return;
-    const el = document.createElement('div'); el.className = 'shape-overlay';
-    // Mặc định màu trắng, không có viền để đè lên nền giấy PDF
-    el.style.left = '10%'; el.style.top = '10%'; el.style.width = '15%'; el.style.height = '5%'; el.style.backgroundColor = '#ffffff'; el.style.border = 'none';
-    const drag = document.createElement('div'); drag.className = 'drag-handle'; drag.innerHTML = '☩ Kéo';
-    const resize = document.createElement('div'); resize.className = 'resize-handle';
-    const del = document.createElement('div'); del.className = 'delete-handle'; del.innerHTML = '✖ Xóa';
-    const rot = document.createElement('div'); rot.className = 'rotate-handle'; rot.innerHTML = '↻';
-    
-    const removeOverlay = (e) => { e.preventDefault(); e.stopPropagation(); el.style.opacity='0'; setTimeout(()=> { el.remove(); setActiveElement(null); }, 150); };
-    del.onmousedown = removeOverlay;
-    del.addEventListener('touchstart', removeOverlay, {passive: false});
-
-    el.appendChild(drag); el.appendChild(del); el.appendChild(rot); el.appendChild(resize); box.appendChild(el);
-    makeDraggable(el, drag, box); makeResizable(el, resize, box); makeRotatable(el, rot, box);
-    el.onclick = () => setActiveElement(el, 'shape');
-    setActiveElement(el, 'shape');
+    createHandles(el, box, 'shape');
+    box.appendChild(el); setActiveElement(el, 'shape');
   }
 
   function addImageToPage(box, base64Src, leftPct, topPct) {
     const el = document.createElement('div'); el.className = 'img-overlay'; el.style.left = leftPct + '%'; el.style.top = topPct + '%'; el.style.width = '25%'; el.style.height = 'auto';
     const img = document.createElement('img'); img.src = base64Src;
-    const drag = document.createElement('div'); drag.className = 'drag-handle'; drag.innerHTML = '☩ Kéo';
-    const resize = document.createElement('div'); resize.className = 'resize-handle';
-    const del = document.createElement('div'); del.className = 'delete-handle'; del.innerHTML = '✖ Xóa';
-    const rot = document.createElement('div'); rot.className = 'rotate-handle'; rot.innerHTML = '↻';
-    
-    const removeOverlay = (e) => { e.preventDefault(); e.stopPropagation(); el.style.opacity='0'; setTimeout(()=> { el.remove(); setActiveElement(null); }, 150); };
-    del.onmousedown = removeOverlay;
-    del.addEventListener('touchstart', removeOverlay, {passive: false});
-
-    el.appendChild(drag); el.appendChild(del); el.appendChild(rot); el.appendChild(img); el.appendChild(resize); box.appendChild(el);
-    makeDraggable(el, drag, box); makeResizable(el, resize, box); makeRotatable(el, rot, box);
-    el.onclick = () => setActiveElement(el, 'image');
-    setActiveElement(el, 'image');
+    el.appendChild(img);
+    createHandles(el, box, 'image');
+    box.appendChild(el); setActiveElement(el, 'image');
   }
 
   function makeDraggable(el, handle, container) {
@@ -1786,7 +1849,6 @@
     currentScanPageId = pageId;
     showLoader("Đang tải ảnh chất lượng cao để làm phẳng...");
     
-    // Sử dụng setTimeout để UI không bị kẹt khi render canvas kích thước lớn
     setTimeout(async () => {
       try {
         const item = workspacePages.find(p => p.id === pageId);
@@ -1795,7 +1857,6 @@
         }
         const page = await pdfJsCache[item.docId].getPage(item.pageIndex + 1);
         
-        // TĂNG SCALE LÊN 3.0 ĐỂ LẤY MA TRẬN ẢNH GỐC CỰC KỲ SẮC NÉT (Bỏ qua canvas UI hiển thị mờ)
         const viewport = page.getViewport({ scale: 3.0, rotation: item.rotation });
         const destCanvas = document.getElementById('scan-canvas');
         destCanvas.width = viewport.width; 
@@ -1828,7 +1889,6 @@
       scanMatDisplay = scanMatOriginalBackup.clone();
 
       const w = destCanvas.width, h = destCanvas.height;
-      // Khởi tạo điểm cắt ôm trọn 100% tài liệu
       scanPoints = [ {x:0,y:0}, {x:w,y:0}, {x:w,y:h}, {x:0,y:h} ];
 
       document.getElementById('scan-filter-tools').style.display = 'none';
@@ -1844,7 +1904,6 @@
 
   function updateScanHandles(canvas) {
     const rect = canvas.getBoundingClientRect();
-    // Tỷ lệ giữa kích thước thật của ảnh trong bộ nhớ và kích thước CSS hiển thị trên màn hình
     const scaleX = rect.width / canvas.width;
     const scaleY = rect.height / canvas.height;
     
@@ -1873,7 +1932,6 @@
        const canvas = document.getElementById('scan-canvas'); 
        const rect = canvas.getBoundingClientRect();
        
-       // Hệ số chuyển đổi ngược lại: Từ điểm chuột trên giao diện map vào tọa độ ma trận điểm ảnh thật
        const sX = canvas.width / rect.width, sY = canvas.height / rect.height;
        
        let cx = e.touches ? e.touches[0].clientX : e.clientX; 
@@ -1894,7 +1952,7 @@
     document.addEventListener('mouseup', endDrag); document.addEventListener('touchend', endDrag);
   });
 
-function applyPerspective() {
+  function applyPerspective() {
     try {
       let dst = new cv.Mat();
       let wTop = Math.hypot(scanPoints[0].x - scanPoints[1].x, scanPoints[0].y - scanPoints[1].y); let wBot = Math.hypot(scanPoints[3].x - scanPoints[2].x, scanPoints[3].y - scanPoints[2].y);
@@ -1975,7 +2033,7 @@ function applyPerspective() {
     setupCropMode();
   }
 
-async function saveScanResult() {
+  async function saveScanResult() {
     const canvas = document.getElementById('scan-canvas');
     const base64 = canvas.toDataURL('image/jpeg', 0.95);
     
@@ -2093,7 +2151,9 @@ async function saveScanResult() {
           const drawX = cx - (objW/2)*Math.cos(rad) + (objH/2)*Math.sin(rad);
           const drawY = cy - (objW/2)*Math.sin(rad) - (objH/2)*Math.cos(rad);
 
-          newPage.drawRectangle({ x: drawX, y: drawY, width: objW, height: objH, color: PDFLib.rgb(rgb.r, rgb.g, rgb.b), rotate: PDFLib.degrees(-angleDeg) });
+          // Hỗ trợ export Eraser (viền 'none')
+          let borderWidth = node.style.border === 'none' ? 0 : 1;
+          newPage.drawRectangle({ x: drawX, y: drawY, width: objW, height: objH, color: PDFLib.rgb(rgb.r, rgb.g, rgb.b), rotate: PDFLib.degrees(-angleDeg), borderWidth: borderWidth, borderColor: PDFLib.rgb(rgb.r, rgb.g, rgb.b) });
         }
         for (const node of box.querySelectorAll('.text-overlay')) {
           let pureText = node.innerText.replace(/☩ Kéo|✖ Xóa|↻/g, '').trim(); if(!pureText) continue;
@@ -2258,7 +2318,6 @@ async function saveScanResult() {
     hideLoader();
   }
 
-  // ================= LOGIC NHÂN BẢN FILE =================
   async function executeCloneFile() {
     if (workspacePages.length === 0) return;
     const selectedCheckboxes = document.querySelectorAll('.page-selector:checked');
