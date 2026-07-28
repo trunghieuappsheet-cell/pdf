@@ -143,6 +143,7 @@
     
     .main-area { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
     
+    /* Gắn z-index 1030 chuẩn để đè lên trang PDF ở dưới */
     .main-header { padding: 1rem 1.5rem; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1030; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
     .main-title-wrap h4 { font-weight: 700; color: var(--brand-blue); margin: 0; font-size: 1.2rem; letter-spacing: -0.5px;}
     .main-title-wrap p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
@@ -169,8 +170,8 @@
     .page-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--brand-blue);}
     .page-card.sortable-ghost { opacity: 0.4; }
     
-    /* GÓC TRÁI DƯỚI CHO CHECKBOX VÀ CHỈNH LẠI Z-INDEX CHUẨN MỰC */
-    .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 20; display: block; background: rgba(255,255,255,0.85); padding: 6px 8px; border-radius: 8px; box-shadow: var(--shadow-soft); transition: 0.2s; }
+    /* FIX CHỐNG ĐÈ HEADER: Set z-index thấp hơn Header (10) để khi cuộn không bị lồi lên */
+    .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 10; display: block; background: rgba(255,255,255,0.85); padding: 6px 8px; border-radius: 8px; box-shadow: var(--shadow-soft); transition: 0.2s; }
     .page-select-box:hover { background: #fff; transform: scale(1.1); }
     .page-select-box input { transform: scale(1.4); cursor: pointer; border-radius: 4px; accent-color: var(--brand-blue); margin: 0;}
     
@@ -186,7 +187,7 @@
     .pdf-page-box { position: relative; display: inline-block; line-height: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: opacity 0.2s ease;}
     .pdf-page-box canvas { width: 100%; max-width: 100%; height: auto; display: block; touch-action: none;}
 
-    #edit-toolbar { background: var(--bg-panel); padding: 12px 25px; box-shadow: var(--shadow-soft); border-bottom: 1px solid var(--border-color); display: none; flex-wrap: wrap; gap: 15px; align-items: center; z-index: 1030;}
+    #edit-toolbar { background: var(--bg-panel); padding: 12px 25px; box-shadow: var(--shadow-soft); border-bottom: 1px solid var(--border-color); display: none; flex-wrap: wrap; gap: 15px; align-items: center; z-index: 1030; position: sticky; top: 0;}
     #edit-toolbar.active { display: flex; }
     
     .text-overlay { position: absolute; min-width: 20px; min-height: 20px; padding: 2px 4px; outline: none; white-space: pre-wrap; word-wrap: break-word; cursor: text; border: 1px dashed transparent; background: transparent; line-height: 1.2; z-index: 50; transition: opacity 0.15s;}
@@ -262,7 +263,7 @@
       
       .page-card { width: 100%; margin: 0 auto; display: flex; flex-direction: column; padding-top: 15px;}
       .page-actions { position: static; display: flex !important; flex-direction: row; justify-content: center; flex-wrap: wrap; background: transparent; border: none; box-shadow: none; margin-bottom: 10px; padding: 0; gap: 6px;}
-      .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 20;}
+      .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 10;}
       
       #page-container { grid-template-columns: 1fr; padding: 15px;}
     }
@@ -308,8 +309,8 @@
       </div>
       <div id="drop-zone" class="drop-zone shadow-sm">
         <i data-lucide="upload-cloud" size="28"></i>
-        <div class="text-secondary fw-semibold mt-2" style="font-size: 11px;" data-i18n="drop_zone_text">Kéo thả PDF, Word, Excel, PPT, Ảnh vào đây</div>
-        <input type="file" id="file-input" multiple hidden accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg">
+        <div class="text-secondary fw-semibold mt-2" style="font-size: 11px;" data-i18n="drop_zone_text">Kéo thả file vào đây</div>
+        <input type="file" id="file-input" multiple hidden>
       </div>
 
       <div class="sidebar-title mt-4">
@@ -380,6 +381,7 @@
       </div>
 
       <div class="ms-auto d-flex align-items-center gap-2 mt-2 mt-md-0 flex-wrap">
+        <!-- Chế độ Edit ẩn công cụ chọn hàng loạt, Xuất file chuyển sang mép phải cùng -->
         <button class="btn btn-sm btn-outline-danger shadow-sm" onclick="resetApp()" title="Làm Mới"><i data-lucide="refresh-cw" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_refresh">Làm Mới</span></button>
         <button class="btn btn-sm btn-primary shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#exportModal" title="Xuất File"><i data-lucide="download" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_export">Xuất File</span></button>
       </div>
@@ -413,6 +415,9 @@
 
       <div id="grid-main-buttons" class="d-flex gap-2 flex-wrap ms-auto">
         <div class="d-flex align-items-center gap-1 border-end pe-2 me-1">
+            <button class="btn btn-custom btn-outline-secondary shadow-sm px-2" onclick="undo()" title="Hoàn tác (Ctrl+Z)"><i data-lucide="undo" size="16"></i></button>
+            <button class="btn btn-custom btn-outline-secondary shadow-sm px-2" onclick="redo()" title="Làm lại (Ctrl+Y)"><i data-lucide="redo" size="16"></i></button>
+            
             <button class="btn btn-custom btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i></button>
             <button class="btn btn-custom btn-outline-primary shadow-sm px-2" onclick="batchDuplicate()" title="Nhân bản trang chọn"><i data-lucide="copy" size="16"></i></button>
             <button class="btn btn-custom btn-outline-info shadow-sm px-2" onclick="batchRotateLeft()" title="Xoay trái trang chọn"><i data-lucide="rotate-ccw" size="16"></i></button>
@@ -423,6 +428,7 @@
         <button class="btn btn-custom btn-outline-success shadow-sm" data-bs-toggle="modal" data-bs-target="#mergeExcelModal"><i data-lucide="sheet" size="16" class="me-1"></i> <span data-i18n="btn_merge_excel">Gộp Excel</span></button>
         <button class="btn btn-custom btn-warning shadow-sm text-dark" data-bs-toggle="modal" data-bs-target="#cloneModal"><i data-lucide="copy" size="16" class="me-1"></i> <span data-i18n="btn_clone_file">Nhân bản File</span></button>
         <button class="btn btn-custom btn-info text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" data-bs-toggle="modal" data-bs-target="#splitModal"><i data-lucide="scissors" size="16" class="me-1"></i> <span data-i18n="btn_split">Tách File</span></button>
+        <!-- Nút Xuất file ngoài cùng -->
         <button class="btn btn-custom btn-outline-danger shadow-sm" onclick="resetApp()"><i data-lucide="refresh-cw" size="16" class="me-1"></i> <span data-i18n="btn_refresh">Làm Mới</span></button>
         <button class="btn btn-custom btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#exportModal"><i data-lucide="download" size="16" class="me-1"></i> <span data-i18n="btn_export">Xuất File</span></button>
       </div>
@@ -433,7 +439,7 @@
          <i data-lucide="file-up" style="width: 48px; height: 48px; color: var(--brand-blue);"></i>
       </div>
       <h4 class="fw-bold" style="color: var(--brand-blue);" data-i18n="empty_doc_title">Chưa có tài liệu nào</h4>
-      <p class="text-muted mt-2" data-i18n="empty_doc_desc">Kéo thả PDF, Word, Excel, PPT, Ảnh vào đây<br>hoặc click để chọn file từ máy</p>
+      <p class="text-muted mt-2" data-i18n="empty_doc_desc">Kéo thả file bất kỳ vào đây<br>hoặc click để chọn file từ máy</p>
     </div>
 
     <div id="page-container"></div>
@@ -655,7 +661,7 @@
     vi: {
       loader_processing: "Đang xử lý...",
       import_doc: "Nhập Tài Liệu",
-      drop_zone_text: "Kéo thả PDF, Word, Excel, PPT, Ảnh vào đây",
+      drop_zone_text: "Kéo thả file bất kỳ vào đây",
       image_gallery: "Kho Hình Ảnh",
       upload_btn: "+ Tải hình từ thiết bị",
       drop_image_text: "Kéo thả ảnh từ đây vào trang để chèn.",
@@ -676,7 +682,7 @@
       btn_split: "Tách File",
       btn_clone_file: "Nhân bản File",
       empty_doc_title: "Chưa có tài liệu nào",
-      empty_doc_desc: "Kéo thả PDF, Word, Excel, PPT, Ảnh vào đây<br>hoặc click để chọn file từ máy",
+      empty_doc_desc: "Kéo thả file bất kỳ vào đây<br>hoặc click để chọn file từ máy",
       modal_merge_excel_title: "Gộp file Excel",
       merge_files_label: "Chọn các file Excel cần gộp (Tương đồng cột):",
       merge_start_row_label: "Lấy dữ liệu từ dòng số (áp dụng từ file thứ 2 trở đi):",
@@ -736,7 +742,7 @@
     en: {
       loader_processing: "Processing...",
       import_doc: "Import Document",
-      drop_zone_text: "Drop PDF, Word, Excel, PPT, Image here",
+      drop_zone_text: "Drop any file here",
       image_gallery: "Image Gallery",
       upload_btn: "+ Upload from device",
       drop_image_text: "Drag image from here into the page to insert.",
@@ -757,7 +763,7 @@
       btn_split: "Split File",
       btn_clone_file: "Clone File",
       empty_doc_title: "No document yet",
-      empty_doc_desc: "Drop PDF, Word, Excel, PPT, Image here<br>or click to select file",
+      empty_doc_desc: "Drop any file here<br>or click to select file",
       modal_merge_excel_title: "Merge Excel Files",
       merge_files_label: "Select Excel files to merge (Similar columns):",
       merge_start_row_label: "Start data from row (applies from 2nd file):",
@@ -859,7 +865,7 @@
     applyLanguage(currentLang);
   });
 
-  // ================= LỊCH SỬ THAO TÁC (UNDO / REDO) =================
+  // ================= LỊCH SỬ THAO TÁC (UNDO / REDO) MƯỢT MÀ =================
   let historyStack = [];
   let historyIndex = -1;
   let isRestoring = false;
@@ -911,19 +917,12 @@
       let currentPagesStr = JSON.stringify(workspacePages);
       let statePagesStr = JSON.stringify(state.pages);
       
+      // Khôi phục mượt mà không chớp đen
       if (currentPagesStr !== statePagesStr) {
-          // Ngăn chớp đen: dùng hiệu ứng mờ
-          pageContainer.style.opacity = '0.3';
-          pageContainer.style.pointerEvents = 'none';
-
           workspacePages = JSON.parse(statePagesStr);
           pageContainer.innerHTML = '';
           sidebarGrid.innerHTML = '';
-          
           await appendPagesToWorkspace(workspacePages, true);
-
-          pageContainer.style.opacity = '1';
-          pageContainer.style.pointerEvents = 'auto';
       }
       
       workspacePages.forEach(p => {
@@ -1329,7 +1328,8 @@
         fileList.innerHTML += `<div class="file-badge"><i data-lucide="file-check-2" size="18" class="me-2" style="color:var(--brand-blue)"></i> <span class="text-truncate">${file.name}</span></div>`;
       } catch (err) { alert(`Lỗi với file ${file.name}: ${err}`); }
       
-      await new Promise(r => setTimeout(r, 50));
+      // Bỏ hàm sleep delay cũ để đẩy nhanh tốc độ nạp multi file
+      await new Promise(r => setTimeout(r, 0));
     }
     
     pDesc.innerText = `Đang vẽ lên màn hình...`;
@@ -1462,7 +1462,7 @@
       sidebarGrid.appendChild(sideCard);
       await renderSingleCanvas(item, document.getElementById(`side-box-${item.id}`), 0.3);
       
-      if (!isRestoring && i % 3 === 0) await new Promise(r => setTimeout(r, 30)); 
+      if (!isRestoring && i % 10 === 0) await new Promise(r => requestAnimationFrame(r)); 
     }
     
     updatePageLabels();
@@ -1599,7 +1599,6 @@
     });
   }
 
-  // HÀM HELPER CHUNG ĐỂ GẮN CÁC NÚT ĐIỀU KHIỂN BẰNG SVG ICON
   function createHandles(el, box, type) {
     const dragIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="19 9 22 12 19 15"></polyline><polyline points="9 19 12 22 15 19"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>`;
     const delIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
