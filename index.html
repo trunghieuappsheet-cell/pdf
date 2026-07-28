@@ -169,8 +169,8 @@
     .page-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--brand-blue);}
     .page-card.sortable-ghost { opacity: 0.4; }
     
-    /* FIX: CHECKBOX ĐƯỢC ƯU TIÊN HIỂN THỊ CAO NHẤT (Z-INDEX: 999) */
-    .page-select-box { position: absolute; top: 10px; left: 10px; z-index: 999; display: block; background: rgba(255,255,255,0.85); padding: 6px 8px; border-radius: 8px; box-shadow: var(--shadow-soft); transition: 0.2s; }
+    /* FIX: CHECKBOX CHUYỂN XUỐNG GÓC DƯỚI BÊN TRÁI */
+    .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 999; display: block; background: rgba(255,255,255,0.85); padding: 6px 8px; border-radius: 8px; box-shadow: var(--shadow-soft); transition: 0.2s; }
     .page-select-box:hover { background: #fff; transform: scale(1.1); }
     .page-select-box input { transform: scale(1.4); cursor: pointer; border-radius: 4px; accent-color: var(--brand-blue); margin: 0;}
     
@@ -185,13 +185,6 @@
     .canvas-wrapper { overflow: hidden; display: flex; justify-content: center; align-items: center; background: var(--bg-panel-alt); border-radius: 4px; min-height: 220px; width: 100%; border: 1px solid var(--border-color); position: relative;}
     .pdf-page-box { position: relative; display: inline-block; line-height: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.08); transition: opacity 0.2s ease;}
     .pdf-page-box canvas { width: 100%; max-width: 100%; height: auto; display: block; touch-action: none;}
-    
-    /* CSS CHO LỚP TEXT NATIVE PDF ĐỂ CLICK VÀO SỬA */
-    .pdf-text-layer { position: absolute; left: 0; top: 0; right: 0; bottom: 0; overflow: hidden; pointer-events: none; z-index: 48; line-height: 1;}
-    .pdf-text-layer.active { pointer-events: auto; }
-    .pdf-text-layer span { position: absolute; color: transparent; cursor: pointer; white-space: pre; transform-origin: 0% 0%; transition: background 0.2s;}
-    .pdf-text-layer.active span { background: rgba(59, 130, 246, 0.1); border: 1px dashed rgba(59, 130, 246, 0.4); }
-    .pdf-text-layer.active span:hover { background: rgba(59, 130, 246, 0.3); border: 1px dashed var(--brand-blue); color: rgba(0,0,0,0.6); }
 
     #edit-toolbar { background: var(--bg-panel); padding: 12px 25px; box-shadow: var(--shadow-soft); border-bottom: 1px solid var(--border-color); display: none; flex-wrap: wrap; gap: 15px; align-items: center;}
     #edit-toolbar.active { display: flex; }
@@ -207,13 +200,14 @@
     .resize-handle { position: absolute; right: -8px; bottom: -8px; width: 20px; height: 20px; background: var(--brand-blue); border-radius: 50%; cursor: se-resize; display: none; z-index: 51; border: 2px solid white; touch-action: none;}
     .shape-overlay.active .resize-handle, .img-overlay.active .resize-handle { display: block; }
     
-    .drag-handle { position: absolute; top: -30px; left: -2px; background: var(--brand-blue); color: #fff; border-radius: 4px; padding: 4px 12px; font-size: 13px; cursor: move; display: none; user-select: none; font-weight: bold; touch-action: none; white-space: nowrap;}
-    .delete-handle { position: absolute; top: -30px; right: -2px; background: #dc2626; color: #fff; border-radius: 4px; padding: 4px 10px; font-size: 13px; cursor: pointer; display: none; z-index: 52; font-weight: bold; user-select: none;}
-    .rotate-handle { position: absolute; left: -8px; bottom: -8px; width: 22px; height: 22px; background: #eab308; color: white; border-radius: 50%; cursor: grab; display: none; z-index: 51; border: 2px solid white; text-align: center; line-height: 18px; font-size: 14px; font-weight: bold; touch-action: none;}
+    /* GIAO DIỆN ICON CHO DRAG, DELETE, ROTATE */
+    .drag-handle { position: absolute; top: -32px; left: -2px; background: var(--brand-blue); color: #fff; border-radius: 4px; width: 28px; height: 28px; display: none; align-items: center; justify-content: center; cursor: move; user-select: none; touch-action: none; }
+    .delete-handle { position: absolute; top: -32px; right: -2px; background: #dc2626; color: #fff; border-radius: 4px; width: 28px; height: 28px; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 52; user-select: none; }
+    .rotate-handle { position: absolute; left: -14px; bottom: -14px; width: 28px; height: 28px; background: #eab308; color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; cursor: grab; z-index: 51; border: 2px solid white; touch-action: none;}
     
-    .text-overlay:focus .drag-handle, .shape-overlay.active .drag-handle, .img-overlay.active .drag-handle { display: block; }
-    .text-overlay:focus .delete-handle, .shape-overlay.active .delete-handle, .img-overlay.active .delete-handle { display: block; }
-    .text-overlay:focus .rotate-handle, .shape-overlay.active .rotate-handle, .img-overlay.active .rotate-handle { display: block; }
+    .text-overlay:focus .drag-handle, .shape-overlay.active .drag-handle, .img-overlay.active .drag-handle { display: flex; }
+    .text-overlay:focus .delete-handle, .shape-overlay.active .delete-handle, .img-overlay.active .delete-handle { display: flex; }
+    .text-overlay:focus .rotate-handle, .shape-overlay.active .rotate-handle, .img-overlay.active .rotate-handle { display: flex; }
 
     #image-gallery { max-height: 150px; overflow-y: auto; padding-right: 5px; }
     .uploaded-img-thumb { width: 55px; height: 55px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border-color); cursor: grab; background: var(--bg-panel); margin: 3px; transition: 0.2s;}
@@ -269,6 +263,7 @@
       .page-card { width: 100%; margin: 0 auto; display: flex; flex-direction: column; padding-top: 15px;}
       
       .page-actions { position: static; display: flex !important; flex-direction: row; justify-content: center; flex-wrap: wrap; background: transparent; border: none; box-shadow: none; margin-bottom: 10px; padding: 0; gap: 6px;}
+      .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 999;}
       
       #page-container { grid-template-columns: 1fr; padding: 15px;}
     }
@@ -347,11 +342,6 @@
     <div id="edit-toolbar" class="sticky-top">
       <button class="btn btn-sm btn-outline-secondary fw-bold shadow-sm" onclick="toggleEditMode()"><i data-lucide="layout-grid" class="me-1" size="16"></i> <span data-i18n="btn_back">Trở về</span></button>
       
-      <!-- NÚT BẬT TẮT CHẾ ĐỘ SỬA CHỮ PDF NATIVE -->
-      <button id="btn-native-edit" class="btn btn-sm btn-outline-primary fw-bold shadow-sm ms-2" onclick="toggleNativeEditMode()" title="Sửa nội dung chữ trên file PDF">
-         <i data-lucide="edit-2" class="me-1" size="16"></i> <span data-i18n="btn_edit_pdf">Sửa chữ PDF</span>
-      </button>
-      
       <div class="vr mx-2 d-none d-md-block" style="background-color: var(--border-color);"></div>
 
       <div class="d-flex align-items-center p-1 rounded border shadow-sm" style="background: var(--bg-panel-alt);">
@@ -382,7 +372,6 @@
       </div>
 
       <div class="ms-auto d-flex align-items-center gap-2 mt-2 mt-md-0 flex-wrap">
-        <!-- Nhóm nút Thao tác hàng loạt (Batch Actions) -->
         <div class="d-flex align-items-center gap-1 border-end pe-2 me-1">
             <button class="btn btn-sm btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_select_all">Chọn tất cả</span></button>
             <button class="btn btn-sm btn-outline-primary shadow-sm px-2" onclick="batchDuplicate()" title="Nhân bản trang chọn"><i data-lucide="copy" size="16"></i></button>
@@ -426,7 +415,6 @@
       </div>
 
       <div id="grid-main-buttons" class="d-flex gap-2 flex-wrap ms-auto">
-        <!-- Nhóm nút Thao tác hàng loạt (Batch Actions) -->
         <div class="d-flex align-items-center gap-1 border-end pe-2 me-1">
             <button class="btn btn-custom btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i></button>
             <button class="btn btn-custom btn-outline-primary shadow-sm px-2" onclick="batchDuplicate()" title="Nhân bản trang chọn"><i data-lucide="copy" size="16"></i></button>
@@ -648,8 +636,6 @@
     }
   });
 
-  window.isEditPdfTextMode = false;
-
   async function callGasApi(payload) {
     if(!GOOGLE_API_URL || GOOGLE_API_URL === "YOUR_WEB_APP_API_URL") {
         throw new Error("Vui lòng cập nhật biến GOOGLE_API_URL thành link Web App mới của bạn.");
@@ -691,7 +677,6 @@
       btn_refresh: "Làm Mới",
       btn_split: "Tách File",
       btn_clone_file: "Nhân bản File",
-      btn_edit_pdf: "Sửa chữ PDF",
       empty_doc_title: "Chưa có tài liệu nào",
       empty_doc_desc: "Kéo thả PDF, Word, Excel, PPT, Ảnh vào đây<br>hoặc click để chọn file từ máy",
       modal_merge_excel_title: "Gộp file Excel",
@@ -777,7 +762,6 @@
       btn_refresh: "Refresh",
       btn_split: "Split File",
       btn_clone_file: "Clone File",
-      btn_edit_pdf: "Edit PDF Text",
       empty_doc_title: "No document yet",
       empty_doc_desc: "Drop PDF, Word, Excel, PPT, Image here<br>or click to select file",
       modal_merge_excel_title: "Merge Excel Files",
@@ -1305,23 +1289,6 @@
     return btoa(result);
   }
 
-  // TÍNH NĂNG CHỈNH SỬA VĂN BẢN TRỰC TIẾP
-  function toggleNativeEditMode() {
-    window.isEditPdfTextMode = !window.isEditPdfTextMode;
-    const btn = document.getElementById('btn-native-edit');
-    if(window.isEditPdfTextMode) {
-        btn.classList.add('btn-primary');
-        btn.classList.remove('btn-outline-primary');
-        btn.style.color = '#fff';
-        document.querySelectorAll('.pdf-text-layer').forEach(el => el.classList.add('active'));
-    } else {
-        btn.classList.remove('btn-primary');
-        btn.classList.add('btn-outline-primary');
-        btn.style.color = '';
-        document.querySelectorAll('.pdf-text-layer').forEach(el => el.classList.remove('active'));
-    }
-  }
-
   async function renderSingleCanvas(item, targetBox, scaleFactor) {
     if (!targetBox) return;
     const annotations = [];
@@ -1342,78 +1309,6 @@
     await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
 
     targetBox.appendChild(canvas);
-
-    // THÊM LỚP CHỮ GỐC ĐỂ CLICK SỬA DÀNH CHO BẢN PC/MAIN
-    if (scaleFactor >= 1.0) {
-        try {
-            const textContent = await page.getTextContent();
-            const textLayerDiv = document.createElement('div');
-            textLayerDiv.className = 'pdf-text-layer';
-            if(window.isEditPdfTextMode) textLayerDiv.classList.add('active');
-
-            textContent.items.forEach(textItem => {
-                if (!textItem.str.trim()) return;
-                const tx = pdfjsLib.Util.transform(viewport.transform, textItem.transform);
-                const fontHeight = Math.sqrt((tx[2] * tx[2]) + (tx[3] * tx[3]));
-                const left = tx[4];
-                const top = tx[5] - fontHeight * 0.85;
-
-                const span = document.createElement('span');
-                span.style.left = left + 'px';
-                span.style.top = top + 'px';
-                span.style.fontSize = fontHeight + 'px';
-                span.style.fontFamily = textItem.fontName || 'sans-serif';
-                span.textContent = textItem.str;
-                
-                span.onclick = (e) => {
-                    if(!window.isEditPdfTextMode) return;
-                    e.stopPropagation();
-                    
-                    const rect = targetBox.getBoundingClientRect();
-                    const spanRect = span.getBoundingClientRect();
-                    
-                    const leftPct = ((spanRect.left - rect.left) / rect.width) * 100;
-                    const topPct = ((spanRect.top - rect.top) / rect.height) * 100;
-                    const widthPct = (spanRect.width / rect.width) * 100;
-                    const heightPct = (spanRect.height / rect.height) * 100;
-
-                    // 1. Tạo hộp che trắng (Tẩy) đè lên đoạn gốc
-                    const eraser = document.createElement('div'); 
-                    eraser.className = 'shape-overlay';
-                    eraser.style.left = (leftPct - 0.5) + '%'; 
-                    eraser.style.top = (topPct - 0.5) + '%'; 
-                    eraser.style.width = (widthPct + 1) + '%'; 
-                    eraser.style.height = (heightPct + 1) + '%'; 
-                    eraser.style.backgroundColor = '#ffffff'; 
-                    eraser.style.border = 'none';
-                    createHandles(eraser, targetBox, 'shape');
-
-                    // 2. Tạo hộp chữ có nội dung tương tự để sửa
-                    const txt = document.createElement('div'); 
-                    txt.className = 'text-overlay'; 
-                    txt.contentEditable = true; 
-                    txt.innerHTML = textItem.str;
-                    txt.style.left = leftPct + '%'; 
-                    txt.style.top = topPct + '%'; 
-                    txt.style.color = '#000000'; 
-                    txt.style.backgroundColor = 'transparent'; 
-                    txt.style.fontSize = (spanRect.height * 0.9) + 'px'; 
-                    txt.style.fontFamily = "'Roboto', sans-serif"; 
-                    txt.style.textDecoration = "none";
-                    createHandles(txt, targetBox, 'text');
-
-                    span.style.display = 'none'; // Ẩn chữ gốc
-                    targetBox.appendChild(eraser);
-                    targetBox.appendChild(txt);
-                    
-                    txt.focus();
-                };
-                textLayerDiv.appendChild(span);
-            });
-            targetBox.appendChild(textLayerDiv);
-        } catch (e) { console.log('Không thể trích xuất chữ trang này', e); }
-    }
-
     annotations.forEach(el => targetBox.appendChild(el));
   }
 
@@ -1607,11 +1502,15 @@
     });
   }
 
-  // HÀM HELPER CHUNG ĐỂ GẮN CÁC NÚT ĐIỀU KHIỂN
+  // HÀM HELPER CHUNG ĐỂ GẮN CÁC NÚT ĐIỀU KHIỂN BẰNG SVG ICON
   function createHandles(el, box, type) {
-    const drag = document.createElement('div'); drag.className = 'drag-handle'; drag.innerHTML = '☩ Kéo'; drag.contentEditable = false;
-    const del = document.createElement('div'); del.className = 'delete-handle'; del.innerHTML = '✖ Xóa'; del.contentEditable = false;
-    const rot = document.createElement('div'); rot.className = 'rotate-handle'; rot.innerHTML = '↻'; rot.contentEditable = false;
+    const dragIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="19 9 22 12 19 15"></polyline><polyline points="9 19 12 22 15 19"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>`;
+    const delIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+    const rotIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-10.09l5.67-5.67"/></svg>`;
+
+    const drag = document.createElement('div'); drag.className = 'drag-handle'; drag.innerHTML = dragIcon; drag.contentEditable = false;
+    const del = document.createElement('div'); del.className = 'delete-handle'; del.innerHTML = delIcon; del.contentEditable = false;
+    const rot = document.createElement('div'); rot.className = 'rotate-handle'; rot.innerHTML = rotIcon; rot.contentEditable = false;
     
     const removeOverlay = (e) => { e.preventDefault(); e.stopPropagation(); el.style.opacity='0'; setTimeout(()=> { el.remove(); setActiveElement(null); }, 150); };
     del.onmousedown = removeOverlay;
@@ -2151,12 +2050,15 @@
           const drawX = cx - (objW/2)*Math.cos(rad) + (objH/2)*Math.sin(rad);
           const drawY = cy - (objW/2)*Math.sin(rad) - (objH/2)*Math.cos(rad);
 
-          // Hỗ trợ export Eraser (viền 'none')
-          let borderWidth = node.style.border === 'none' ? 0 : 1;
-          newPage.drawRectangle({ x: drawX, y: drawY, width: objW, height: objH, color: PDFLib.rgb(rgb.r, rgb.g, rgb.b), rotate: PDFLib.degrees(-angleDeg), borderWidth: borderWidth, borderColor: PDFLib.rgb(rgb.r, rgb.g, rgb.b) });
+          newPage.drawRectangle({ x: drawX, y: drawY, width: objW, height: objH, color: PDFLib.rgb(rgb.r, rgb.g, rgb.b), rotate: PDFLib.degrees(-angleDeg) });
         }
         for (const node of box.querySelectorAll('.text-overlay')) {
-          let pureText = node.innerText.replace(/☩ Kéo|✖ Xóa|↻/g, '').trim(); if(!pureText) continue;
+          // Lấy đúng phần nội dung text, bỏ qua nội dung của các handle ẩn
+          const clone = node.cloneNode(true);
+          clone.querySelectorAll('.drag-handle, .delete-handle, .rotate-handle, .resize-handle').forEach(h => h.remove());
+          let pureText = clone.innerText.trim(); 
+          if(!pureText) continue;
+          
           const l = parseFloat(node.style.left)/100, t = parseFloat(node.style.top)/100;
           const size = (parseInt(node.style.fontSize) || 24) * scale; 
           const cObj = hexToRgb(rgb2hex(node.style.color)); const isB = node.style.fontWeight === 'bold', isI = node.style.fontStyle === 'italic';
