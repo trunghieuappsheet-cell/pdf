@@ -143,6 +143,7 @@
     
     .main-area { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
     
+    /* Gắn z-index 1030 chuẩn để đè lên trang PDF ở dưới */
     .main-header { padding: 1rem 1.5rem; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1030; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
     .main-title-wrap h4 { font-weight: 700; color: var(--brand-blue); margin: 0; font-size: 1.2rem; letter-spacing: -0.5px;}
     .main-title-wrap p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
@@ -169,12 +170,11 @@
     .page-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--brand-blue);}
     .page-card.sortable-ghost { opacity: 0.4; }
     
-    /* FIX: CHECKBOX Z-INDEX THẤP XUỐNG DƯỚI HEADER ĐỂ KHÔNG BỊ ĐÈ */
+    /* FIX CHỐNG ĐÈ HEADER: Set z-index thấp hơn Header (10) để khi cuộn không bị lồi lên */
     .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 10; display: block; background: rgba(255,255,255,0.85); padding: 6px 8px; border-radius: 8px; box-shadow: var(--shadow-soft); transition: 0.2s; }
     .page-select-box:hover { background: #fff; transform: scale(1.1); }
     .page-select-box input { transform: scale(1.4); cursor: pointer; border-radius: 4px; accent-color: var(--brand-blue); margin: 0;}
     
-    /* GOM PAGE-ACTIONS THÀNH 1 DÒNG DỌC/NGANG GỌN GÀNG */
     .page-actions { position: absolute; top: 10px; right: 10px; display: none; flex-direction: row; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 4px; background: var(--bg-panel); border: 1px solid var(--border-color); padding: 4px; border-radius: var(--radius-sm); z-index: 10; box-shadow: var(--shadow-soft); max-width: calc(100% - 20px);}
     
     #page-container:not(.scroll-mode) .page-card:hover .page-actions { display: flex; }
@@ -374,13 +374,14 @@
         <div class="color-dot" style="background-color: #eab308;" onclick="setColor('#eab308', 'bg')" title="Vàng"></div>
         <input type="color" id="tool-bg-color" class="form-control form-control-color p-0 border-0 ms-1 rounded" style="width: 24px; height: 24px; background: transparent;" value="#ffffff" title="Chọn màu tự chọn">
 
-        <!-- Lịch sử (Undo/Redo) -->
+        <!-- Lịch sử (Undo/Redo) di chuyển vào đây -->
         <div class="vr mx-2" style="background-color: var(--border-color);"></div>
         <button class="btn btn-sm btn-light border shadow-sm px-2" onclick="undo()" title="Hoàn tác (Ctrl+Z)"><i data-lucide="undo" size="15"></i></button>
         <button class="btn btn-sm btn-light border shadow-sm px-2 ms-1" onclick="redo()" title="Làm lại (Ctrl+Y)"><i data-lucide="redo" size="15"></i></button>
       </div>
 
       <div class="ms-auto d-flex align-items-center gap-2 mt-2 mt-md-0 flex-wrap">
+        <!-- Chế độ Edit ẩn công cụ chọn hàng loạt, Xuất file chuyển sang mép phải cùng -->
         <button class="btn btn-sm btn-outline-danger shadow-sm" onclick="resetApp()" title="Làm Mới"><i data-lucide="refresh-cw" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_refresh">Làm Mới</span></button>
         <button class="btn btn-sm btn-primary shadow-sm ms-2" data-bs-toggle="modal" data-bs-target="#exportModal" title="Xuất File"><i data-lucide="download" size="16"></i> <span class="d-none d-xl-inline" data-i18n="btn_export">Xuất File</span></button>
       </div>
@@ -414,12 +415,10 @@
 
       <div id="grid-main-buttons" class="d-flex gap-2 flex-wrap ms-auto">
         <div class="d-flex align-items-center gap-1 border-end pe-2 me-1">
-            <button class="btn btn-custom btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i></button>
-            <!-- NÚT UNDO REDO KẾ BÊN CHỌN TẤT CẢ -->
             <button class="btn btn-custom btn-outline-secondary shadow-sm px-2" onclick="undo()" title="Hoàn tác (Ctrl+Z)"><i data-lucide="undo" size="16"></i></button>
             <button class="btn btn-custom btn-outline-secondary shadow-sm px-2" onclick="redo()" title="Làm lại (Ctrl+Y)"><i data-lucide="redo" size="16"></i></button>
-            <div class="vr mx-1" style="background-color: var(--border-color);"></div>
-
+            
+            <button class="btn btn-custom btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i></button>
             <button class="btn btn-custom btn-outline-primary shadow-sm px-2" onclick="batchDuplicate()" title="Nhân bản trang chọn"><i data-lucide="copy" size="16"></i></button>
             <button class="btn btn-custom btn-outline-info shadow-sm px-2" onclick="batchRotateLeft()" title="Xoay trái trang chọn"><i data-lucide="rotate-ccw" size="16"></i></button>
             <button class="btn btn-custom btn-outline-info shadow-sm px-2" onclick="batchRotateRight()" title="Xoay phải trang chọn"><i data-lucide="rotate-cw" size="16"></i></button>
@@ -429,6 +428,7 @@
         <button class="btn btn-custom btn-outline-success shadow-sm" data-bs-toggle="modal" data-bs-target="#mergeExcelModal"><i data-lucide="sheet" size="16" class="me-1"></i> <span data-i18n="btn_merge_excel">Gộp Excel</span></button>
         <button class="btn btn-custom btn-warning shadow-sm text-dark" data-bs-toggle="modal" data-bs-target="#cloneModal"><i data-lucide="copy" size="16" class="me-1"></i> <span data-i18n="btn_clone_file">Nhân bản File</span></button>
         <button class="btn btn-custom btn-info text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" data-bs-toggle="modal" data-bs-target="#splitModal"><i data-lucide="scissors" size="16" class="me-1"></i> <span data-i18n="btn_split">Tách File</span></button>
+        <!-- Nút Xuất file ngoài cùng -->
         <button class="btn btn-custom btn-outline-danger shadow-sm" onclick="resetApp()"><i data-lucide="refresh-cw" size="16" class="me-1"></i> <span data-i18n="btn_refresh">Làm Mới</span></button>
         <button class="btn btn-custom btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#exportModal"><i data-lucide="download" size="16" class="me-1"></i> <span data-i18n="btn_export">Xuất File</span></button>
       </div>
@@ -865,7 +865,7 @@
     applyLanguage(currentLang);
   });
 
-  // ================= LỊCH SỬ THAO TÁC (UNDO / REDO) MƯỢT MÀ BẰNG OBSERVER =================
+  // ================= LỊCH SỬ THAO TÁC (UNDO / REDO) MƯỢT MÀ =================
   let historyStack = [];
   let historyIndex = -1;
   let isRestoring = false;
@@ -917,7 +917,7 @@
       let currentPagesStr = JSON.stringify(workspacePages);
       let statePagesStr = JSON.stringify(state.pages);
       
-      // Khôi phục mượt mà: Nếu số lượng hoặc thứ tự trang thay đổi mới build lại DOM
+      // Khôi phục mượt mà không chớp đen
       if (currentPagesStr !== statePagesStr) {
           workspacePages = JSON.parse(statePagesStr);
           pageContainer.innerHTML = '';
@@ -940,10 +940,6 @@
                   createHandles(el, box, o.type);
                   box.appendChild(el);
               });
-              
-              // Đánh dấu để IntersectionObserver render lại canvas nếu bị xoay
-              box.dataset.renderedRotation = "";
-              pageObserver.observe(box);
           }
       });
       
@@ -958,119 +954,6 @@
       if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
       if (e.ctrlKey && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
   });
-
-  // ================= TỐI ƯU HIỆU SUẤT LOAD CANVAS BẰNG INTERSECTION OBSERVER =================
-  const pageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-          if (entry.isIntersecting) {
-              const box = entry.target;
-              const pageId = box.dataset.pageId;
-              const scale = parseFloat(box.dataset.scale);
-              const item = workspacePages.find(p => p.id === pageId);
-              
-              if (item && box.dataset.renderedRotation !== String(item.rotation)) {
-                  box.dataset.renderedRotation = String(item.rotation);
-                  renderSingleCanvas(item, box, scale);
-              }
-          }
-      });
-  }, { rootMargin: "150% 0px" });
-
-  async function renderSingleCanvas(item, targetBox, scaleFactor) {
-    if (!targetBox) return;
-
-    if (!pdfJsCache[item.docId]) {
-       pdfJsCache[item.docId] = await pdfjsLib.getDocument({ data: base64ToUint8Array(item.body || item.base64) }).promise;
-    }
-    const page = await pdfJsCache[item.docId].getPage(item.pageIndex + 1);
-    
-    const viewport = page.getViewport({ scale: scaleFactor, rotation: item.rotation }); 
-    const canvas = document.createElement('canvas');
-    canvas.height = viewport.height; 
-    canvas.width = viewport.width;
-    canvas.style.display = 'block';
-    
-    await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
-
-    // Chèn canvas vào dưới cùng để không ghi đè mất overlays
-    const oldCanvas = targetBox.querySelector('canvas');
-    if (oldCanvas) {
-        targetBox.replaceChild(canvas, oldCanvas);
-    } else {
-        targetBox.insertBefore(canvas, targetBox.firstChild);
-    }
-  }
-
-  async function appendPagesToWorkspace(newPages, isRestoring = false) {
-    const fragmentMain = document.createDocumentFragment();
-    const fragmentSide = document.createDocumentFragment();
-
-    for (let i = 0; i < newPages.length; i++) {
-      const item = newPages[i];
-      
-      const card = document.createElement('div');
-      card.className = "page-card"; card.id = `card-${item.id}`;
-      card.innerHTML = `
-        <div class="page-select-box">
-           <input type="checkbox" class="page-selector form-check-input shadow-sm" data-id="${item.id}">
-        </div>
-        <div class="page-actions">
-            <button class="btn btn-primary btn-sm shadow-sm scroll-only p-1" onclick="addTextToPage('${item.id}')" title="Thêm Chữ"><i data-lucide="type" size="14"></i></button>
-            <button class="btn btn-success btn-sm shadow-sm scroll-only p-1" onclick="addShapeToPage('${item.id}')" title="Thêm Khung"><i data-lucide="square" size="14"></i></button>
-            <button class="btn btn-dark btn-sm text-white shadow-sm scroll-only p-1" onclick="openScanModal('${item.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i></button>
-            <button class="btn btn-info btn-sm text-white shadow-sm scroll-only p-1" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${item.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i></button>
-            <div class="vr mx-1 scroll-only" style="background-color: var(--border-color);"></div>
-            <button class="btn btn-warning btn-sm shadow-sm grid-only text-dark p-1" onclick="enterEditMode('${item.id}')" title="${t('btn_edit')}"><i data-lucide="edit-3" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="promptMovePage('${item.id}')" title="Chuyển đến trang..."><i data-lucide="move" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="duplicatePage('${item.id}')" title="Nhân bản"><i data-lucide="copy" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageLeft('${item.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageRight('${item.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-danger shadow-sm p-1" onclick="removePage('${item.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
-        </div>
-        <div class="canvas-wrapper" id="wrapper-${item.id}">
-          <div class="pdf-page-box" id="box-${item.id}" data-page-id="${item.id}" data-scale="${window.innerWidth < 768 ? 1.0 : 1.5}"></div>
-        </div>
-        <div class="badge mt-3 fw-bold px-3 py-2 rounded-pill shadow-sm badge-count" style="background: var(--bg-panel-alt); color: var(--text-main); border: 1px solid var(--border-color);">${t('page_label')} X</div>
-      `;
-      fragmentMain.appendChild(card);
-      
-      const sideCard = document.createElement('div');
-      sideCard.className = "side-page-item"; sideCard.id = `side-${item.id}`;
-      sideCard.onclick = (e) => {
-          if(!e.target.closest('.side-page-actions')) scrollToPage(item.id);
-      };
-      sideCard.innerHTML = `
-        <div class="side-page-actions">
-           <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageLeft('${item.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="13"></i></button>
-           <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageRight('${item.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="13"></i></button>
-           <button class="btn btn-light border p-0 text-danger" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); removePage('${item.id}')" title="Xóa"><i data-lucide="trash-2" size="13"></i></button>
-        </div>
-        <div class="side-canvas-wrapper pdf-page-box" id="side-box-${item.id}" data-page-id="${item.id}" data-scale="0.3"></div>
-        <div class="side-page-label">${t('page_label')} X</div>
-      `;
-      fragmentSide.appendChild(sideCard);
-    }
-    
-    pageContainer.appendChild(fragmentMain);
-    sidebarGrid.appendChild(fragmentSide);
-
-    // Bật Observer để lazy-load Canvas cực nhanh
-    newPages.forEach(item => {
-        const mainBox = document.getElementById(`box-${item.id}`);
-        const sideBox = document.getElementById(`side-box-${item.id}`);
-        setupDropZoneForPage(mainBox);
-        pageObserver.observe(mainBox);
-        pageObserver.observe(sideBox);
-    });
-    
-    updatePageLabels();
-    initSortables();
-    lucide.createIcons();
-    if(isEditMode) {
-      document.querySelectorAll('.page-actions').forEach(el => el.style.display = 'flex');
-      document.querySelectorAll('.page-select-box').forEach(el => el.style.display = 'none');
-    }
-  }
 
   // ================= GLOBAL DRAG & DROP =================
   let globalDragCounter = 0;
@@ -1097,7 +980,7 @@
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) { handleFiles(e.dataTransfer.files); }
   });
 
-  // ================= BATCH ACTIONS =================
+  // ================= BATCH ACTIONS (THAO TÁC HÀNG LOẠT) =================
   function getSelectedIds() {
     const selectedCheckboxes = document.querySelectorAll('.page-selector:checked');
     return Array.from(selectedCheckboxes).map(cb => cb.dataset.id);
@@ -1167,7 +1050,7 @@
             <button class="btn btn-light btn-sm text-danger shadow-sm p-1" onclick="removePage('${clonedItem.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
         </div>
         <div class="canvas-wrapper" id="wrapper-${clonedItem.id}">
-          <div class="pdf-page-box" id="box-${clonedItem.id}" data-page-id="${clonedItem.id}" data-scale="${window.innerWidth < 768 ? 1.0 : 1.5}"></div>
+          <div class="pdf-page-box" id="box-${clonedItem.id}"></div>
         </div>
         <div class="badge mt-3 fw-bold px-3 py-2 rounded-pill shadow-sm badge-count" style="background: var(--bg-panel-alt); color: var(--text-main); border: 1px solid var(--border-color);">${t('page_label')} X</div>
     `;
@@ -1183,18 +1066,16 @@
            <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageRight('${clonedItem.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="13"></i></button>
            <button class="btn btn-light border p-0 text-danger" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); removePage('${clonedItem.id}')" title="Xóa"><i data-lucide="trash-2" size="13"></i></button>
         </div>
-        <div class="side-canvas-wrapper pdf-page-box" id="side-box-${clonedItem.id}" data-page-id="${clonedItem.id}" data-scale="0.3"></div>
+        <div class="side-canvas-wrapper" id="side-box-${clonedItem.id}"></div>
         <div class="side-page-label">${t('page_label')} X</div>
     `;
     const refNodeSide = sidebarGrid.children[idx + 1];
     sidebarGrid.insertBefore(sideCard, refNodeSide || null);
 
-    // Kích hoạt Observer cho các box mới thay vì bắt CPU đợi
-    const mainBox = document.getElementById(`box-${clonedItem.id}`);
-    const sideBox = document.getElementById(`side-box-${clonedItem.id}`);
-    setupDropZoneForPage(mainBox);
-    pageObserver.observe(mainBox);
-    pageObserver.observe(sideBox);
+    let cScale = window.innerWidth < 768 ? 1.0 : 1.5;
+    await renderSingleCanvas(clonedItem, document.getElementById(`box-${clonedItem.id}`), cScale);
+    setupDropZoneForPage(document.getElementById(`box-${clonedItem.id}`));
+    await renderSingleCanvas(clonedItem, document.getElementById(`side-box-${clonedItem.id}`), 0.3);
 
     updatePageLabels();
     lucide.createIcons();
@@ -1317,6 +1198,282 @@
     }
   }
 
+  let sortMain, sortSide;
+  function initSortables() {
+    if(sortMain) sortMain.destroy();
+    if(sortSide) sortSide.destroy();
+    sortMain = new Sortable(pageContainer, { 
+      animation: 150, 
+      ghostClass: 'sortable-ghost', 
+      handle: '.canvas-wrapper', 
+      disabled: isEditMode, 
+      scroll: true, 
+      scrollSensitivity: 100, 
+      scrollSpeed: 20,
+      forceFallback: true, 
+      fallbackTolerance: 3,
+      onEnd: (e) => { syncOrder(e, 'main'); captureState(); }
+    });
+    sortSide = new Sortable(sidebarGrid, { 
+      animation: 150, 
+      scroll: true,
+      forceFallback: true,
+      onEnd: (e) => { syncOrder(e, 'side'); captureState(); }
+    });
+  }
+  
+  function syncOrder(evt, source) {
+    const oldIdx = evt.oldIndex;
+    const newIdx = evt.newIndex;
+    if (oldIdx === newIdx) return;
+    const item = workspacePages.splice(oldIdx, 1)[0];
+    workspacePages.splice(newIdx, 0, item);
+    if (source === 'main') {
+      const sideEl = sidebarGrid.children[oldIdx];
+      const refNode = newIdx < oldIdx ? sidebarGrid.children[newIdx] : sidebarGrid.children[newIdx + 1];
+      sidebarGrid.insertBefore(sideEl, refNode || null);
+    } else {
+      const mainEl = pageContainer.children[oldIdx];
+      const refNode = newIdx < oldIdx ? pageContainer.children[newIdx] : pageContainer.children[newIdx + 1];
+      pageContainer.insertBefore(mainEl, refNode || null);
+    }
+    updatePageLabels();
+  }
+
+  function updatePageLabels() {
+    Array.from(pageContainer.children).forEach((card, i) => { const badge = card.querySelector('.badge-count'); if(badge) badge.innerText = `${t('page_label')} ${i + 1}`; });
+    Array.from(sidebarGrid.children).forEach((item, i) => { const label = item.querySelector('.side-page-label'); if(label) label.innerText = `${t('page_label')} ${i + 1}`; });
+  }
+
+  dropZone.onclick = () => fileInput.click();
+  fileInput.onchange = (e) => handleFiles(e.target.files);
+
+  function toBase64WithProgress(f, onProgress) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      if(onProgress) r.onprogress = (e) => { if(e.lengthComputable) onProgress(e.loaded / e.total); };
+      r.onload=()=>res(r.result);
+      r.onerror=(e)=>rej(e);
+      r.readAsDataURL(f);
+    });
+  }
+
+  async function handleFiles(files) {
+    if (files.length === 0) return;
+    
+    isUploadingData = true; 
+    const toast = document.getElementById('upload-toast');
+    toast.style.display = 'block';
+    const pBar = document.getElementById('upload-progress-bar');
+    const pDesc = document.getElementById('toast-desc');
+    
+    let newPages = [];
+    
+    for (let fIdx = 0; fIdx < files.length; fIdx++) {
+      let file = files[fIdx];
+      let basePct = (fIdx / files.length) * 100;
+      pDesc.innerText = `Đang đọc: ${file.name} (${Math.round(basePct)}%)`;
+      pBar.style.width = basePct + '%';
+      
+      try {
+        const mime = file.type || getMime(file.name);
+        const base64Data = await toBase64WithProgress(file, (pct) => {
+           let realPct = basePct + ((pct * 100) / files.length);
+           pBar.style.width = realPct + '%';
+           pDesc.innerText = `Đang tải lên: ${file.name} (${Math.round(realPct)}%)`;
+        });
+
+        let finalPdfBase64 = "";
+
+        if (mime === 'application/pdf') {
+          finalPdfBase64 = base64Data.split(',')[1];
+          pDesc.innerText = `Đang xử lý PDF: ${file.name} (${Math.round(basePct + (100/files.length))}%)`;
+        } 
+        else if (mime.startsWith('image/')) {
+          pDesc.innerText = `Đang xử lý ảnh: ${file.name} (${Math.round(basePct + (100/files.length))}%)`;
+          const imgPdfDoc = await PDFLib.PDFDocument.create();
+          const imgRawBase64 = base64Data.split(',')[1];
+          const imgBytes = base64ToUint8Array(imgRawBase64);
+          
+          let embeddedImg;
+          if (mime.includes('png')) embeddedImg = await imgPdfDoc.embedPng(imgBytes);
+          else embeddedImg = await imgPdfDoc.embedJpg(imgBytes);
+          
+          const dims = embeddedImg.scale(1);
+          const newPage = imgPdfDoc.addPage([dims.width, dims.height]);
+          newPage.drawImage(embeddedImg, { x: 0, y: 0, width: dims.width, height: dims.height });
+          finalPdfBase64 = await imgPdfDoc.saveAsBase64();
+        } 
+        else {
+          pDesc.innerText = `Server đang chuyển đổi: ${file.name} (${Math.round(basePct + (100/files.length))}%)`;
+          const res = await callGasApi({
+              action: 'convertFileToPdf',
+              base64Data: base64Data,
+              fileName: file.name,
+              mimeType: mime
+          });
+          finalPdfBase64 = res.base64;
+        }
+
+        const currentDocId = "doc_" + (fileIdCounter++);
+        const pdfDoc = await PDFLib.PDFDocument.load(finalPdfBase64);
+        for (let i = 0; i < pdfDoc.getPageCount(); i++) {
+          const item = { id: generateId(), docId: currentDocId, base64: finalPdfBase64, pageIndex: i, rotation: 0 };
+          workspacePages.push(item);
+          newPages.push(item);
+        }
+        
+        const fileList = document.getElementById('loaded-files-list');
+        if(fileList.innerHTML.includes(t('empty_files')) || fileList.innerHTML.includes('Chưa có')) fileList.innerHTML = '';
+        fileList.innerHTML += `<div class="file-badge"><i data-lucide="file-check-2" size="18" class="me-2" style="color:var(--brand-blue)"></i> <span class="text-truncate">${file.name}</span></div>`;
+      } catch (err) { alert(`Lỗi với file ${file.name}: ${err}`); }
+      
+      // Bỏ hàm sleep delay cũ để đẩy nhanh tốc độ nạp multi file
+      await new Promise(r => setTimeout(r, 0));
+    }
+    
+    pDesc.innerText = `Đang vẽ lên màn hình...`;
+    pBar.style.width = '95%';
+    
+    if(newPages.length > 0) {
+        await appendPagesToWorkspace(newPages);
+        captureState();
+    }
+    
+    pBar.style.width = '100%';
+    pDesc.innerText = `Hoàn tất!`;
+    setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    
+    isUploadingData = false;
+    checkEmptyState(); 
+  }
+
+  const imageUpload = document.getElementById('image-upload');
+  const imageGallery = document.getElementById('image-gallery');
+  imageUpload.onchange = async (e) => {
+    if (!e.target.files.length) return;
+    const base64 = await toBase64WithProgress(e.target.files[0], null);
+    const img = document.createElement('img');
+    img.src = base64; img.className = 'uploaded-img-thumb shadow-sm'; img.draggable = true;
+    img.ondragstart = (e) => { 
+        window.isInternalDrag = true;
+        e.dataTransfer.setData('text/plain', base64); 
+        e.dataTransfer.effectAllowed = 'copy'; 
+    };
+    img.ondragend = (e) => { window.isInternalDrag = false; };
+    
+    img.addEventListener('touchstart', (e) => { 
+        img.dataset.dragBase64 = base64; 
+        e.target.style.opacity = '0.5';
+    }, {passive:true});
+    img.addEventListener('touchend', (e) => { e.target.style.opacity = '1'; }, {passive:true});
+
+    imageGallery.appendChild(img);
+    imageUpload.value = '';
+  };
+
+  function base64ToUint8Array(b64) {
+    const raw = window.atob(b64.replace(/\s/g, ''));
+    const arr = new Uint8Array(new ArrayBuffer(raw.length));
+    for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i); 
+    return arr;
+  }
+  function uint8ToBase64(u8Arr) {
+    let CHUNK_SIZE = 0x8000, index = 0, length = u8Arr.length, result = '', slice;
+    while (index < length) {
+      slice = u8Arr.subarray(index, Math.min(index + CHUNK_SIZE, length));
+      result += String.fromCharCode.apply(null, slice);
+      index += CHUNK_SIZE;
+    }
+    return btoa(result);
+  }
+
+  async function renderSingleCanvas(item, targetBox, scaleFactor) {
+    if (!targetBox) return;
+    const annotations = [];
+    targetBox.querySelectorAll('.text-overlay, .shape-overlay, .img-overlay').forEach(el => annotations.push(el));
+    targetBox.innerHTML = '';
+
+    if (!pdfJsCache[item.docId]) {
+       pdfJsCache[item.docId] = await pdfjsLib.getDocument({ data: base64ToUint8Array(item.body || item.base64) }).promise;
+    }
+    const page = await pdfJsCache[item.docId].getPage(item.pageIndex + 1);
+    
+    const viewport = page.getViewport({ scale: scaleFactor, rotation: item.rotation }); 
+    const canvas = document.createElement('canvas');
+    canvas.height = viewport.height; 
+    canvas.width = viewport.width;
+    canvas.style.display = 'block';
+    
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+
+    targetBox.appendChild(canvas);
+    annotations.forEach(el => targetBox.appendChild(el));
+  }
+
+  async function appendPagesToWorkspace(newPages, isRestoring = false) {
+    for (let i = 0; i < newPages.length; i++) {
+      const item = newPages[i];
+      
+      const card = document.createElement('div');
+      card.className = "page-card"; card.id = `card-${item.id}`;
+      card.innerHTML = `
+        <div class="page-select-box">
+           <input type="checkbox" class="page-selector form-check-input shadow-sm" data-id="${item.id}">
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-primary btn-sm shadow-sm scroll-only p-1" onclick="addTextToPage('${item.id}')" title="Thêm Chữ"><i data-lucide="type" size="14"></i></button>
+            <button class="btn btn-success btn-sm shadow-sm scroll-only p-1" onclick="addShapeToPage('${item.id}')" title="Thêm Khung"><i data-lucide="square" size="14"></i></button>
+            <button class="btn btn-dark btn-sm text-white shadow-sm scroll-only p-1" onclick="openScanModal('${item.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i></button>
+            <button class="btn btn-info btn-sm text-white shadow-sm scroll-only p-1" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${item.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i></button>
+            <div class="vr mx-1 scroll-only" style="background-color: var(--border-color);"></div>
+            <button class="btn btn-warning btn-sm shadow-sm grid-only text-dark p-1" onclick="enterEditMode('${item.id}')" title="${t('btn_edit')}"><i data-lucide="edit-3" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="promptMovePage('${item.id}')" title="Chuyển đến trang..."><i data-lucide="move" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="duplicatePage('${item.id}')" title="Nhân bản"><i data-lucide="copy" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageLeft('${item.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageRight('${item.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-danger shadow-sm p-1" onclick="removePage('${item.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
+        </div>
+        <div class="canvas-wrapper" id="wrapper-${item.id}">
+          <div class="pdf-page-box" id="box-${item.id}"></div>
+        </div>
+        <div class="badge mt-3 fw-bold px-3 py-2 rounded-pill shadow-sm badge-count" style="background: var(--bg-panel-alt); color: var(--text-main); border: 1px solid var(--border-color);">${t('page_label')} X</div>
+      `;
+      pageContainer.appendChild(card);
+      
+      let cScale = window.innerWidth < 768 ? 1.0 : 1.5;
+      await renderSingleCanvas(item, document.getElementById(`box-${item.id}`), cScale);
+      setupDropZoneForPage(document.getElementById(`box-${item.id}`));
+      
+      const sideCard = document.createElement('div');
+      sideCard.className = "side-page-item"; sideCard.id = `side-${item.id}`;
+      sideCard.onclick = (e) => {
+          if(!e.target.closest('.side-page-actions')) scrollToPage(item.id);
+      };
+      sideCard.innerHTML = `
+        <div class="side-page-actions">
+           <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageLeft('${item.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="13"></i></button>
+           <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageRight('${item.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="13"></i></button>
+           <button class="btn btn-light border p-0 text-danger" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); removePage('${item.id}')" title="Xóa"><i data-lucide="trash-2" size="13"></i></button>
+        </div>
+        <div class="side-canvas-wrapper" id="side-box-${item.id}"></div>
+        <div class="side-page-label">${t('page_label')} X</div>
+      `;
+      sidebarGrid.appendChild(sideCard);
+      await renderSingleCanvas(item, document.getElementById(`side-box-${item.id}`), 0.3);
+      
+      if (!isRestoring && i % 10 === 0) await new Promise(r => requestAnimationFrame(r)); 
+    }
+    
+    updatePageLabels();
+    initSortables();
+    lucide.createIcons();
+    if(isEditMode) {
+      document.querySelectorAll('.page-actions').forEach(el => el.style.display = 'flex');
+      document.querySelectorAll('.page-select-box').forEach(el => el.style.display = 'none');
+    }
+  }
+
   function promptMovePage(pageId) {
     const currentIdx = workspacePages.findIndex(p => p.id === pageId);
     if(currentIdx < 0) return;
@@ -1353,13 +1510,20 @@
       const mainBox = document.getElementById(`box-${item.id}`);
       const sideBox = document.getElementById(`side-box-${item.id}`);
       
-      item.rotation = (item.rotation + angle + 360) % 360;
-      
-      // Xóa flag rendered để Observer tự vẽ lại canvas theo góc mới
-      if (mainBox) { mainBox.dataset.renderedRotation = ""; pageObserver.observe(mainBox); }
-      if (sideBox) { sideBox.dataset.renderedRotation = ""; pageObserver.observe(sideBox); }
-      
-      if(!skipHistory) captureState();
+      if (mainBox) mainBox.style.opacity = '0.5';
+      if (sideBox) sideBox.style.opacity = '0.5';
+
+      setTimeout(async () => {
+        item.rotation = (item.rotation + angle + 360) % 360;
+        let cScale = window.innerWidth < 768 ? 1.0 : 1.5;
+        await renderSingleCanvas(item, mainBox, cScale);
+        await renderSingleCanvas(item, sideBox, 0.3);
+        
+        if (mainBox) mainBox.style.opacity = '1';
+        if (sideBox) sideBox.style.opacity = '1';
+        
+        if(!skipHistory) captureState();
+      }, 10);
     }
   }
 
@@ -1907,11 +2071,9 @@
         workspacePages[itemIdx].rotation = 0; 
         workspacePages[itemIdx].pageIndex = 0; 
         
-        // Cập nhật DOM và đánh dấu observer load lại
-        const mainBox = document.getElementById(`box-${currentScanPageId}`);
-        const sideBox = document.getElementById(`side-box-${currentScanPageId}`);
-        if(mainBox) { mainBox.dataset.renderedRotation = ""; pageObserver.observe(mainBox); }
-        if(sideBox) { sideBox.dataset.renderedRotation = ""; pageObserver.observe(sideBox); }
+        let cScale = window.innerWidth < 768 ? 1.0 : 1.5;
+        await renderSingleCanvas(workspacePages[itemIdx], document.getElementById(`box-${currentScanPageId}`), cScale);
+        await renderSingleCanvas(workspacePages[itemIdx], document.getElementById(`side-box-${currentScanPageId}`), 0.3);
       } catch (err) {
         alert("Có lỗi xảy ra khi lưu: " + err.message);
       } finally {
