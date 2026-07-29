@@ -229,8 +229,8 @@
     .side-page-actions { position: absolute; top: 3px; right: 3px; display: none; gap: 2px; background: var(--bg-panel); border: 1px solid var(--border-color); padding: 2px; border-radius: 4px; z-index: 10;}
     .side-page-item:hover .side-page-actions { display: flex; }
 
-    /* LOADER */
-    .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(4px);}
+    /* LOADER - CÓ THÊM THANH PROGRESS BAR */
+    .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(4px);}
     
     /* GLOBAL DROP ZONE */
     #global-drop-zone { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(11, 80, 161, 0.95); color: white; z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; border: 8px dashed rgba(255,255,255,0.6); backdrop-filter: blur(5px);}
@@ -276,6 +276,7 @@
   <h2 class="fw-bold text-center px-4" data-i18n="global_drop_text">Thả tài liệu vào đây để tự động thêm</h2>
 </div>
 
+<!-- TOAST UPLOAD CHO GIAI ĐOẠN ĐỌC FILE BAN ĐẦU -->
 <div id="upload-toast" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050; display: none;">
   <div class="toast show shadow-lg" role="alert" style="border-radius: var(--radius-md); border-color: var(--brand-blue); background: var(--bg-panel);">
     <div class="toast-header border-bottom border-light" style="background: var(--bg-panel-alt);">
@@ -292,9 +293,15 @@
   </div>
 </div>
 
+<!-- LOADER CHÍNH (CÓ THANH TIẾN TRÌNH CHI TIẾT) -->
 <div class="loading-overlay" id="loader">
-  <div class="spinner-border mb-3" style="color: #60a5fa !important;"></div>
-  <div id="loader-text" class="fw-bold fs-5 text-white" data-i18n="loader_processing">Đang xử lý...</div>
+  <div class="spinner-border mb-3" style="color: #60a5fa !important; width: 3rem; height: 3rem;"></div>
+  <div id="loader-text" class="fw-bold fs-5 text-white mb-2" data-i18n="loader_processing">Đang xử lý...</div>
+  
+  <div class="progress w-75 rounded-pill" style="height: 12px; display: none; max-width: 400px; background-color: rgba(255,255,255,0.2);" id="loader-progress-container">
+    <div id="loader-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%; background-color: #38bdf8;"></div>
+  </div>
+  <div id="loader-progress-text" class="text-white mt-2 fw-bold small" style="display: none;">0 / 0 (0%)</div>
 </div>
 
 <div class="app-container">
@@ -448,7 +455,7 @@
   </div>
 </div>
 
-<!-- MODAL NÉN FILE ĐỘC LẬP (MỚI) -->
+<!-- MODAL NÉN FILE ĐỘC LẬP (ĐÃ SỬA LỖI & THÊM PROGRESS) -->
 <div class="modal fade" id="compressModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -632,6 +639,8 @@
         <select id="export-format" class="form-select form-select-lg mb-4">
           <option value="pdf" data-i18n="export_format_pdf">Tệp PDF (.pdf)</option>
           <option value="word" data-i18n="export_format_word">Word (.docx) - Trích xuất văn bản (OCR)</option>
+          <!-- TUỲ CHỌN XUẤT EXCEL MỚI THÊM VÀO -->
+          <option value="excel" data-i18n="export_format_excel">Excel (.xlsx) - Trích xuất bảng (AI)</option>
           <option value="png" data-i18n="export_format_png">Ảnh rời (.zip chứa các file .png)</option>
         </select>
 
@@ -672,8 +681,33 @@
     }
   });
 
-  // KHO LƯU TRỮ CHUNG ĐỂ TRÁNH LỖI OUT OF MEMORY
+  // KHO LƯU TRỮ CHUNG DẠNG MẢNG RAW (UINT8ARRAY) ĐỂ TRÁNH LỖI OUT OF MEMORY
   window.fileStorage = {}; 
+
+  // ================= LOADER UI KÈM PROGRESS BAR =================
+  const loader = document.getElementById('loader');
+  
+  function showLoader(txt, showProgress = false) { 
+      loader.style.display = 'flex'; 
+      document.getElementById('loader-text').innerText = txt; 
+      document.getElementById('loader-progress-container').style.display = showProgress ? 'flex' : 'none';
+      document.getElementById('loader-progress-text').style.display = showProgress ? 'block' : 'none';
+      if(showProgress) updateLoaderProgress(0, 100, "");
+  }
+  
+  function updateLoaderProgress(current, total, suffix = "") {
+      const pct = total > 0 ? Math.min(100, (current / total) * 100) : 0;
+      document.getElementById('loader-progress-bar').style.width = pct + '%';
+      if(current > 0 || total > 0) {
+          document.getElementById('loader-progress-text').innerText = `${current} / ${total} ${suffix} (${Math.round(pct)}%)`;
+      } else {
+          document.getElementById('loader-progress-text').innerText = `${Math.round(pct)}%`;
+      }
+  }
+
+  function hideLoader() { 
+      loader.style.display = 'none'; 
+  }
 
   async function callGasApi(payload) {
     if(!GOOGLE_API_URL || GOOGLE_API_URL === "YOUR_WEB_APP_API_URL") {
@@ -747,6 +781,7 @@
       export_format_label: "Định dạng xuất:",
       export_format_pdf: "Tệp PDF (.pdf)",
       export_format_word: "Word (.docx) - Trích xuất văn bản (OCR)",
+      export_format_excel: "Excel (.xlsx) - Trích xuất bảng (AI)",
       export_format_png: "Ảnh rời (.zip chứa các file .png)",
       export_page_numbers: "Tự động đánh số trang",
       export_fit_a4: "Ép kích thước về chuẩn A4 (Để In ấn)",
@@ -770,7 +805,7 @@
       loading_scan_save: "Đang lưu kết quả...",
       loading_export_pdf: "Đang xuất file...",
       loading_export_word: "Hệ thống Google đang dùng AI phân tích cấu trúc văn bản. Quá trình này có thể mất đến 10 giây...",
-      loading_export_png: "Đang trích xuất hình ảnh ra file nén Zip...",
+      loading_export_png: "Đang trích xuất hình ảnh...",
       loading_export_extreme: "Đang xử lý siêu nén...",
       loading_split: "Đang tách file và đóng gói zip...",
       loading_clone: "Đang nhân bản và đóng gói zip...",
@@ -833,6 +868,7 @@
       export_format_label: "Export Format:",
       export_format_pdf: "PDF File (.pdf)",
       export_format_word: "Word (.docx) - Text Extraction (OCR)",
+      export_format_excel: "Excel (.xlsx) - Data Extraction (AI)",
       export_format_png: "Separate Images (.zip with .png)",
       export_page_numbers: "Auto add page numbers",
       export_fit_a4: "Force A4 Size (For Printing)",
@@ -856,7 +892,7 @@
       loading_scan_save: "Saving result...",
       loading_export_pdf: "Exporting file...",
       loading_export_word: "Google AI is analyzing text structure. This may take up to 10 seconds...",
-      loading_export_png: "Extracting images to Zip file...",
+      loading_export_png: "Extracting images...",
       loading_export_extreme: "Processing extreme compression...",
       loading_split: "Splitting file and packaging zip...",
       loading_clone: "Cloning and packaging zip...",
@@ -910,7 +946,7 @@
     applyLanguage(currentLang);
   });
 
-  // ================= LỊCH SỬ THAO TÁC (UNDO / REDO) MƯỢT MÀ =================
+  // ================= LỊCH SỬ THAO TÁC (UNDO / REDO) SIÊU NHẸ =================
   let historyStack = [];
   let historyIndex = -1;
   let isRestoring = false;
@@ -962,7 +998,6 @@
       let currentPagesStr = JSON.stringify(workspacePages);
       let statePagesStr = JSON.stringify(state.pages);
       
-      // Khôi phục mượt mà không chớp đen
       if (currentPagesStr !== statePagesStr) {
           workspacePages = JSON.parse(statePagesStr);
           pageContainer.innerHTML = '';
@@ -991,7 +1026,6 @@
       setActiveElement(null);
       isRestoring = false;
 
-      // ĐẢM BẢO FIX: Hiển thị ngay thanh công cụ trang (.page-actions) sau khi Undo/Redo nếu đang ở Edit Mode
       if(isEditMode) {
           document.querySelectorAll('.page-actions').forEach(el => el.style.display = 'flex');
       }
@@ -1039,9 +1073,11 @@
   async function batchDuplicate() {
     const ids = getSelectedIds();
     if(ids.length === 0) { alert("Vui lòng chọn ít nhất 1 trang để nhân bản!"); return; }
-    showLoader("Đang nhân bản...");
+    showLoader("Đang nhân bản...", true);
     for(let i = ids.length - 1; i >= 0; i--) {
+        updateLoaderProgress(ids.length - i, ids.length, "trang");
         await duplicatePage(ids[i], true);
+        await new Promise(r => setTimeout(r, 0));
     }
     captureState();
     hideLoader();
@@ -1137,7 +1173,7 @@
     if(!skipHistory) captureState();
   }
 
-  // ================= TÍNH NĂNG NÉN FILE ĐỘC LẬP =================
+  // ================= TÍNH NĂNG NÉN FILE ĐỘC LẬP KÈM TIẾN TRÌNH THỰC TẾ =================
   function updateCompressLabel() {
     const val = parseInt(document.getElementById('compress-level').value);
     document.getElementById('label-level-1').className = val === 1 ? 'text-primary' : '';
@@ -1145,9 +1181,9 @@
     document.getElementById('label-level-3').className = val === 3 ? 'text-primary' : '';
     
     let desc = "";
-    if(val === 1) desc = "Mức Tiêu chuẩn: Nén thông minh bằng thư viện, giữ nguyên chất lượng gốc, cho phép copy chữ.";
-    if(val === 2) desc = "Mức Trung bình: Chuyển đổi các trang thành ảnh chất lượng cao để giảm dung lượng, văn bản sẽ không thể copy.";
-    if(val === 3) desc = "Mức Siêu nén: Ép hình ảnh xuống chất lượng trung bình, file sẽ rất nhẹ (Không thể copy chữ).";
+    if(val === 1) desc = "Mức Tiêu chuẩn: Tối ưu dữ liệu ngầm bằng thư viện, giữ nguyên chất lượng gốc, cho phép copy chữ.";
+    if(val === 2) desc = "Mức Trung bình: Chuyển đổi các trang thành ảnh chất lượng cao để giảm dung lượng (KHÔNG thể copy chữ).";
+    if(val === 3) desc = "Mức Siêu nén: Ép hình ảnh xuống chất lượng thấp hơn, file sẽ rất nhẹ (KHÔNG thể copy chữ).";
     document.getElementById('compress-desc-text').innerText = desc;
   }
 
@@ -1161,16 +1197,17 @@
     const modalInstance = bootstrap.Modal.getInstance(document.getElementById('compressModal'));
     if(modalInstance) modalInstance.hide();
     
-    showLoader("Đang nén file... Vui lòng đợi.");
+    showLoader("Đang nén file... Vui lòng đợi.", true);
 
     try {
         const arrayBuffer = await file.arrayBuffer();
         let finalBytes;
 
         if (level === 1) {
-            // Nén tiêu chuẩn bằng cách load và save lại (PDFLib tự remove object thừa)
+            updateLoaderProgress(50, 100, "%");
             const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
             finalBytes = await pdfDoc.save();
+            updateLoaderProgress(100, 100, "%");
         } else {
             // Nén ảnh hóa (Rasterize)
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
@@ -1181,6 +1218,7 @@
             let imgQuality = level === 2 ? 0.7 : 0.4;
 
             for (let i = 1; i <= pdfJsDoc.numPages; i++) {
+                updateLoaderProgress(i, pdfJsDoc.numPages, "trang");
                 const page = await pdfJsDoc.getPage(i);
                 const viewport = page.getViewport({ scale: scale });
                 const canvas = document.createElement('canvas');
@@ -1190,9 +1228,16 @@
                 await page.render({ canvasContext: ctx, viewport: viewport }).promise;
 
                 const imgData = canvas.toDataURL('image/jpeg', imgQuality);
-                const embedImg = await imgPdf.embedJpg(imgData.split(',')[1]);
+                const embedImg = await imgPdf.embedJpg(base64ToUint8Array(imgData.split(',')[1]));
                 const newPage = imgPdf.addPage([viewport.width, viewport.height]);
                 newPage.drawImage(embedImg, { x: 0, y: 0, width: viewport.width, height: viewport.height });
+                
+                // Giải phóng bộ nhớ khẩn cấp
+                canvas.width = 0; canvas.height = 0;
+                page.cleanup(); 
+                
+                // Trả luồng CPU để UI cập nhật thanh tiến trình
+                await new Promise(r => setTimeout(r, 10)); 
             }
             finalBytes = await imgPdf.save({ useObjectStreams: true });
         }
@@ -1218,10 +1263,11 @@
     const modalInstance = bootstrap.Modal.getInstance(modalEl);
     if (modalInstance) modalInstance.hide();
 
-    showLoader(t('loading_merge_excel'));
+    showLoader(t('loading_merge_excel'), true);
 
     try {
       for (let i = 0; i < files.length; i++) {
+        updateLoaderProgress(i + 1, files.length, "file");
         const file = files[i];
         const data = await file.arrayBuffer();
         const workbook = XLSX.read(data);
@@ -1237,6 +1283,7 @@
              combinedData = combinedData.concat(jsonData.slice(rowsToSkip));
           }
         }
+        await new Promise(r => setTimeout(r, 10));
       }
 
       const newWs = XLSX.utils.aoa_to_sheet(combinedData);
@@ -1249,7 +1296,7 @@
     hideLoader();
   }
 
-  // ================= LOGIC XỬ LÝ PDF =================
+  // ================= LOGIC XỬ LÝ LÕI ĐỌC FILE LÊN BỘ NHỚ RAM =================
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
   lucide.createIcons();
 
@@ -1283,7 +1330,6 @@
   const fileInput = document.getElementById('file-input');
   const dropZone = document.getElementById('drop-zone');
   const mainEmptyState = document.getElementById('main-empty-state');
-  const loader = document.getElementById('loader');
 
   document.getElementById('export-format').addEventListener('change', function() { document.getElementById('quality-box').style.display = (this.value === 'pdf') ? 'block' : 'none'; });
   document.getElementById('export-quality').addEventListener('change', function() { document.getElementById('extreme-warning').style.display = this.value === 'extreme' ? 'block' : 'none'; });
@@ -1397,23 +1443,18 @@
       
       try {
         const mime = file.type || getMime(file.name);
-        const base64Data = await toBase64WithProgress(file, (pct) => {
-           let realPct = basePct + ((pct * 100) / files.length);
-           pBar.style.width = realPct + '%';
-           pDesc.innerText = `Đang tải lên: ${file.name} (${Math.round(realPct)}%)`;
-        });
-
-        let finalPdfBase64 = "";
+        
+        let finalPdfBytes; // Lưu Dạng Binary Array thay vì chuỗi Text
 
         if (mime === 'application/pdf') {
-          finalPdfBase64 = base64Data.split(',')[1];
+          // BỎ BASE64 HOÀN TOÀN TRÊN PDF
+          finalPdfBytes = new Uint8Array(await file.arrayBuffer());
           pDesc.innerText = `Đang xử lý PDF: ${file.name} (${Math.round(basePct + (100/files.length))}%)`;
         } 
         else if (mime.startsWith('image/')) {
           pDesc.innerText = `Đang xử lý ảnh: ${file.name} (${Math.round(basePct + (100/files.length))}%)`;
           const imgPdfDoc = await PDFLib.PDFDocument.create();
-          const imgRawBase64 = base64Data.split(',')[1];
-          const imgBytes = base64ToUint8Array(imgRawBase64);
+          const imgBytes = new Uint8Array(await file.arrayBuffer());
           
           let embeddedImg;
           if (mime.includes('png')) embeddedImg = await imgPdfDoc.embedPng(imgBytes);
@@ -1422,25 +1463,26 @@
           const dims = embeddedImg.scale(1);
           const newPage = imgPdfDoc.addPage([dims.width, dims.height]);
           newPage.drawImage(embeddedImg, { x: 0, y: 0, width: dims.width, height: dims.height });
-          finalPdfBase64 = await imgPdfDoc.saveAsBase64();
+          finalPdfBytes = await imgPdfDoc.save();
         } 
         else {
           pDesc.innerText = `Server đang chuyển đổi: ${file.name} (${Math.round(basePct + (100/files.length))}%)`;
+          const base64Data = await toBase64WithProgress(file, null);
           const res = await callGasApi({
               action: 'convertFileToPdf',
               base64Data: base64Data,
               fileName: file.name,
               mimeType: mime
           });
-          finalPdfBase64 = res.base64;
+          finalPdfBytes = base64ToUint8Array(res.base64);
         }
 
         const currentDocId = "doc_" + (fileIdCounter++);
-        window.fileStorage[currentDocId] = finalPdfBase64; // LƯU VÀO KHO TOÀN CỤC CHỐNG LỖI MEMORY
+        window.fileStorage[currentDocId] = finalPdfBytes; // Lưu nguyên khối binary vào kho toàn cục
 
-        const pdfDoc = await PDFLib.PDFDocument.load(finalPdfBase64);
+        const pdfDoc = await PDFLib.PDFDocument.load(finalPdfBytes);
         for (let i = 0; i < pdfDoc.getPageCount(); i++) {
-          const item = { id: generateId(), docId: currentDocId, pageIndex: i, rotation: 0 }; // KHÔNG CHỨA BASE64 NỮA
+          const item = { id: generateId(), docId: currentDocId, pageIndex: i, rotation: 0 }; 
           workspacePages.push(item);
           newPages.push(item);
         }
@@ -1450,13 +1492,14 @@
         fileList.innerHTML += `<div class="file-badge"><i data-lucide="file-check-2" size="18" class="me-2" style="color:var(--brand-blue)"></i> <span class="text-truncate">${file.name}</span></div>`;
       } catch (err) { alert(`Lỗi với file ${file.name}: ${err}`); }
       
-      await new Promise(r => setTimeout(r, 0));
+      await new Promise(r => setTimeout(r, 10));
     }
     
     pDesc.innerText = `Đang vẽ lên màn hình...`;
     pBar.style.width = '95%';
     
     if(newPages.length > 0) {
+        toast.style.display = 'none'; // Ẩn toast chuyển sang Loader chính
         await appendPagesToWorkspace(newPages);
         captureState();
     }
@@ -1516,7 +1559,8 @@
     targetBox.innerHTML = '';
 
     if (!pdfJsCache[item.docId]) {
-       pdfJsCache[item.docId] = await pdfjsLib.getDocument({ data: base64ToUint8Array(item.body || window.fileStorage[item.docId]) }).promise;
+       // Lấy trực tiếp từ kho nhị phân (Siêu nhanh)
+       pdfJsCache[item.docId] = await pdfjsLib.getDocument({ data: window.fileStorage[item.docId] }).promise;
     }
     const page = await pdfJsCache[item.docId].getPage(item.pageIndex + 1);
     
@@ -1533,7 +1577,11 @@
   }
 
   async function appendPagesToWorkspace(newPages, isRestoring = false) {
+    if(!isRestoring) showLoader("Đang nạp trang lên giao diện...", true);
+
     for (let i = 0; i < newPages.length; i++) {
+      if(!isRestoring) updateLoaderProgress(i + 1, newPages.length, "trang");
+
       const item = newPages[i];
       
       const card = document.createElement('div');
@@ -1583,7 +1631,7 @@
       sidebarGrid.appendChild(sideCard);
       await renderSingleCanvas(item, document.getElementById(`side-box-${item.id}`), 0.3);
       
-      if (!isRestoring && i % 10 === 0) await new Promise(r => requestAnimationFrame(r)); 
+      if (!isRestoring && i % 5 === 0) await new Promise(r => setTimeout(r, 0)); 
     }
     
     updatePageLabels();
@@ -1593,6 +1641,8 @@
       document.querySelectorAll('.page-actions').forEach(el => el.style.display = 'flex');
       document.querySelectorAll('.page-select-box').forEach(el => el.style.display = 'none');
     }
+
+    if(!isRestoring) hideLoader();
   }
 
   function promptMovePage(pageId) {
@@ -1949,7 +1999,7 @@
     const text = document.getElementById('ai-result-text'); text.select(); text.setSelectionRange(0, 99999); document.execCommand("copy"); alert(t('alert_ai_copied'));
   }
 
-  // ================= CĂN CHỈNH & LÀM PHẲNG (TAPSCANNER STYLE) TỐI ƯU ================= //
+  // ================= CĂN CHỈNH & LÀM PHẲNG ================= //
   let scanMatOrigin = null; let scanMatDisplay = null; let scanMatOriginalBackup = null;
   let scanPoints = [{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}];
   let currentScanPageId = null;
@@ -1974,13 +2024,13 @@
     }
     
     currentScanPageId = pageId;
-    showLoader("Đang tải ảnh chất lượng cao để làm phẳng...");
+    showLoader("Đang nạp dữ liệu ảnh...");
     
     setTimeout(async () => {
       try {
         const item = workspacePages.find(p => p.id === pageId);
         if (!pdfJsCache[item.docId]) {
-           pdfJsCache[item.docId] = await pdfjsLib.getDocument({ data: base64ToUint8Array(item.body || window.fileStorage[item.docId]) }).promise;
+           pdfJsCache[item.docId] = await pdfjsLib.getDocument({ data: window.fileStorage[item.docId] }).promise;
         }
         const page = await pdfJsCache[item.docId].getPage(item.pageIndex + 1);
         
@@ -2166,7 +2216,7 @@
     
     const itemIdx = workspacePages.findIndex(p => p.id === currentScanPageId);
     if(itemIdx > -1) {
-      showLoader(t('loading_scan_save'));
+      showLoader(t('loading_scan_save'), false);
       
       try {
         const imgPdfDoc = await PDFLib.PDFDocument.create();
@@ -2183,12 +2233,10 @@
         
         const newPage = imgPdfDoc.addPage([tW, tH]);
         newPage.drawImage(embeddedImg, { x: 0, y: 0, width: tW, height: tH });
-        const finalPdfBase64 = await imgPdfDoc.saveAsBase64();
-        
-        delete pdfJsCache[workspacePages[itemIdx].docId]; 
+        const finalPdfBytes = await imgPdfDoc.save();
         
         const newDocId = "scan_" + generateId();
-        window.fileStorage[newDocId] = finalPdfBase64; // UPDATE VÀO KHO TOÀN CỤC
+        window.fileStorage[newDocId] = finalPdfBytes; // Lưu Binary Array vào fileStorage
 
         workspacePages[itemIdx].docId = newDocId;
         workspacePages[itemIdx].body = undefined;
@@ -2210,7 +2258,7 @@
     if (modalInstance) modalInstance.hide();
   }
 
-  // ================= TẠO FILE PDF & XUẤT FILE TÍNH TOÁN XOAY================= //
+  // ================= TẠO FILE PDF (DÙNG CHUNG CHO XUẤT, SPLIT, CLONE) ================= //
   async function buildStandardPdf(pagesToProcess, appendPageNumbers = false, fitToA4 = false) {
     const mergedPdf = await PDFLib.PDFDocument.create();
     mergedPdf.registerFontkit(window.fontkit);
@@ -2228,7 +2276,9 @@
     const defaultNumFont = await mergedPdf.embedFont(PDFLib.StandardFonts.Helvetica);
 
     for (let index = 0; index < pagesToProcess.length; index++) {
+      if(window.updateLoaderProgress) updateLoaderProgress(index + 1, pagesToProcess.length, "trang");
       const item = pagesToProcess[index];
+      
       if (!pdfLibCache[item.docId]) pdfLibCache[item.docId] = await PDFLib.PDFDocument.load(window.fileStorage[item.docId]);
       
       const srcDoc = pdfLibCache[item.docId];
@@ -2322,6 +2372,8 @@
         const pageText = String(index + 1); const textWidth = defaultNumFont.widthOfTextAtSize(pageText, 12);
         newPage.drawText(pageText, { x: (targetW / 2) - (textWidth / 2), y: 15, size: 12, font: defaultNumFont, color: PDFLib.rgb(0, 0, 0) });
       }
+      
+      await new Promise(r => setTimeout(r, 0)); // Dừng luồng để thanh Progress bar load lên
     }
     return mergedPdf;
   }
@@ -2346,11 +2398,11 @@
     if (modalInstance) modalInstance.hide();
 
     let loadingMsg = t('loading_export_pdf');
-    if (format === 'word') loadingMsg = t('loading_export_word');
+    if (format === 'word' || format === 'excel') loadingMsg = t('loading_export_word');
     if (format === 'png') loadingMsg = t('loading_export_png');
     if (format === 'pdf' && quality === 'extreme') loadingMsg = t('loading_export_extreme');
     
-    showLoader(loadingMsg);
+    showLoader(loadingMsg, true); // Kích hoạt hiển thị thanh Progress
     
     try {
       const standardDoc = await buildStandardPdf(pagesToProcess, addPageNums, fitA4);
@@ -2362,15 +2414,20 @@
           const imgPdf = await PDFLib.PDFDocument.create();
           const pdfJsDoc = await pdfjsLib.getDocument({ data: standardBytes }).promise;
           for (let i = 1; i <= pdfJsDoc.numPages; i++) {
+            updateLoaderProgress(i, pdfJsDoc.numPages, "trang");
             const page = await pdfJsDoc.getPage(i);
             const viewport = page.getViewport({ scale: 1.5 });
             const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
             const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
             await page.render({ canvasContext: ctx, viewport: viewport }).promise;
             const imgData = canvas.toDataURL('image/jpeg', 0.5); 
-            const embedImg = await imgPdf.embedJpg(imgData.split(',')[1]);
+            const embedImg = await imgPdf.embedJpg(base64ToUint8Array(imgData.split(',')[1]));
             const newPage = imgPdf.addPage([viewport.width, viewport.height]);
             newPage.drawImage(embedImg, { x: 0, y: 0, width: viewport.width, height: viewport.height });
+            
+            canvas.width = 0; canvas.height = 0;
+            page.cleanup();
+            await new Promise(r => setTimeout(r, 10)); 
           }
           finalBytes = await imgPdf.save({ useObjectStreams: true });
         }
@@ -2378,24 +2435,46 @@
         hideLoader();
       }
       else if (format === 'png') {
-        const zip = new JSZip();
         const pdfJsDoc = await pdfjsLib.getDocument({ data: standardBytes }).promise;
-        for (let i = 1; i <= pdfJsDoc.numPages; i++) {
-          const page = await pdfJsDoc.getPage(i);
-          const viewport = page.getViewport({ scale: 2.0 });
-          const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
-          const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-          await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-          const imgData = canvas.toDataURL('image/png').split(',')[1];
-          zip.file(`Trang_${i}.png`, imgData, {base64: true});
-        }
-        const zipContent = await zip.generateAsync({ type: "blob" });
-        triggerDownload(zipContent, `HinhAnh_Trang_${new Date().getTime()}.zip`);
-        hideLoader();
-      }
-      else if (format === 'word') {
-        const base64Pdf = uint8ToBase64(standardBytes);
         
+        // Nếu chỉ có 1 trang, thì xuất tải ảnh trực tiếp, không cần đóng Zip
+        if (pdfJsDoc.numPages === 1) {
+            updateLoaderProgress(1, 1, "trang");
+            const page = await pdfJsDoc.getPage(1);
+            const viewport = page.getViewport({ scale: 2.0 });
+            const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
+            const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+            
+            canvas.toBlob((blob) => {
+                triggerDownload(blob, `Trang_1_${new Date().getTime()}.png`);
+                hideLoader();
+            }, 'image/png', 1.0);
+        } else {
+            // Từ 2 trang trở lên thì vẫn nén ZIP bình thường
+            const zip = new JSZip();
+            for (let i = 1; i <= pdfJsDoc.numPages; i++) {
+              updateLoaderProgress(i, pdfJsDoc.numPages, "trang");
+              const page = await pdfJsDoc.getPage(i);
+              const viewport = page.getViewport({ scale: 2.0 });
+              const canvas = document.createElement('canvas'); canvas.width = viewport.width; canvas.height = viewport.height;
+              const ctx = canvas.getContext('2d'); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+              await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+              const imgData = canvas.toDataURL('image/png').split(',')[1];
+              zip.file(`Trang_${i}.png`, imgData, {base64: true});
+              
+              canvas.width = 0; canvas.height = 0;
+              page.cleanup();
+              await new Promise(r => setTimeout(r, 10));
+            }
+            const zipContent = await zip.generateAsync({ type: "blob" });
+            triggerDownload(zipContent, `HinhAnh_Trang_${new Date().getTime()}.zip`);
+            hideLoader();
+        }
+      }
+      else if (format === 'word' || format === 'excel') {
+        // Gửi lệnh lên Google Apps Script, truyền tên format mong muốn
+        const base64Pdf = uint8ToBase64(standardBytes);
         try {
           const res = await callGasApi({
             action: 'convertPdfToDocxExcel',
@@ -2408,11 +2487,15 @@
           for (let i = 0; i < byteCharacters.length; i++) byteNumbers[i] = byteCharacters.charCodeAt(i);
           const byteArray = new Uint8Array(byteNumbers);
           
-          const mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+          let mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+          if (format === 'excel') {
+             mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+          }
+          
           triggerDownload(new Blob([byteArray], { type: mime }), `${res.name}`);
           hideLoader();
         } catch(err) {
-          alert("Lỗi trích xuất (OCR) từ hệ thống Google: " + err.message);
+          alert("Lỗi trích xuất từ hệ thống Google: " + err.message);
           hideLoader();
         }
       }
@@ -2432,18 +2515,25 @@
     const names = rawNames.map(n => n.trim()).filter(n => n !== "");
 
     const modalEl = document.getElementById('splitModal'); const modalInstance = bootstrap.Modal.getInstance(modalEl); if (modalInstance) modalInstance.hide();
-    showLoader(t('loading_split'));
+    
+    const chunkTotal = Math.ceil(pagesToProcess.length / pageCount);
+    showLoader(t('loading_split'), true);
     
     try {
       const zip = new JSZip();
       for (let i = 0; i < pagesToProcess.length; i += pageCount) {
+        const chunkIndex = i / pageCount;
+        updateLoaderProgress(chunkIndex + 1, chunkTotal, "file con");
+        
         const chunk = pagesToProcess.slice(i, i + pageCount);
         const chunkDoc = await buildStandardPdf(chunk, false, false); 
         const bytes = await chunkDoc.save({ useObjectStreams: true });
-        const chunkIndex = i / pageCount;
+        
         let fileName = names[chunkIndex] || `File_Tach_${chunkIndex + 1}`;
         if (!fileName.toLowerCase().endsWith('.pdf')) fileName += '.pdf';
         zip.file(fileName, bytes);
+        
+        await new Promise(r => setTimeout(r, 10));
       }
       const zipContent = await zip.generateAsync({ type: "blob" });
       triggerDownload(zipContent, `Danh_Sach_File_Tach_${new Date().getTime()}.zip`);
@@ -2468,7 +2558,7 @@
     const modalInstance = bootstrap.Modal.getInstance(modalEl);
     if (modalInstance) modalInstance.hide();
 
-    showLoader(t('loading_clone'));
+    showLoader(t('loading_clone'), true);
     
     try {
       const doc = await buildStandardPdf(pagesToProcess, false, false); 
@@ -2476,9 +2566,11 @@
       const zip = new JSZip();
       
       for (let i = 0; i < copyCount; i++) {
+        updateLoaderProgress(i + 1, copyCount, "bản sao");
         let fileName = names[i] || `Ban_Sao_${i + 1}`;
         if (!fileName.toLowerCase().endsWith('.pdf')) fileName += '.pdf';
         zip.file(fileName, bytes);
+        await new Promise(r => setTimeout(r, 5));
       }
       
       const zipContent = await zip.generateAsync({ type: "blob" });
@@ -2504,9 +2596,7 @@
     if(x==='png') return 'image/png'; if(x==='jpg'||x==='jpeg') return 'image/jpeg'; return 'application/pdf'; 
   }
   function generateId() { return Math.random().toString(36).substring(2, 9); }
-  function showLoader(txt) { loader.style.display = 'flex'; document.getElementById('loader-text').innerText = txt; }
-  function hideLoader() { loader.style.display = 'none'; }
-
+  
   checkEmptyState();
 </script>
 </body>
