@@ -94,6 +94,7 @@
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     [data-theme="dark"] ::-webkit-scrollbar-thumb { background: #475569; }
 
+    /* OVERRIDE BOOTSTRAP ĐỂ ĐỒNG BỘ DARK MODE */
     [data-theme="dark"] .bg-light, [data-theme="dark"] .bg-white { background-color: var(--bg-panel) !important; }
     [data-theme="dark"] .text-secondary, [data-theme="dark"] .text-dark, [data-theme="dark"] .text-muted { color: var(--text-muted) !important; }
     [data-theme="dark"] label.text-secondary { color: var(--text-main) !important; }
@@ -110,6 +111,7 @@
     [data-theme="dark"] .btn-light:hover { background-color: var(--border-color); }
     [data-theme="dark"] .alert-warning { background-color: #422006; border-color: #713f12; color: #fef08a; }
 
+    /* BỐ CỤC CHÍNH */
     .app-container { display: flex; flex: 1; overflow: hidden; }
     
     .sidebar { background: var(--bg-panel); border-right: 1px solid var(--border-color); width: 280px; display: flex; flex-direction: column; z-index: 100; flex-shrink: 0; overflow-y: auto; transition: 0.3s;}
@@ -117,8 +119,17 @@
     .sidebar-header { padding: 1.5rem 1.2rem; border-bottom: 1px solid var(--border-color); text-align: center; background: var(--bg-panel); }
     .sidebar-header img { max-height: 40px; object-fit: contain; transition: 0.3s;}
     
-    [data-theme="dark"] .sidebar-header img { background-color: #ffffff; padding: 5px; border-radius: 6px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.4); }
-    [data-theme="dark"] body { background: url('https://drive.google.com/uc?export=view&id=1sAxq1PVLDJptQyots8iq7dFqbGQ1U_JT') no-repeat center center fixed !important; background-size: cover !important; }
+    [data-theme="dark"] .sidebar-header img {
+      background-color: #ffffff;
+      padding: 5px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+
+    [data-theme="dark"] body {
+      background: url('https://drive.google.com/uc?export=view&id=1sAxq1PVLDJptQyots8iq7dFqbGQ1U_JT') no-repeat center center fixed !important;
+      background-size: cover !important;
+    }
     [data-theme="dark"] .app-container { background-color: rgba(15, 23, 42, 0.6); }
 
     .sidebar-top { padding: 1.2rem; flex-grow: 1; overflow-y: auto; background: var(--bg-panel);}
@@ -132,6 +143,7 @@
     
     .main-area { flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
     
+    /* Gắn z-index 1030 chuẩn để đè lên trang PDF ở dưới */
     .main-header { padding: 1rem 1.5rem; background: var(--bg-panel); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 1030; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);}
     .main-title-wrap h4 { font-weight: 700; color: var(--brand-blue); margin: 0; font-size: 1.2rem; letter-spacing: -0.5px;}
     .main-title-wrap p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
@@ -139,6 +151,7 @@
     .theme-toggle-btn, .lang-toggle-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--border-color); background: var(--bg-panel-alt); color: var(--text-main); cursor: pointer; transition: 0.2s; font-weight: bold; font-size: 12px;}
     .theme-toggle-btn:hover, .lang-toggle-btn:hover { border-color: var(--brand-blue); color: var(--brand-blue); }
 
+    /* BUTTONS */
     .btn-primary { background-color: var(--brand-blue); border-color: var(--brand-blue); border-radius: var(--radius-sm); font-weight: 600; color: #fff;}
     .btn-primary:hover { background-color: var(--brand-blue-hover); border-color: var(--brand-blue-hover); color: #fff;}
     .btn-outline-primary { color: var(--brand-blue); border-color: var(--brand-blue); border-radius: var(--radius-sm); font-weight: 600;}
@@ -157,6 +170,7 @@
     .page-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); border-color: var(--brand-blue);}
     .page-card.sortable-ghost { opacity: 0.4; }
     
+    /* FIX CHỐNG ĐÈ HEADER: Set z-index thấp hơn Header (10) để khi cuộn không bị lồi lên */
     .page-select-box { position: absolute; bottom: 15px; left: 15px; top: auto; z-index: 10; display: block; background: rgba(255,255,255,0.85); padding: 6px 8px; border-radius: 8px; box-shadow: var(--shadow-soft); transition: 0.2s; }
     .page-select-box:hover { background: #fff; transform: scale(1.1); }
     .page-select-box input { transform: scale(1.4); cursor: pointer; border-radius: 4px; accent-color: var(--brand-blue); margin: 0;}
@@ -187,6 +201,7 @@
     .resize-handle { position: absolute; right: -8px; bottom: -8px; width: 20px; height: 20px; background: var(--brand-blue); border-radius: 50%; cursor: se-resize; display: none; z-index: 51; border: 2px solid white; touch-action: none;}
     .shape-overlay.active .resize-handle, .img-overlay.active .resize-handle { display: block; }
     
+    /* GIAO DIỆN ICON CHO DRAG, DELETE, ROTATE */
     .drag-handle { position: absolute; top: -32px; left: -2px; background: var(--brand-blue); color: #fff; border-radius: 4px; width: 28px; height: 28px; display: none; align-items: center; justify-content: center; cursor: move; user-select: none; touch-action: none; }
     .delete-handle { position: absolute; top: -32px; right: -2px; background: #dc2626; color: #fff; border-radius: 4px; width: 28px; height: 28px; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 52; user-select: none; }
     .rotate-handle { position: absolute; left: -14px; bottom: -14px; width: 28px; height: 28px; background: #eab308; color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; cursor: grab; z-index: 51; border: 2px solid white; touch-action: none;}
@@ -214,13 +229,16 @@
     .side-page-actions { position: absolute; top: 3px; right: 3px; display: none; gap: 2px; background: var(--bg-panel); border: 1px solid var(--border-color); padding: 2px; border-radius: 4px; z-index: 10;}
     .side-page-item:hover .side-page-actions { display: flex; }
 
+    /* LOADER */
     .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(4px);}
     
+    /* GLOBAL DROP ZONE */
     #global-drop-zone { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(11, 80, 161, 0.95); color: white; z-index: 10000; display: none; align-items: center; justify-content: center; flex-direction: column; border: 8px dashed rgba(255,255,255,0.6); backdrop-filter: blur(5px);}
     #global-drop-zone.active { display: flex; }
 
     .file-badge { background: var(--bg-panel-alt); padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 8px; font-size: 12px; font-weight: 600; border: 1px solid var(--border-color); display: flex; align-items: center; color: var(--text-main);}
 
+    /* SCANNER STYLES */
     #scan-canvas-container { position: relative; display: inline-block; box-shadow: var(--shadow-soft); max-width: 100%; touch-action: none; background: var(--bg-panel-alt); border-radius: var(--radius-sm); border: 1px solid var(--border-color);}
     .corner-handle { position: absolute; width: 30px; height: 30px; background: transparent; border: 3px solid #0ea5e9; border-radius: 50%; cursor: crosshair; z-index: 100; transform: translate(-50%, -50%); touch-action: none; box-shadow: 0 0 10px rgba(0,0,0,0.5);}
     .corner-handle::after { content: ''; position: absolute; top: 50%; left: 50%; width: 8px; height: 8px; background: #0ea5e9; border-radius: 50%; transform: translate(-50%, -50%); }
@@ -289,7 +307,7 @@
       <div class="sidebar-title">
         <i data-lucide="file-up" size="16"></i> <span data-i18n="import_doc">Nhập Tài Liệu</span>
       </div>
-      <div id="drop-zone" class="drop-zone shadow-sm" onclick="document.getElementById('file-input').click()">
+      <div id="drop-zone" class="drop-zone shadow-sm">
         <i data-lucide="upload-cloud" size="28"></i>
         <div class="text-secondary fw-semibold mt-2" style="font-size: 11px;" data-i18n="drop_zone_text">Kéo thả file vào đây</div>
         <input type="file" id="file-input" multiple hidden>
@@ -356,7 +374,7 @@
         <div class="color-dot" style="background-color: #eab308;" onclick="setColor('#eab308', 'bg')" title="Vàng"></div>
         <input type="color" id="tool-bg-color" class="form-control form-control-color p-0 border-0 ms-1 rounded" style="width: 24px; height: 24px; background: transparent;" value="#ffffff" title="Chọn màu tự chọn">
 
-        <!-- Lịch sử (Undo/Redo) dời sát đây -->
+        <!-- Lịch sử (Undo/Redo) -->
         <div class="vr mx-2" style="background-color: var(--border-color);"></div>
         <button class="btn btn-sm btn-light border shadow-sm px-2" onclick="undo()" title="Hoàn tác (Ctrl+Z)"><i data-lucide="undo" size="15"></i></button>
         <button class="btn btn-sm btn-light border shadow-sm px-2 ms-1" onclick="redo()" title="Làm lại (Ctrl+Y)"><i data-lucide="redo" size="15"></i></button>
@@ -396,25 +414,23 @@
 
       <div id="grid-main-buttons" class="d-flex gap-2 flex-wrap ms-auto">
         <div class="d-flex align-items-center gap-1 border-end pe-2 me-1">
-            <button class="btn btn-custom btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i></button>
-            <!-- NÚT UNDO REDO KẾT BÊN CHỌN TẤT CẢ -->
             <button class="btn btn-custom btn-outline-secondary shadow-sm px-2" onclick="undo()" title="Hoàn tác (Ctrl+Z)"><i data-lucide="undo" size="16"></i></button>
             <button class="btn btn-custom btn-outline-secondary shadow-sm px-2" onclick="redo()" title="Làm lại (Ctrl+Y)"><i data-lucide="redo" size="16"></i></button>
-            <div class="vr mx-1" style="background-color: var(--border-color);"></div>
-
+            
+            <button class="btn btn-custom btn-outline-secondary shadow-sm" onclick="selectAllPages()" title="Chọn tất cả"><i data-lucide="check-square" size="16"></i></button>
             <button class="btn btn-custom btn-outline-primary shadow-sm px-2" onclick="batchDuplicate()" title="Nhân bản trang chọn"><i data-lucide="copy" size="16"></i></button>
             <button class="btn btn-custom btn-outline-info shadow-sm px-2" onclick="batchRotateLeft()" title="Xoay trái trang chọn"><i data-lucide="rotate-ccw" size="16"></i></button>
             <button class="btn btn-custom btn-outline-info shadow-sm px-2" onclick="batchRotateRight()" title="Xoay phải trang chọn"><i data-lucide="rotate-cw" size="16"></i></button>
             <button class="btn btn-custom btn-outline-danger shadow-sm px-2" onclick="batchDelete()" title="Xóa trang chọn"><i data-lucide="trash-2" size="16"></i></button>
         </div>
 
-        <!-- Nút Nén File Mới Thêm -->
-        <button class="btn btn-custom btn-secondary shadow-sm" data-bs-toggle="modal" data-bs-target="#compressModal"><i data-lucide="minimize" size="16" class="me-1"></i> <span class="d-none d-xl-inline" data-i18n="btn_compress">Nén File</span></button>
-        
         <button class="btn btn-custom btn-outline-success shadow-sm" data-bs-toggle="modal" data-bs-target="#mergeExcelModal"><i data-lucide="sheet" size="16" class="me-1"></i> <span data-i18n="btn_merge_excel">Gộp Excel</span></button>
         <button class="btn btn-custom btn-warning shadow-sm text-dark" data-bs-toggle="modal" data-bs-target="#cloneModal"><i data-lucide="copy" size="16" class="me-1"></i> <span data-i18n="btn_clone_file">Nhân bản File</span></button>
         <button class="btn btn-custom btn-info text-white shadow-sm" style="background-color: #0ea5e9; border-color: #0ea5e9;" data-bs-toggle="modal" data-bs-target="#splitModal"><i data-lucide="scissors" size="16" class="me-1"></i> <span data-i18n="btn_split">Tách File</span></button>
         
+        <!-- NÚT NÉN FILE MỚI THÊM VÀO -->
+        <button class="btn btn-custom btn-secondary shadow-sm" data-bs-toggle="modal" data-bs-target="#compressModal"><i data-lucide="minimize" size="16" class="me-1"></i> <span data-i18n="btn_compress">Nén File</span></button>
+
         <button class="btn btn-custom btn-outline-danger shadow-sm" onclick="resetApp()"><i data-lucide="refresh-cw" size="16" class="me-1"></i> <span data-i18n="btn_refresh">Làm Mới</span></button>
         <button class="btn btn-custom btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#exportModal"><i data-lucide="download" size="16" class="me-1"></i> <span data-i18n="btn_export">Xuất File</span></button>
       </div>
@@ -432,32 +448,33 @@
   </div>
 </div>
 
-<!-- Modal Nén PDF -->
+<!-- MODAL NÉN FILE ĐỘC LẬP (MỚI) -->
 <div class="modal fade" id="compressModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title fw-bold" style="color: var(--brand-blue);"><i data-lucide="minimize" class="me-2"></i> <span data-i18n="modal_compress_title">Nén PDF</span></h5>
+        <h5 class="modal-title fw-bold" style="color: var(--brand-blue);"><i data-lucide="minimize" class="me-2"></i> <span data-i18n="modal_compress_title">Nén dung lượng File PDF</span></h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-4">
-        <label class="fw-bold mb-2 text-secondary">Chọn file PDF cần nén (Hoạt động Độc lập):</label>
+        <label class="fw-bold mb-2 text-secondary" data-i18n="compress_file_label">Chọn file PDF cần nén:</label>
         <input type="file" id="compress-file-input" accept=".pdf" class="form-control mb-4">
         
-        <label class="fw-bold mb-2 text-secondary">Mức độ nén (Kéo thanh trượt):</label>
-        <div class="d-flex justify-content-between text-muted small fw-bold mb-1">
-            <span>Siêu nén</span>
-            <span>Trung bình</span>
-            <span>Tiêu chuẩn</span>
-        </div>
-        <input type="range" class="form-range" min="1" max="3" step="1" id="compress-level" value="2">
+        <label class="fw-bold mb-3 text-secondary" data-i18n="compress_level_label">Mức độ nén:</label>
+        <input type="range" class="form-range" id="compress-level" min="1" max="3" step="1" value="2" oninput="updateCompressLabel()">
         
-        <div class="progress mt-4" style="height: 15px; display: none; border-radius: 8px;" id="compress-progress-container">
-          <div id="compress-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" style="width: 0%; transition: width 0.1s;">0%</div>
+        <div class="d-flex justify-content-between text-muted fw-bold mt-2" style="font-size: 13px;">
+          <span id="label-level-1">Tiêu chuẩn</span>
+          <span id="label-level-2" class="text-primary">Trung bình</span>
+          <span id="label-level-3">Siêu nén</span>
+        </div>
+        
+        <div class="alert alert-info mt-4" style="font-size: 13px;">
+           <i data-lucide="info" size="14"></i> <span id="compress-desc-text">Mức Trung bình: Chuyển đổi các trang thành ảnh chất lượng cao để giảm dung lượng, văn bản sẽ không thể copy.</span>
         </div>
       </div>
       <div class="modal-footer border-0">
-        <button type="button" class="btn btn-primary w-100 py-2 fw-bold shadow-sm" onclick="executeCompress()" id="btn-execute-compress">Bắt Đầu Nén & Tải Xuống</button>
+        <button type="button" class="btn btn-secondary w-100 py-2 fw-bold shadow-sm" onclick="executeCompressFile()" data-i18n="btn_execute_compress">Tiến hành Nén & Tải xuống</button>
       </div>
     </div>
   </div>
@@ -507,6 +524,7 @@
   </div>
 </div>
 
+<!-- GIAO DIỆN LÀM PHẲNG -->
 <div class="modal fade" id="scanModal" data-bs-backdrop="static" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content">
@@ -654,6 +672,9 @@
     }
   });
 
+  // KHO LƯU TRỮ CHUNG ĐỂ TRÁNH LỖI OUT OF MEMORY
+  window.fileStorage = {}; 
+
   async function callGasApi(payload) {
     if(!GOOGLE_API_URL || GOOGLE_API_URL === "YOUR_WEB_APP_API_URL") {
         throw new Error("Vui lòng cập nhật biến GOOGLE_API_URL thành link Web App mới của bạn.");
@@ -688,7 +709,6 @@
       text_color: "Chữ:",
       bg_color: "Nền:",
       btn_export: "Xuất File",
-      btn_compress: "Nén File",
       app_title: "Quản lý Tài liệu",
       app_desc: "Thêm, xóa, sắp xếp và chỉnh sửa trang PDF",
       btn_merge_excel: "Gộp Excel",
@@ -696,10 +716,10 @@
       btn_refresh: "Làm Mới",
       btn_split: "Tách File",
       btn_clone_file: "Nhân bản File",
+      btn_compress: "Nén File",
       empty_doc_title: "Chưa có tài liệu nào",
       empty_doc_desc: "Kéo thả file bất kỳ vào đây<br>hoặc click để chọn file từ máy",
       modal_merge_excel_title: "Gộp file Excel",
-      modal_compress_title: "Nén PDF",
       merge_files_label: "Chọn các file Excel cần gộp (Tương đồng cột):",
       merge_start_row_label: "Lấy dữ liệu từ dòng số (áp dụng từ file thứ 2 trở đi):",
       merge_desc: "File đầu tiên sẽ được lấy toàn bộ dữ liệu làm chuẩn (bao gồm tiêu đề). Các file sau sẽ bỏ qua tiêu đề theo số dòng bạn chọn bên trên.",
@@ -718,6 +738,10 @@
       clone_names_label: "Tên file mong muốn (mỗi tên 1 dòng):",
       btn_execute_clone_file: "Nhân bản File & Tải Xuống (Zip)",
       modal_export_title: "Tùy chọn Xuất & Tải về",
+      modal_compress_title: "Nén dung lượng File PDF",
+      compress_file_label: "Chọn file PDF cần nén:",
+      compress_level_label: "Mức độ nén:",
+      btn_execute_compress: "Tiến hành Nén & Tải xuống",
       export_info_all: "Đang xuất: <strong>Tất cả trang</strong>",
       export_info_selected: "Đang xuất: <strong>{count} trang đã chọn</strong>",
       export_format_label: "Định dạng xuất:",
@@ -771,7 +795,6 @@
       text_color: "Text:",
       bg_color: "Bg:",
       btn_export: "Export",
-      btn_compress: "Compress",
       app_title: "Document Manager",
       app_desc: "Add, delete, sort and edit PDF pages",
       btn_merge_excel: "Merge Excel",
@@ -779,10 +802,10 @@
       btn_refresh: "Refresh",
       btn_split: "Split File",
       btn_clone_file: "Clone File",
+      btn_compress: "Compress File",
       empty_doc_title: "No document yet",
       empty_doc_desc: "Drop any file here<br>or click to select file",
       modal_merge_excel_title: "Merge Excel Files",
-      modal_compress_title: "Compress PDF",
       merge_files_label: "Select Excel files to merge (Similar columns):",
       merge_start_row_label: "Start data from row (applies from 2nd file):",
       merge_desc: "The first file keeps all its data (including headers). Subsequent files will skip rows based on the number above.",
@@ -801,6 +824,10 @@
       clone_names_label: "Desired filenames (one per line):",
       btn_execute_clone_file: "Clone File & Download (Zip)",
       modal_export_title: "Export Options",
+      modal_compress_title: "Compress PDF File",
+      compress_file_label: "Select PDF file to compress:",
+      compress_level_label: "Compression Level:",
+      btn_execute_compress: "Compress & Download",
       export_info_all: "Exporting: <strong>All pages</strong>",
       export_info_selected: "Exporting: <strong>{count} selected pages</strong>",
       export_format_label: "Export Format:",
@@ -883,17 +910,7 @@
     applyLanguage(currentLang);
   });
 
-  // ================= KHẮC PHỤC OOM - QUẢN LÝ DUNG LƯỢNG PDF LÕI =================
-  let globalDocStore = {}; // Lưu file gốc 1 lần duy nhất thay vì lưu vào từng trang
-  let workspacePages = [];
-  let pdfJsCache = {}; 
-  let fileIdCounter = 0; 
-  let activeElement = null; 
-  let isEditMode = false;
-  const pageContainer = document.getElementById('page-container');
-  const sidebarGrid = document.getElementById('sidebar-page-grid');
-
-  // ================= LỊCH SỬ THAO TÁC (UNDO / REDO) MƯỢT MÀ BẰNG OBSERVER =================
+  // ================= LỊCH SỬ THAO TÁC (UNDO / REDO) MƯỢT MÀ =================
   let historyStack = [];
   let historyIndex = -1;
   let isRestoring = false;
@@ -945,7 +962,7 @@
       let currentPagesStr = JSON.stringify(workspacePages);
       let statePagesStr = JSON.stringify(state.pages);
       
-      // Khôi phục mượt mà: Nếu cấu trúc/thứ tự trang thay đổi mới build lại DOM
+      // Khôi phục mượt mà không chớp đen
       if (currentPagesStr !== statePagesStr) {
           workspacePages = JSON.parse(statePagesStr);
           pageContainer.innerHTML = '';
@@ -968,15 +985,16 @@
                   createHandles(el, box, o.type);
                   box.appendChild(el);
               });
-              
-              // Đánh dấu để IntersectionObserver tự render lại canvas nếu trang bị xoay
-              box.dataset.renderedRotation = "";
-              pageObserver.observe(box);
           }
       });
       
       setActiveElement(null);
       isRestoring = false;
+
+      // ĐẢM BẢO FIX: Hiển thị ngay thanh công cụ trang (.page-actions) sau khi Undo/Redo nếu đang ở Edit Mode
+      if(isEditMode) {
+          document.querySelectorAll('.page-actions').forEach(el => el.style.display = 'flex');
+      }
   }
 
   function undo() { if (historyIndex > 0) restoreState(historyIndex - 1); }
@@ -987,120 +1005,7 @@
       if (e.ctrlKey && e.key.toLowerCase() === 'y') { e.preventDefault(); redo(); }
   });
 
-  // ================= TỐI ƯU HIỆU SUẤT LOAD BẰNG INTERSECTION OBSERVER =================
-  const pageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-          if (entry.isIntersecting) {
-              const box = entry.target;
-              const pageId = box.dataset.pageId;
-              const scale = parseFloat(box.dataset.scale);
-              const item = workspacePages.find(p => p.id === pageId);
-              
-              if (item && box.dataset.renderedRotation !== String(item.rotation)) {
-                  box.dataset.renderedRotation = String(item.rotation);
-                  renderSingleCanvas(item, box, scale);
-              }
-          }
-      });
-  }, { rootMargin: "150% 0px" });
-
-  async function renderSingleCanvas(item, targetBox, scaleFactor) {
-    if (!targetBox) return;
-
-    if (!pdfJsCache[item.docId]) {
-       pdfJsCache[item.docId] = await pdfjsLib.getDocument({ data: base64ToUint8Array(globalDocStore[item.docId]) }).promise;
-    }
-    const page = await pdfJsCache[item.docId].getPage(item.pageIndex + 1);
-    
-    const viewport = page.getViewport({ scale: scaleFactor, rotation: item.rotation }); 
-    const canvas = document.createElement('canvas');
-    canvas.height = viewport.height; 
-    canvas.width = viewport.width;
-    canvas.style.display = 'block';
-    
-    await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
-
-    // Chèn canvas xuống lớp dưới cùng của TargetBox để không đè mất chữ
-    const oldCanvas = targetBox.querySelector('canvas');
-    if (oldCanvas) {
-        targetBox.replaceChild(canvas, oldCanvas);
-    } else {
-        targetBox.insertBefore(canvas, targetBox.firstChild);
-    }
-  }
-
-  async function appendPagesToWorkspace(newPages, isRestoring = false) {
-    const fragmentMain = document.createDocumentFragment();
-    const fragmentSide = document.createDocumentFragment();
-
-    for (let i = 0; i < newPages.length; i++) {
-      const item = newPages[i];
-      
-      const card = document.createElement('div');
-      card.className = "page-card"; card.id = `card-${item.id}`;
-      card.innerHTML = `
-        <div class="page-select-box">
-           <input type="checkbox" class="page-selector form-check-input shadow-sm" data-id="${item.id}">
-        </div>
-        <div class="page-actions">
-            <button class="btn btn-primary btn-sm shadow-sm scroll-only p-1" onclick="addTextToPage('${item.id}')" title="Thêm Chữ"><i data-lucide="type" size="14"></i></button>
-            <button class="btn btn-success btn-sm shadow-sm scroll-only p-1" onclick="addShapeToPage('${item.id}')" title="Thêm Khung"><i data-lucide="square" size="14"></i></button>
-            <button class="btn btn-dark btn-sm text-white shadow-sm scroll-only p-1" onclick="openScanModal('${item.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i></button>
-            <button class="btn btn-info btn-sm text-white shadow-sm scroll-only p-1" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${item.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i></button>
-            <div class="vr mx-1 scroll-only" style="background-color: var(--border-color);"></div>
-            <button class="btn btn-warning btn-sm shadow-sm grid-only text-dark p-1" onclick="enterEditMode('${item.id}')" title="${t('btn_edit')}"><i data-lucide="edit-3" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="promptMovePage('${item.id}')" title="Chuyển đến trang..."><i data-lucide="move" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="duplicatePage('${item.id}')" title="Nhân bản"><i data-lucide="copy" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageLeft('${item.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageRight('${item.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="14"></i></button>
-            <button class="btn btn-light btn-sm text-danger shadow-sm p-1" onclick="removePage('${item.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
-        </div>
-        <div class="canvas-wrapper" id="wrapper-${item.id}">
-          <div class="pdf-page-box" id="box-${item.id}" data-page-id="${item.id}" data-scale="${window.innerWidth < 768 ? 1.0 : 1.5}"></div>
-        </div>
-        <div class="badge mt-3 fw-bold px-3 py-2 rounded-pill shadow-sm badge-count" style="background: var(--bg-panel-alt); color: var(--text-main); border: 1px solid var(--border-color);">${t('page_label')} X</div>
-      `;
-      fragmentMain.appendChild(card);
-      
-      const sideCard = document.createElement('div');
-      sideCard.className = "side-page-item"; sideCard.id = `side-${item.id}`;
-      sideCard.onclick = (e) => {
-          if(!e.target.closest('.side-page-actions')) scrollToPage(item.id);
-      };
-      sideCard.innerHTML = `
-        <div class="side-page-actions">
-           <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageLeft('${item.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="13"></i></button>
-           <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageRight('${item.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="13"></i></button>
-           <button class="btn btn-light border p-0 text-danger" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); removePage('${item.id}')" title="Xóa"><i data-lucide="trash-2" size="13"></i></button>
-        </div>
-        <div class="side-canvas-wrapper pdf-page-box" id="side-box-${item.id}" data-page-id="${item.id}" data-scale="0.3"></div>
-        <div class="side-page-label">${t('page_label')} X</div>
-      `;
-      fragmentSide.appendChild(sideCard);
-    }
-    
-    pageContainer.appendChild(fragmentMain);
-    sidebarGrid.appendChild(fragmentSide);
-
-    // Kích hoạt Observer cho các trang mới thêm vào
-    newPages.forEach(item => {
-        const mainBox = document.getElementById(`box-${item.id}`);
-        const sideBox = document.getElementById(`side-box-${item.id}`);
-        setupDropZoneForPage(mainBox);
-        pageObserver.observe(mainBox);
-        pageObserver.observe(sideBox);
-    });
-    
-    updatePageLabels();
-    initSortables();
-    lucide.createIcons();
-    if(isEditMode) {
-      document.querySelectorAll('.page-actions').forEach(el => el.style.display = 'flex');
-      document.querySelectorAll('.page-select-box').forEach(el => el.style.display = 'none');
-    }
-  }
-
-  // ================= TẢI LÊN FILE =================
+  // ================= GLOBAL DRAG & DROP =================
   let globalDragCounter = 0;
   window.isInternalDrag = false;
 
@@ -1125,172 +1030,7 @@
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) { handleFiles(e.dataTransfer.files); }
   });
 
-  dropZone.onclick = () => fileInput.click();
-  fileInput.onchange = (e) => handleFiles(e.target.files);
-
-  async function handleFiles(files) {
-    if (!files || files.length === 0) return;
-    isUploadingData = true; 
-    
-    try {
-        const toast = document.getElementById('upload-toast');
-        toast.style.display = 'block';
-        const pBar = document.getElementById('upload-progress-bar');
-        const pDesc = document.getElementById('toast-desc');
-        
-        let newPages = [];
-        
-        for (let fIdx = 0; fIdx < files.length; fIdx++) {
-          let file = files[fIdx];
-          let basePct = (fIdx / files.length) * 100;
-          pDesc.innerText = `Đang nạp: ${file.name}`;
-          pBar.style.width = basePct + '%';
-          
-          await new Promise(r => setTimeout(r, 10)); 
-          
-          const mime = file.type || getMime(file.name);
-          const base64Data = await toBase64WithProgress(file, (pct) => {
-             let realPct = basePct + ((pct * 100) / files.length);
-             pBar.style.width = realPct + '%';
-             pDesc.innerText = `Đang xử lý: ${file.name} (${Math.round(realPct)}%)`;
-          });
-
-          let finalPdfBase64 = "";
-
-          if (mime === 'application/pdf') {
-            finalPdfBase64 = base64Data.split(',')[1];
-          } 
-          else if (mime.startsWith('image/')) {
-            const imgPdfDoc = await PDFLib.PDFDocument.create();
-            const imgRawBase64 = base64Data.split(',')[1];
-            const imgBytes = base64ToUint8Array(imgRawBase64);
-            
-            let embeddedImg;
-            if (mime.includes('png')) embeddedImg = await imgPdfDoc.embedPng(imgBytes);
-            else embeddedImg = await imgPdfDoc.embedJpg(imgBytes);
-            
-            const dims = embeddedImg.scale(1);
-            const newPage = imgPdfDoc.addPage([dims.width, dims.height]);
-            newPage.drawImage(embeddedImg, { x: 0, y: 0, width: dims.width, height: dims.height });
-            finalPdfBase64 = await imgPdfDoc.saveAsBase64();
-          } 
-          else {
-            pDesc.innerText = `Server đang chuyển đổi: ${file.name}`;
-            const res = await callGasApi({
-                action: 'convertFileToPdf',
-                base64Data: base64Data,
-                fileName: file.name,
-                mimeType: mime
-            });
-            finalPdfBase64 = res.base64;
-          }
-
-          pDesc.innerText = `Đang trích xuất trang từ: ${file.name}`;
-          
-          // LƯU LÕI VÀO GLOBAL STORE ĐỂ TIẾT KIỆM RAM TỐI ĐA
-          const currentDocId = "doc_" + (fileIdCounter++);
-          globalDocStore[currentDocId] = finalPdfBase64;
-          
-          const pdfDoc = await PDFLib.PDFDocument.load(finalPdfBase64, { ignoreEncryption: true });
-          const pageCount = pdfDoc.getPageCount();
-          
-          for (let i = 0; i < pageCount; i++) {
-            const item = { id: generateId(), docId: currentDocId, pageIndex: i, rotation: 0 };
-            workspacePages.push(item);
-            newPages.push(item);
-          }
-          
-          const fileList = document.getElementById('loaded-files-list');
-          if(fileList.innerHTML.includes(t('empty_files'))) fileList.innerHTML = '';
-          fileList.innerHTML += `<div class="file-badge"><i data-lucide="file-check-2" size="18" class="me-2" style="color:var(--brand-blue)"></i> <span class="text-truncate">${file.name}</span></div>`;
-        }
-        
-        pDesc.innerText = `Đang hiển thị...`;
-        pBar.style.width = '95%';
-        
-        if(newPages.length > 0) {
-            await appendPagesToWorkspace(newPages);
-            captureState();
-        }
-        
-        pBar.style.width = '100%';
-        pDesc.innerText = `Hoàn tất!`;
-        setTimeout(() => { toast.style.display = 'none'; }, 2000);
-        
-    } catch (err) {
-        alert(`Lỗi xử lý file: ${err.message || err}`);
-    } finally {
-        isUploadingData = false;
-        fileInput.value = ''; 
-        checkEmptyState(); 
-    }
-  }
-
-  // ================= NÉN PDF NỀN =================
-  async function executeCompress() {
-      const fileInputModal = document.getElementById('compress-file-input');
-      if (!fileInputModal.files.length) return alert("Vui lòng chọn 1 file PDF!");
-      
-      const file = fileInputModal.files[0];
-      const level = parseInt(document.getElementById('compress-level').value);
-      let scale = 1.0, quality = 0.4;
-      if(level === 2) { scale = 1.5; quality = 0.6; }
-      if(level === 3) { scale = 2.0; quality = 0.8; }
-      
-      const btn = document.getElementById('btn-execute-compress');
-      const pContainer = document.getElementById('compress-progress-container');
-      const pBar = document.getElementById('compress-progress-bar');
-      
-      btn.disabled = true;
-      pContainer.style.display = 'flex';
-      pBar.style.width = '0%';
-      pBar.innerText = 'Đang đọc...';
-      
-      try {
-          const arrayBuffer = await file.arrayBuffer();
-          const pdfJsDoc = await pdfjsLib.getDocument({ data: new Uint8Array(arrayBuffer) }).promise;
-          const newPdf = await PDFLib.PDFDocument.create();
-          
-          const totalPages = pdfJsDoc.numPages;
-          for (let i = 1; i <= totalPages; i++) {
-              const page = await pdfJsDoc.getPage(i);
-              const viewport = page.getViewport({ scale: scale });
-              
-              const canvas = document.createElement('canvas');
-              canvas.width = viewport.width;
-              canvas.height = viewport.height;
-              const ctx = canvas.getContext('2d');
-              ctx.fillStyle = "#ffffff";
-              ctx.fillRect(0, 0, canvas.width, canvas.height);
-              
-              await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-              const imgData = canvas.toDataURL('image/jpeg', quality);
-              
-              const embedImg = await newPdf.embedJpg(imgData.split(',')[1]);
-              const newPage = newPdf.addPage([viewport.width, viewport.height]);
-              newPage.drawImage(embedImg, { x: 0, y: 0, width: viewport.width, height: viewport.height });
-              
-              const pct = Math.round((i / totalPages) * 100);
-              pBar.style.width = pct + '%';
-              pBar.innerText = pct + '%';
-              
-              await new Promise(r => requestAnimationFrame(r));
-          }
-          
-          pBar.innerText = "Đang đóng gói...";
-          const pdfBytes = await newPdf.save();
-          triggerDownload(new Blob([pdfBytes], { type: "application/pdf" }), `Da_Nen_${file.name}`);
-          
-      } catch(err) {
-          alert("Lỗi khi nén: " + err.message);
-      } finally {
-          btn.disabled = false;
-          pContainer.style.display = 'none';
-          fileInputModal.value = '';
-      }
-  }
-
-  // ================= CÁC BATCH ACTIONS CÒN LẠI =================
+  // ================= BATCH ACTIONS (THAO TÁC HÀNG LOẠT) =================
   function getSelectedIds() {
     const selectedCheckboxes = document.querySelectorAll('.page-selector:checked');
     return Array.from(selectedCheckboxes).map(cb => cb.dataset.id);
@@ -1360,7 +1100,7 @@
             <button class="btn btn-light btn-sm text-danger shadow-sm p-1" onclick="removePage('${clonedItem.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
         </div>
         <div class="canvas-wrapper" id="wrapper-${clonedItem.id}">
-          <div class="pdf-page-box" id="box-${clonedItem.id}" data-page-id="${clonedItem.id}" data-scale="${window.innerWidth < 768 ? 1.0 : 1.5}"></div>
+          <div class="pdf-page-box" id="box-${clonedItem.id}"></div>
         </div>
         <div class="badge mt-3 fw-bold px-3 py-2 rounded-pill shadow-sm badge-count" style="background: var(--bg-panel-alt); color: var(--text-main); border: 1px solid var(--border-color);">${t('page_label')} X</div>
     `;
@@ -1376,16 +1116,16 @@
            <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageRight('${clonedItem.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="13"></i></button>
            <button class="btn btn-light border p-0 text-danger" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); removePage('${clonedItem.id}')" title="Xóa"><i data-lucide="trash-2" size="13"></i></button>
         </div>
-        <div class="side-canvas-wrapper pdf-page-box" id="side-box-${clonedItem.id}" data-page-id="${clonedItem.id}" data-scale="0.3"></div>
+        <div class="side-canvas-wrapper" id="side-box-${clonedItem.id}"></div>
         <div class="side-page-label">${t('page_label')} X</div>
     `;
     const refNodeSide = sidebarGrid.children[idx + 1];
     sidebarGrid.insertBefore(sideCard, refNodeSide || null);
 
-    const mainBox = document.getElementById(`box-${clonedItem.id}`);
-    const sideBox = document.getElementById(`side-box-${clonedItem.id}`);
-    if(mainBox) { setupDropZoneForPage(mainBox); pageObserver.observe(mainBox); }
-    if(sideBox) pageObserver.observe(sideBox);
+    let cScale = window.innerWidth < 768 ? 1.0 : 1.5;
+    await renderSingleCanvas(clonedItem, document.getElementById(`box-${clonedItem.id}`), cScale);
+    setupDropZoneForPage(document.getElementById(`box-${clonedItem.id}`));
+    await renderSingleCanvas(clonedItem, document.getElementById(`side-box-${clonedItem.id}`), 0.3);
 
     updatePageLabels();
     lucide.createIcons();
@@ -1395,6 +1135,464 @@
     }
     
     if(!skipHistory) captureState();
+  }
+
+  // ================= TÍNH NĂNG NÉN FILE ĐỘC LẬP =================
+  function updateCompressLabel() {
+    const val = parseInt(document.getElementById('compress-level').value);
+    document.getElementById('label-level-1').className = val === 1 ? 'text-primary' : '';
+    document.getElementById('label-level-2').className = val === 2 ? 'text-primary' : '';
+    document.getElementById('label-level-3').className = val === 3 ? 'text-primary' : '';
+    
+    let desc = "";
+    if(val === 1) desc = "Mức Tiêu chuẩn: Nén thông minh bằng thư viện, giữ nguyên chất lượng gốc, cho phép copy chữ.";
+    if(val === 2) desc = "Mức Trung bình: Chuyển đổi các trang thành ảnh chất lượng cao để giảm dung lượng, văn bản sẽ không thể copy.";
+    if(val === 3) desc = "Mức Siêu nén: Ép hình ảnh xuống chất lượng trung bình, file sẽ rất nhẹ (Không thể copy chữ).";
+    document.getElementById('compress-desc-text').innerText = desc;
+  }
+
+  async function executeCompressFile() {
+    const fileInput = document.getElementById('compress-file-input');
+    if(!fileInput.files.length) return alert("Vui lòng chọn file PDF để nén!");
+    
+    const file = fileInput.files[0];
+    const level = parseInt(document.getElementById('compress-level').value);
+
+    const modalInstance = bootstrap.Modal.getInstance(document.getElementById('compressModal'));
+    if(modalInstance) modalInstance.hide();
+    
+    showLoader("Đang nén file... Vui lòng đợi.");
+
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        let finalBytes;
+
+        if (level === 1) {
+            // Nén tiêu chuẩn bằng cách load và save lại (PDFLib tự remove object thừa)
+            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+            finalBytes = await pdfDoc.save();
+        } else {
+            // Nén ảnh hóa (Rasterize)
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+            const pdfJsDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const imgPdf = await PDFLib.PDFDocument.create();
+
+            let scale = level === 2 ? 1.5 : 1.0;
+            let imgQuality = level === 2 ? 0.7 : 0.4;
+
+            for (let i = 1; i <= pdfJsDoc.numPages; i++) {
+                const page = await pdfJsDoc.getPage(i);
+                const viewport = page.getViewport({ scale: scale });
+                const canvas = document.createElement('canvas');
+                canvas.width = viewport.width; canvas.height = viewport.height;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+
+                const imgData = canvas.toDataURL('image/jpeg', imgQuality);
+                const embedImg = await imgPdf.embedJpg(imgData.split(',')[1]);
+                const newPage = imgPdf.addPage([viewport.width, viewport.height]);
+                newPage.drawImage(embedImg, { x: 0, y: 0, width: viewport.width, height: viewport.height });
+            }
+            finalBytes = await imgPdf.save({ useObjectStreams: true });
+        }
+
+        triggerDownload(new Blob([finalBytes], { type: "application/pdf" }), `Nen_${file.name}`);
+    } catch (e) {
+        alert("Lỗi khi nén file: " + e.message);
+    }
+    
+    hideLoader();
+    fileInput.value = "";
+  }
+
+
+  // ================= LOGIC GỘP EXCEL =================
+  async function executeMergeExcel() {
+    const files = document.getElementById('merge-excel-input').files;
+    if (files.length === 0) return;
+    const startRow = parseInt(document.getElementById('merge-start-row').value) || 2;
+    let combinedData = [];
+
+    const modalEl = document.getElementById('mergeExcelModal');
+    const modalInstance = bootstrap.Modal.getInstance(modalEl);
+    if (modalInstance) modalInstance.hide();
+
+    showLoader(t('loading_merge_excel'));
+
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data);
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        if (i === 0) {
+          combinedData = combinedData.concat(jsonData); 
+        } else {
+          const rowsToSkip = startRow - 1;
+          if (jsonData.length > rowsToSkip) {
+             combinedData = combinedData.concat(jsonData.slice(rowsToSkip));
+          }
+        }
+      }
+
+      const newWs = XLSX.utils.aoa_to_sheet(combinedData);
+      const newWb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(newWb, newWs, "MergedData");
+      const wbout = XLSX.write(newWb, {bookType:'xlsx', type:'array'});
+      const blob = new Blob([wbout], {type:"application/octet-stream"});
+      triggerDownload(blob, `Merged_Excel_${new Date().getTime()}.xlsx`);
+    } catch (err) { alert(t('alert_merge_error') + err); }
+    hideLoader();
+  }
+
+  // ================= LOGIC XỬ LÝ PDF =================
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+  lucide.createIcons();
+
+  let workspacePages = [];
+  let pdfJsCache = {}; 
+  let fileIdCounter = 0; 
+  let activeElement = null; 
+  let isEditMode = false;
+  const pageContainer = document.getElementById('page-container');
+  const sidebarGrid = document.getElementById('sidebar-page-grid');
+
+  const AI_KEYS = [
+    'AIzaSyAAq_-gH4tHwMNIuEane7VIOGusmiemgNE','AIzaSyDqZ-mdwZBf4WKwu_x5FrNhtY-hd4Ck-po','AIzaSyBp_lGA-dul6o0_LmE7S8FEA8lStoIfEwI',
+    'AIzaSyASdMGtDEj1vMHns38cNYFI3NsiIA2I89w','AIzaSyCDkgQmmE0pA2KpJWBiKFr_30jljTdGplE','AIzaSyACAS-8RvCmHHvl9PMDpqlXJLEyOkSywNE',
+    'AIzaSyD4cLcgUas4atpyCzRKJ4JxB0KFvLdmfX4','AIzaSyB1m3ivO9pWiO28ZAMhRd8vDaNVllOXIyQ','AIzaSyAU5PMX11swuXI68QZ2mD-uUygf8bZE35U',
+    'AIzaSyDxP9_bLZIZUrI5xfnFip566d1MBZCrB88','AIzaSyC90dM6U9i7rlWoM8bN8xbTX5tdSAJxBHw','AIzaSyDRyvuBU02LjFD5K52jeVwMtkgUl6459z4',
+    'AIzaSyC1zejl9G4dvpUbtNXuOf5dY2kW7RYg2sE','AIzaSyByzbyqFlWP5Xqd_VPSNU6g8kbsczK1b_o','AIzaSyAjEOTvSpWmTRHLI893Su30z36PQVgxiWk',
+    'AIzaSyDM0ElPi08JiCfy847hcbfP5nSjHz5cxDg','AIzaSyB5XZgSgsqXog90ap2vbn4dicdTWKN6BWY','AIzaSyClEk34xSnr097HEMYjFXLISNZg5bjWDDE',
+    'AIzaSyDpEACEryMqFQdERS6To2rftO1pEJnOQAY','AIzaSyBy4RhNdBNm4i6xPYhXb2ewnRJsSJEMv7o','AIzaSyDO1UvO1lSdoUEvtIav09oSR3HcjSjrGRE',
+    'AIzaSyCaMpBxtUOKEfSwc9rSln7wnBolJpl5QIw','AIzaSyB1UCJAaeWVIxM7JaT9INM--BbziZSO48c','AIzaSyAtf5qZqBXivqnPk4KqTyC-cIN34fmlCBY',
+    'AIzaSyAThuS2PIRHCezg9xx01F4W9EKzSoZe9O0','AIzaSyAvzKNixyYWvp7Yckj4USUvF5oUjGaFKFo','AIzaSyCsoeczCwoq5sWoSQ-YQdAxDdl9S0Dogms',
+    'AIzaSyDS0UIbcDZlYckogaJ3Em-i6igcZ2_fQJ0','AIzaSyDLWRVI6gUE1CmAVNBalIayrMCYvlYQCk0','AIzaSyAKLz7rNcTjs-te-Sk3cMwkNwB9tkJCc-Y'
+  ];
+  let currentAiKeyIdx = Math.floor(Math.random() * AI_KEYS.length);
+
+  const fontUrls = {
+    'Arial': { reg: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Regular.ttf', bold: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Medium.ttf', ita: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-Italic.ttf', boldIta: 'https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/fonts/Roboto/Roboto-MediumItalic.ttf' },
+    'Times New Roman': { reg: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/lora/Lora-Regular.ttf', bold: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/lora/Lora-Bold.ttf', ita: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/lora/Lora-Italic.ttf', boldIta: 'https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/lora/Lora-BoldItalic.ttf' }
+  };
+
+  const fileInput = document.getElementById('file-input');
+  const dropZone = document.getElementById('drop-zone');
+  const mainEmptyState = document.getElementById('main-empty-state');
+  const loader = document.getElementById('loader');
+
+  document.getElementById('export-format').addEventListener('change', function() { document.getElementById('quality-box').style.display = (this.value === 'pdf') ? 'block' : 'none'; });
+  document.getElementById('export-quality').addEventListener('change', function() { document.getElementById('extreme-warning').style.display = this.value === 'extreme' ? 'block' : 'none'; });
+
+  document.getElementById('exportModal').addEventListener('show.bs.modal', function() {
+     const selected = document.querySelectorAll('.page-selector:checked').length;
+     const total = workspacePages.length;
+     const info = document.getElementById('export-selection-info');
+     if(selected === 0 || selected === total) { info.innerHTML = `<i data-lucide="info" size="18" class="me-2 text-primary"></i> ${t('export_info_all')}`; } 
+     else { info.innerHTML = `<i data-lucide="info" size="18" class="me-2 text-primary"></i> ${t('export_info_selected').replace('{count}', selected)}`; }
+     lucide.createIcons();
+  });
+
+  function selectAllPages() {
+    const boxes = document.querySelectorAll('.page-selector');
+    const allChecked = Array.from(boxes).every(b => b.checked);
+    boxes.forEach(b => b.checked = !allChecked);
+  }
+
+  function checkEmptyState() {
+    if (workspacePages.length === 0) {
+      mainEmptyState.style.display = 'flex';
+      pageContainer.style.display = 'none';
+      if (!document.getElementById('empty-grid-msg')) {
+        sidebarGrid.innerHTML = `<div class="text-muted small fst-italic w-100" id="empty-grid-msg">${t('empty_grid')}</div>`;
+      }
+    } else {
+      mainEmptyState.style.display = 'none';
+      pageContainer.style.display = ''; 
+      const emptyMsg = document.getElementById('empty-grid-msg');
+      if (emptyMsg) emptyMsg.remove();
+    }
+  }
+
+  let sortMain, sortSide;
+  function initSortables() {
+    if(sortMain) sortMain.destroy();
+    if(sortSide) sortSide.destroy();
+    sortMain = new Sortable(pageContainer, { 
+      animation: 150, 
+      ghostClass: 'sortable-ghost', 
+      handle: '.canvas-wrapper', 
+      disabled: isEditMode, 
+      scroll: true, 
+      scrollSensitivity: 100, 
+      scrollSpeed: 20,
+      forceFallback: true, 
+      fallbackTolerance: 3,
+      onEnd: (e) => { syncOrder(e, 'main'); captureState(); }
+    });
+    sortSide = new Sortable(sidebarGrid, { 
+      animation: 150, 
+      scroll: true,
+      forceFallback: true,
+      onEnd: (e) => { syncOrder(e, 'side'); captureState(); }
+    });
+  }
+  
+  function syncOrder(evt, source) {
+    const oldIdx = evt.oldIndex;
+    const newIdx = evt.newIndex;
+    if (oldIdx === newIdx) return;
+    const item = workspacePages.splice(oldIdx, 1)[0];
+    workspacePages.splice(newIdx, 0, item);
+    if (source === 'main') {
+      const sideEl = sidebarGrid.children[oldIdx];
+      const refNode = newIdx < oldIdx ? sidebarGrid.children[newIdx] : sidebarGrid.children[newIdx + 1];
+      sidebarGrid.insertBefore(sideEl, refNode || null);
+    } else {
+      const mainEl = pageContainer.children[oldIdx];
+      const refNode = newIdx < oldIdx ? pageContainer.children[newIdx] : pageContainer.children[newIdx + 1];
+      pageContainer.insertBefore(mainEl, refNode || null);
+    }
+    updatePageLabels();
+  }
+
+  function updatePageLabels() {
+    Array.from(pageContainer.children).forEach((card, i) => { const badge = card.querySelector('.badge-count'); if(badge) badge.innerText = `${t('page_label')} ${i + 1}`; });
+    Array.from(sidebarGrid.children).forEach((item, i) => { const label = item.querySelector('.side-page-label'); if(label) label.innerText = `${t('page_label')} ${i + 1}`; });
+  }
+
+  dropZone.onclick = () => fileInput.click();
+  fileInput.onchange = (e) => handleFiles(e.target.files);
+
+  function toBase64WithProgress(f, onProgress) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      if(onProgress) r.onprogress = (e) => { if(e.lengthComputable) onProgress(e.loaded / e.total); };
+      r.onload=()=>res(r.result);
+      r.onerror=(e)=>rej(e);
+      r.readAsDataURL(f);
+    });
+  }
+
+  async function handleFiles(files) {
+    if (files.length === 0) return;
+    
+    isUploadingData = true; 
+    const toast = document.getElementById('upload-toast');
+    toast.style.display = 'block';
+    const pBar = document.getElementById('upload-progress-bar');
+    const pDesc = document.getElementById('toast-desc');
+    
+    let newPages = [];
+    
+    for (let fIdx = 0; fIdx < files.length; fIdx++) {
+      let file = files[fIdx];
+      let basePct = (fIdx / files.length) * 100;
+      pDesc.innerText = `Đang đọc: ${file.name} (${Math.round(basePct)}%)`;
+      pBar.style.width = basePct + '%';
+      
+      try {
+        const mime = file.type || getMime(file.name);
+        const base64Data = await toBase64WithProgress(file, (pct) => {
+           let realPct = basePct + ((pct * 100) / files.length);
+           pBar.style.width = realPct + '%';
+           pDesc.innerText = `Đang tải lên: ${file.name} (${Math.round(realPct)}%)`;
+        });
+
+        let finalPdfBase64 = "";
+
+        if (mime === 'application/pdf') {
+          finalPdfBase64 = base64Data.split(',')[1];
+          pDesc.innerText = `Đang xử lý PDF: ${file.name} (${Math.round(basePct + (100/files.length))}%)`;
+        } 
+        else if (mime.startsWith('image/')) {
+          pDesc.innerText = `Đang xử lý ảnh: ${file.name} (${Math.round(basePct + (100/files.length))}%)`;
+          const imgPdfDoc = await PDFLib.PDFDocument.create();
+          const imgRawBase64 = base64Data.split(',')[1];
+          const imgBytes = base64ToUint8Array(imgRawBase64);
+          
+          let embeddedImg;
+          if (mime.includes('png')) embeddedImg = await imgPdfDoc.embedPng(imgBytes);
+          else embeddedImg = await imgPdfDoc.embedJpg(imgBytes);
+          
+          const dims = embeddedImg.scale(1);
+          const newPage = imgPdfDoc.addPage([dims.width, dims.height]);
+          newPage.drawImage(embeddedImg, { x: 0, y: 0, width: dims.width, height: dims.height });
+          finalPdfBase64 = await imgPdfDoc.saveAsBase64();
+        } 
+        else {
+          pDesc.innerText = `Server đang chuyển đổi: ${file.name} (${Math.round(basePct + (100/files.length))}%)`;
+          const res = await callGasApi({
+              action: 'convertFileToPdf',
+              base64Data: base64Data,
+              fileName: file.name,
+              mimeType: mime
+          });
+          finalPdfBase64 = res.base64;
+        }
+
+        const currentDocId = "doc_" + (fileIdCounter++);
+        window.fileStorage[currentDocId] = finalPdfBase64; // LƯU VÀO KHO TOÀN CỤC CHỐNG LỖI MEMORY
+
+        const pdfDoc = await PDFLib.PDFDocument.load(finalPdfBase64);
+        for (let i = 0; i < pdfDoc.getPageCount(); i++) {
+          const item = { id: generateId(), docId: currentDocId, pageIndex: i, rotation: 0 }; // KHÔNG CHỨA BASE64 NỮA
+          workspacePages.push(item);
+          newPages.push(item);
+        }
+        
+        const fileList = document.getElementById('loaded-files-list');
+        if(fileList.innerHTML.includes(t('empty_files')) || fileList.innerHTML.includes('Chưa có')) fileList.innerHTML = '';
+        fileList.innerHTML += `<div class="file-badge"><i data-lucide="file-check-2" size="18" class="me-2" style="color:var(--brand-blue)"></i> <span class="text-truncate">${file.name}</span></div>`;
+      } catch (err) { alert(`Lỗi với file ${file.name}: ${err}`); }
+      
+      await new Promise(r => setTimeout(r, 0));
+    }
+    
+    pDesc.innerText = `Đang vẽ lên màn hình...`;
+    pBar.style.width = '95%';
+    
+    if(newPages.length > 0) {
+        await appendPagesToWorkspace(newPages);
+        captureState();
+    }
+    
+    pBar.style.width = '100%';
+    pDesc.innerText = `Hoàn tất!`;
+    setTimeout(() => { toast.style.display = 'none'; }, 2000);
+    
+    isUploadingData = false;
+    checkEmptyState(); 
+  }
+
+  const imageUpload = document.getElementById('image-upload');
+  const imageGallery = document.getElementById('image-gallery');
+  imageUpload.onchange = async (e) => {
+    if (!e.target.files.length) return;
+    const base64 = await toBase64WithProgress(e.target.files[0], null);
+    const img = document.createElement('img');
+    img.src = base64; img.className = 'uploaded-img-thumb shadow-sm'; img.draggable = true;
+    img.ondragstart = (e) => { 
+        window.isInternalDrag = true;
+        e.dataTransfer.setData('text/plain', base64); 
+        e.dataTransfer.effectAllowed = 'copy'; 
+    };
+    img.ondragend = (e) => { window.isInternalDrag = false; };
+    
+    img.addEventListener('touchstart', (e) => { 
+        img.dataset.dragBase64 = base64; 
+        e.target.style.opacity = '0.5';
+    }, {passive:true});
+    img.addEventListener('touchend', (e) => { e.target.style.opacity = '1'; }, {passive:true});
+
+    imageGallery.appendChild(img);
+    imageUpload.value = '';
+  };
+
+  function base64ToUint8Array(b64) {
+    const raw = window.atob(b64.replace(/\s/g, ''));
+    const arr = new Uint8Array(new ArrayBuffer(raw.length));
+    for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i); 
+    return arr;
+  }
+  function uint8ToBase64(u8Arr) {
+    let CHUNK_SIZE = 0x8000, index = 0, length = u8Arr.length, result = '', slice;
+    while (index < length) {
+      slice = u8Arr.subarray(index, Math.min(index + CHUNK_SIZE, length));
+      result += String.fromCharCode.apply(null, slice);
+      index += CHUNK_SIZE;
+    }
+    return btoa(result);
+  }
+
+  async function renderSingleCanvas(item, targetBox, scaleFactor) {
+    if (!targetBox) return;
+    const annotations = [];
+    targetBox.querySelectorAll('.text-overlay, .shape-overlay, .img-overlay').forEach(el => annotations.push(el));
+    targetBox.innerHTML = '';
+
+    if (!pdfJsCache[item.docId]) {
+       pdfJsCache[item.docId] = await pdfjsLib.getDocument({ data: base64ToUint8Array(item.body || window.fileStorage[item.docId]) }).promise;
+    }
+    const page = await pdfJsCache[item.docId].getPage(item.pageIndex + 1);
+    
+    const viewport = page.getViewport({ scale: scaleFactor, rotation: item.rotation }); 
+    const canvas = document.createElement('canvas');
+    canvas.height = viewport.height; 
+    canvas.width = viewport.width;
+    canvas.style.display = 'block';
+    
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+
+    targetBox.appendChild(canvas);
+    annotations.forEach(el => targetBox.appendChild(el));
+  }
+
+  async function appendPagesToWorkspace(newPages, isRestoring = false) {
+    for (let i = 0; i < newPages.length; i++) {
+      const item = newPages[i];
+      
+      const card = document.createElement('div');
+      card.className = "page-card"; card.id = `card-${item.id}`;
+      card.innerHTML = `
+        <div class="page-select-box">
+           <input type="checkbox" class="page-selector form-check-input shadow-sm" data-id="${item.id}">
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-primary btn-sm shadow-sm scroll-only p-1" onclick="addTextToPage('${item.id}')" title="Thêm Chữ"><i data-lucide="type" size="14"></i></button>
+            <button class="btn btn-success btn-sm shadow-sm scroll-only p-1" onclick="addShapeToPage('${item.id}')" title="Thêm Khung"><i data-lucide="square" size="14"></i></button>
+            <button class="btn btn-dark btn-sm text-white shadow-sm scroll-only p-1" onclick="openScanModal('${item.id}')" title="Làm Phẳng/Cắt"><i data-lucide="scan" size="14"></i></button>
+            <button class="btn btn-info btn-sm text-white shadow-sm scroll-only p-1" style="background-color: #0ea5e9; border-color: #0ea5e9;" onclick="runAiOcr('${item.id}')" title="Đọc chữ bằng AI"><i data-lucide="cpu" size="14"></i></button>
+            <div class="vr mx-1 scroll-only" style="background-color: var(--border-color);"></div>
+            <button class="btn btn-warning btn-sm shadow-sm grid-only text-dark p-1" onclick="enterEditMode('${item.id}')" title="${t('btn_edit')}"><i data-lucide="edit-3" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="promptMovePage('${item.id}')" title="Chuyển đến trang..."><i data-lucide="move" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-secondary shadow-sm p-1" onclick="duplicatePage('${item.id}')" title="Nhân bản"><i data-lucide="copy" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageLeft('${item.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-primary shadow-sm p-1" onclick="rotatePageRight('${item.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="14"></i></button>
+            <button class="btn btn-light btn-sm text-danger shadow-sm p-1" onclick="removePage('${item.id}')" title="Xóa"><i data-lucide="trash-2" size="14"></i></button>
+        </div>
+        <div class="canvas-wrapper" id="wrapper-${item.id}">
+          <div class="pdf-page-box" id="box-${item.id}"></div>
+        </div>
+        <div class="badge mt-3 fw-bold px-3 py-2 rounded-pill shadow-sm badge-count" style="background: var(--bg-panel-alt); color: var(--text-main); border: 1px solid var(--border-color);">${t('page_label')} X</div>
+      `;
+      pageContainer.appendChild(card);
+      
+      let cScale = window.innerWidth < 768 ? 1.0 : 1.5;
+      await renderSingleCanvas(item, document.getElementById(`box-${item.id}`), cScale);
+      setupDropZoneForPage(document.getElementById(`box-${item.id}`));
+      
+      const sideCard = document.createElement('div');
+      sideCard.className = "side-page-item"; sideCard.id = `side-${item.id}`;
+      sideCard.onclick = (e) => {
+          if(!e.target.closest('.side-page-actions')) scrollToPage(item.id);
+      };
+      sideCard.innerHTML = `
+        <div class="side-page-actions">
+           <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageLeft('${item.id}')" title="Xoay trái"><i data-lucide="rotate-ccw" size="13"></i></button>
+           <button class="btn btn-light border p-0 text-primary" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); rotatePageRight('${item.id}')" title="Xoay phải"><i data-lucide="rotate-cw" size="13"></i></button>
+           <button class="btn btn-light border p-0 text-danger" style="width:24px; height:24px; border-radius: 4px;" onclick="event.stopPropagation(); removePage('${item.id}')" title="Xóa"><i data-lucide="trash-2" size="13"></i></button>
+        </div>
+        <div class="side-canvas-wrapper" id="side-box-${item.id}"></div>
+        <div class="side-page-label">${t('page_label')} X</div>
+      `;
+      sidebarGrid.appendChild(sideCard);
+      await renderSingleCanvas(item, document.getElementById(`side-box-${item.id}`), 0.3);
+      
+      if (!isRestoring && i % 10 === 0) await new Promise(r => requestAnimationFrame(r)); 
+    }
+    
+    updatePageLabels();
+    initSortables();
+    lucide.createIcons();
+    if(isEditMode) {
+      document.querySelectorAll('.page-actions').forEach(el => el.style.display = 'flex');
+      document.querySelectorAll('.page-select-box').forEach(el => el.style.display = 'none');
+    }
   }
 
   function promptMovePage(pageId) {
@@ -1433,12 +1631,20 @@
       const mainBox = document.getElementById(`box-${item.id}`);
       const sideBox = document.getElementById(`side-box-${item.id}`);
       
-      item.rotation = (item.rotation + angle + 360) % 360;
-      
-      if (mainBox) { mainBox.dataset.renderedRotation = ""; pageObserver.observe(mainBox); }
-      if (sideBox) { sideBox.dataset.renderedRotation = ""; pageObserver.observe(sideBox); }
-      
-      if(!skipHistory) captureState();
+      if (mainBox) mainBox.style.opacity = '0.5';
+      if (sideBox) sideBox.style.opacity = '0.5';
+
+      setTimeout(async () => {
+        item.rotation = (item.rotation + angle + 360) % 360;
+        let cScale = window.innerWidth < 768 ? 1.0 : 1.5;
+        await renderSingleCanvas(item, mainBox, cScale);
+        await renderSingleCanvas(item, sideBox, 0.3);
+        
+        if (mainBox) mainBox.style.opacity = '1';
+        if (sideBox) sideBox.style.opacity = '1';
+        
+        if(!skipHistory) captureState();
+      }, 10);
     }
   }
 
@@ -1451,7 +1657,9 @@
       if (s) { s.style.opacity = '0'; }
 
       setTimeout(() => {
+        const p = workspacePages[idx];
         workspacePages.splice(idx, 1);
+        if (!workspacePages.some(x => x.docId === p.docId)) { delete pdfJsCache[p.docId]; }
         if(c) c.remove();
         if(s) s.remove();
         updatePageLabels();
@@ -1466,13 +1674,8 @@
     showLoader(t('loader_processing'));
 
     setTimeout(() => {
-        workspacePages = []; 
-        pdfJsCache = {}; 
-        globalDocStore = {}; // XÓA SẠCH RAM
-        fileIdCounter = 0; 
-        activeElement = null;
-        historyStack = []; 
-        historyIndex = -1;
+        workspacePages = []; pdfJsCache = {}; window.fileStorage = {}; fileIdCounter = 0; activeElement = null;
+        historyStack = []; historyIndex = -1;
         pageContainer.innerHTML = ''; 
         sidebarGrid.innerHTML = '';
         document.getElementById('loaded-files-list').innerHTML = `<div class="text-muted small fst-italic">${t('empty_files')}</div>`;
@@ -1495,7 +1698,7 @@
       const base64 = e.dataTransfer.getData('text/plain');
       if(!base64 || !base64.startsWith('data:image')) return;
       
-      const pageId = box.dataset.pageId || box.id.replace('box-', '');
+      const pageId = box.id.replace('box-', '');
       if(!isEditMode) enterEditMode(pageId); 
 
       const rect = box.getBoundingClientRect();
@@ -1746,7 +1949,7 @@
     const text = document.getElementById('ai-result-text'); text.select(); text.setSelectionRange(0, 99999); document.execCommand("copy"); alert(t('alert_ai_copied'));
   }
 
-  // ================= CĂN CHỈNH & LÀM PHẲNG ================= //
+  // ================= CĂN CHỈNH & LÀM PHẲNG (TAPSCANNER STYLE) TỐI ƯU ================= //
   let scanMatOrigin = null; let scanMatDisplay = null; let scanMatOriginalBackup = null;
   let scanPoints = [{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}];
   let currentScanPageId = null;
@@ -1777,7 +1980,7 @@
       try {
         const item = workspacePages.find(p => p.id === pageId);
         if (!pdfJsCache[item.docId]) {
-           pdfJsCache[item.docId] = await pdfjsLib.getDocument({ data: base64ToUint8Array(globalDocStore[item.docId]) }).promise;
+           pdfJsCache[item.docId] = await pdfjsLib.getDocument({ data: base64ToUint8Array(item.body || window.fileStorage[item.docId]) }).promise;
         }
         const page = await pdfJsCache[item.docId].getPage(item.pageIndex + 1);
         
@@ -1982,19 +2185,19 @@
         newPage.drawImage(embeddedImg, { x: 0, y: 0, width: tW, height: tH });
         const finalPdfBase64 = await imgPdfDoc.saveAsBase64();
         
-        // Lưu PDF mới do scan tạo ra vào bộ nhớ lõi
-        const newDocId = "scan_" + generateId();
-        globalDocStore[newDocId] = finalPdfBase64;
-        
         delete pdfJsCache[workspacePages[itemIdx].docId]; 
+        
+        const newDocId = "scan_" + generateId();
+        window.fileStorage[newDocId] = finalPdfBase64; // UPDATE VÀO KHO TOÀN CỤC
+
         workspacePages[itemIdx].docId = newDocId;
+        workspacePages[itemIdx].body = undefined;
         workspacePages[itemIdx].rotation = 0; 
         workspacePages[itemIdx].pageIndex = 0; 
         
-        const mainBox = document.getElementById(`box-${currentScanPageId}`);
-        const sideBox = document.getElementById(`side-box-${currentScanPageId}`);
-        if(mainBox) { mainBox.dataset.renderedRotation = ""; pageObserver.observe(mainBox); }
-        if(sideBox) { sideBox.dataset.renderedRotation = ""; pageObserver.observe(sideBox); }
+        let cScale = window.innerWidth < 768 ? 1.0 : 1.5;
+        await renderSingleCanvas(workspacePages[itemIdx], document.getElementById(`box-${currentScanPageId}`), cScale);
+        await renderSingleCanvas(workspacePages[itemIdx], document.getElementById(`side-box-${currentScanPageId}`), 0.3);
       } catch (err) {
         alert("Có lỗi xảy ra khi lưu: " + err.message);
       } finally {
@@ -2026,7 +2229,7 @@
 
     for (let index = 0; index < pagesToProcess.length; index++) {
       const item = pagesToProcess[index];
-      if (!pdfLibCache[item.docId]) pdfLibCache[item.docId] = await PDFLib.PDFDocument.load(globalDocStore[item.docId], { ignoreEncryption: true });
+      if (!pdfLibCache[item.docId]) pdfLibCache[item.docId] = await PDFLib.PDFDocument.load(window.fileStorage[item.docId]);
       
       const srcDoc = pdfLibCache[item.docId];
       const srcPage = srcDoc.getPage(item.pageIndex);
