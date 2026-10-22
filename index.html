@@ -19,7 +19,7 @@
     <script>
         (function() {
             try {
-                var cached = localStorage.getItem("studybee_config_cache_v5");
+                var cached = localStorage.getItem("studybee_config_cache_v6");
                 if (cached) {
                     var cfg = JSON.parse(cached);
                     if (cfg.favicon && !cfg.favicon.includes("3135715.png")) {
@@ -250,6 +250,7 @@
             <button type="button" onmousedown="event.preventDefault(); formatDoc('insertUnorderedList')" class="w-8 h-8 rounded hover:bg-gray-700" title="Danh sách chấm tròn"><i class="fa fa-list-ul"></i></button>
             <button type="button" onmousedown="event.preventDefault(); formatDoc('removeFormat')" class="w-8 h-8 rounded hover:bg-gray-700 text-red-400" title="Xóa nền trắng / Xóa định dạng lỗi"><i class="fa fa-eraser"></i></button>
             <input type="color" onchange="formatDoc('foreColor', this.value)" class="w-7 h-7 rounded cursor-pointer bg-transparent border-0" title="Đổi màu chữ đang bôi đen">
+            <span id="syncStatusIndicator" class="text-[11px] text-emerald-400 font-bold ml-2 hidden"><i class="fa fa-check-circle"></i> Đã đồng bộ</span>
         </div>
 
         <div class="flex flex-wrap gap-2">
@@ -309,7 +310,7 @@
                 <script>
                     (function() {
                         try {
-                            var cached = localStorage.getItem("studybee_config_cache_v5");
+                            var cached = localStorage.getItem("studybee_config_cache_v6");
                             if (cached) {
                                 var cfg = JSON.parse(cached);
                                 if (cfg.logo && !cfg.logo.includes("3135715.png")) {
@@ -1304,7 +1305,7 @@
             <div class="p-4 bg-white border-t flex justify-end gap-3">
                 <button type="button" onclick="closeCropperModal()" class="px-5 py-2.5 border rounded-lg font-bold text-gray-600">Hủy</button>
                 <button type="button" id="confirmCropUploadBtn" onclick="executeCropAndUpload()" class="bg-green-600 text-white font-bold px-6 py-2.5 rounded-lg hover:bg-green-700 shadow-lg flex items-center gap-2">
-                    <i class="fa fa-crop"></i> Cắt ảnh & Tải lên Google Drive
+                    <i class="fa fa-crop"></i> Cắt ảnh & Đồng bộ lên Web
                 </button>
             </div>
         </div>
@@ -1469,10 +1470,10 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
-    <!-- LOGIC XỬ LÝ CHÍNH -->
+    <!-- LOGIC XỬ LÝ CHÍNH & ĐỒNG BỘ ĐA TRÌNH DUYỆT -->
     <script>
-        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxc6kWDCQkU9IkcO2Ft_yqa36VtchHC6XikaFLm0vOGnHp6cAyHT0YOd9Q_pAkzQzyuLA/exec";
-        const CONFIG_CACHE_KEY = "studybee_config_cache_v5";
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzy58U2WyTgO8Pia0JxVPLeAzEKV1yTsqAv2JDZQ8JSxA-OxNFqAfo_fGFhA5b-L7_x6w/exec";
+        const CONFIG_CACHE_KEY = "studybee_config_cache_v6";
 
         const DEFAULT_BEE_FAVICON = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230c389b'/><circle cx='50' cy='50' r='30' fill='%23facc15'/><path d='M30 42h40M28 52h44M34 62h32' stroke='%230c389b' stroke-width='6' stroke-linecap='round'/><text x='50' y='88' font-family='Arial' font-weight='900' font-size='14' fill='%23ffffff' text-anchor='middle'>STUDY BEE</text></svg>";
         const DEFAULT_BEE_LOGO = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 360 100'><rect width='84' height='84' x='8' y='8' rx='20' fill='%230c389b'/><circle cx='50' cy='50' r='26' fill='%23facc15'/><path d='M32 42h36M30 50h40M35 58h30' stroke='%230c389b' stroke-width='5' stroke-linecap='round'/><text x='108' y='48' font-family='Montserrat,Arial,sans-serif' font-weight='900' font-size='30' fill='%230c389b'>STUDY BEE</text><text x='108' y='78' font-family='Montserrat,Arial,sans-serif' font-weight='700' font-size='20' fill='%23eab308' letter-spacing='3'>ENGLISH</text></svg>";
@@ -1564,6 +1565,7 @@
         let adminUsersList = [];
         let adminLeadsList = [];
         let lastSearchMatchedItems = [];
+        let activeSubPageIndices = { parentIdx: null, childIdx: null };
 
         let bannerSwiperInstance = null;
         let eventSwiperInstance = null;
@@ -1587,6 +1589,11 @@
 
         function formatDoc(cmd, value = null) {
             document.execCommand(cmd, false, value);
+            // Kích hoạt sự kiện input trên phần tử đang focus để đảm bảo dữ liệu định dạng chữ được ghi nhận
+            const activeEl = document.activeElement;
+            if (activeEl && activeEl.classList.contains('editable')) {
+                activeEl.dispatchEvent(new Event('input', { bubbles: true }));
+            }
         }
 
         function stripHtmlTags(str) {
@@ -1619,7 +1626,6 @@
             return (match && match[1]) ? match[1] : "";
         }
 
-        // Render danh sách mã vùng điện thoại quốc tế xếp theo ABC, mặc định chọn Việt Nam (+84)
         function initCountryCodesDropdown() {
             const selectEl = document.getElementById('f_country_code');
             if (!selectEl) return;
@@ -1633,7 +1639,7 @@
             });
         }
 
-        // Lọc bỏ hoàn toàn dữ liệu EEC cũ và giữ nguyên chữ thường cho email studybeeenglishadmin01@gmail.com
+        // Lọc bỏ dữ liệu EEC cũ NHƯNG TUYỆT ĐỐI KHÔNG GHI ĐÈ lên dữ liệu mới mà Admin đã tùy chỉnh
         function sanitizeLegacyEECData(cfg) {
             if (!cfg || typeof cfg !== 'object') return;
 
@@ -1665,16 +1671,12 @@
                 cfg.logo = DEFAULT_BEE_LOGO;
             }
 
-            cfg.footerCol1Title = "VỀ STUDY BEE ENGLISH";
-            cfg.footerCol2Title = "THÔNG TIN ĐƠN VỊ";
-            cfg.footerCompanyName = stripWhiteBackgroundHtml(cfg.footerCompanyName || "HỘ KINH DOANH GIẢNG DẠY NGOẠI NGỮ STUDY BEE ENGLISH");
-            cfg.footerMsdn = stripWhiteBackgroundHtml(cfg.footerMsdn || "Mã số thuế: 087199003168");
-            cfg.footerAddress = stripWhiteBackgroundHtml(cfg.footerAddress || "Địa chỉ: Ấp Trung Tâm, Xã Thường Phước, Tỉnh Đồng Tháp, Việt Nam");
-            cfg.footerEmail = "Email: studybeeenglishadmin01@gmail.com";
-            cfg.link_email = "studybeeenglishadmin01@gmail.com";
-            if (!cfg.email_cc || cfg.email_cc.toLowerCase().includes("eec") || cfg.email_cc.includes("STUDY BEE ENGLISH")) {
-                cfg.email_cc = "studybeeenglishadmin01@gmail.com";
-            }
+            // Chỉ làm sạch nền trắng chữ ở Footer chứ không ép cứng lại văn bản mặc định
+            if (cfg.footerCompanyName) cfg.footerCompanyName = stripWhiteBackgroundHtml(cfg.footerCompanyName);
+            if (cfg.footerMsdn) cfg.footerMsdn = stripWhiteBackgroundHtml(cfg.footerMsdn);
+            if (cfg.footerAddress) cfg.footerAddress = stripWhiteBackgroundHtml(cfg.footerAddress);
+            if (cfg.footerPhone) cfg.footerPhone = stripWhiteBackgroundHtml(cfg.footerPhone);
+            if (cfg.footerEmail) cfg.footerEmail = stripWhiteBackgroundHtml(cfg.footerEmail);
         }
 
         function initDefaultDataIfEmpty() {
@@ -1765,16 +1767,10 @@
                     { id: "m6", title: "Thư viện", type: "link", link: "#tin-tuc", content: "", children: [] }
                 ];
             } else {
+                // Chỉ chuyển hướng các mục cũ nếu vẫn đang trỏ tới anchor cũ #tai-sao hoặc #giang-vien
                 menuArray.forEach(m => {
-                    const lowerTitle = String(m.title || "").toLowerCase();
-                    if (lowerTitle.includes("về ") || lowerTitle.includes("giới thiệu")) {
-                        m.title = "Về chúng tôi";
-                        m.type = "about";
-                    }
-                    if (lowerTitle.includes("giáo viên") || lowerTitle.includes("giảng viên")) {
-                        m.title = "Đội ngũ giáo viên";
-                        m.type = "teachers";
-                    }
+                    if (m.type === "link" && m.link === "#tai-sao") m.type = "about";
+                    if (m.type === "link" && m.link === "#giang-vien") m.type = "teachers";
                 });
             }
 
@@ -2063,7 +2059,7 @@
             try { checkAuth(); } catch(e) { console.error("checkAuth err:", e); }
         }
 
-        // 1. Tải cấu hình
+        // 1. Tải cấu hình (Thêm ?t=Date.now() và cache: 'no-store' để mọi trình duyệt mới luôn nhận được dữ liệu mới nhất)
         async function loadConfig() {
             initCountryCodesDropdown();
 
@@ -2081,7 +2077,7 @@
             renderAllSectionsSafely();
 
             try {
-                let res = await fetch(APPS_SCRIPT_URL);
+                let res = await fetch(APPS_SCRIPT_URL + "?t=" + Date.now(), { cache: "no-store" });
                 if (!res.ok) throw new Error("Network error");
                 const rawConfig = await res.json();
                 
@@ -2104,7 +2100,7 @@
             }
         }
 
-        // 2. Áp dụng cấu hình chung & Thẻ Meta Open Graph (Preview khi gửi link) lên DOM
+        // 2. Áp dụng cấu hình chung & Thẻ Meta Open Graph lên DOM
         function applyConfigToDOM() {
             const color = String(currentConfig.primaryColor || "#0c389b");
             document.documentElement.style.setProperty('--primary-color', color);
@@ -2263,7 +2259,7 @@
             studentTypesArray = studentTypesArray.map(s => String(s || "").trim()).filter(Boolean);
             syncStudentTypesDropdown();
             document.getElementById('studentTypesModal').classList.add('hidden');
-            await saveAllToGoogleSheet();
+            await saveAllToGoogleSheet(true);
         }
 
         // =========================================================================
@@ -2416,6 +2412,7 @@
 
         // 3. Chuyển đổi giữa các trang
         function hideAllMainViews() {
+            harvestAllLiveDomEdits();
             document.getElementById('homePageView').classList.add('hidden');
             document.getElementById('subPageView').classList.add('hidden');
             document.getElementById('aboutPageView').classList.add('hidden');
@@ -2424,11 +2421,13 @@
 
         function showHomePage() {
             hideAllMainViews();
+            activeSubPageIndices = { parentIdx: null, childIdx: null };
             document.getElementById('homePageView').classList.remove('hidden');
         }
 
         function openAboutPageView() {
             hideAllMainViews();
+            activeSubPageIndices = { parentIdx: null, childIdx: null };
             renderAboutPage();
             document.getElementById('aboutPageView').classList.remove('hidden');
             checkAuth();
@@ -2437,6 +2436,7 @@
 
         function openTeachersPageView() {
             hideAllMainViews();
+            activeSubPageIndices = { parentIdx: null, childIdx: null };
             renderTeachersPage();
             document.getElementById('teachersPageView').classList.remove('hidden');
             checkAuth();
@@ -2444,8 +2444,9 @@
         }
 
         function openSubPageView(parentIdx, childIdx) {
-            const target = childIdx !== null ? menuArray[parentIdx].children[childIdx] : menuArray[parentIdx];
             hideAllMainViews();
+            activeSubPageIndices = { parentIdx, childIdx };
+            const target = childIdx !== null ? menuArray[parentIdx].children[childIdx] : menuArray[parentIdx];
             const subView = document.getElementById('subPageView');
             const contentArea = document.getElementById('subPageContentArea');
             subView.classList.remove('hidden');
@@ -2488,8 +2489,8 @@
                                 </button>
                             </div>
                         </div>
-                        <h4 oninput="aboutPageObj.pillars[${idx}].title = this.innerHTML" class="editable font-black text-brand text-lg uppercase mb-2">${p.title}</h4>
-                        <div oninput="aboutPageObj.pillars[${idx}].desc = this.innerHTML" class="editable text-gray-700 text-sm md:text-[15px] leading-relaxed text-justify flex-1">${p.desc}</div>
+                        <h4 data-sync-group="aboutPillar" data-sync-idx="${idx}" data-sync-field="title" oninput="aboutPageObj.pillars[${idx}].title = this.innerHTML" class="editable font-black text-brand text-lg uppercase mb-2">${p.title}</h4>
+                        <div data-sync-group="aboutPillar" data-sync-idx="${idx}" data-sync-field="desc" oninput="aboutPageObj.pillars[${idx}].desc = this.innerHTML" class="editable text-gray-700 text-sm md:text-[15px] leading-relaxed text-justify flex-1">${p.desc}</div>
                     </div>
                 `);
             });
@@ -2515,10 +2516,10 @@
                                 <div class="motto-badge px-6 py-2.5 rounded">
                                     <span class="motto-pin left-3"></span>
                                     <span class="motto-pin right-3"></span>
-                                    <h3 oninput="aboutPageObj.commitments[${idx}].title = this.innerHTML" class="editable font-black text-base md:text-lg uppercase text-yellow-400">${cm.title}</h3>
+                                    <h3 data-sync-group="aboutCommit" data-sync-idx="${idx}" data-sync-field="title" oninput="aboutPageObj.commitments[${idx}].title = this.innerHTML" class="editable font-black text-base md:text-lg uppercase text-yellow-400">${cm.title}</h3>
                                 </div>
                             </div>
-                            <div oninput="aboutPageObj.commitments[${idx}].desc = this.innerHTML" class="editable text-gray-800 text-base leading-relaxed text-justify">${cm.desc}</div>
+                            <div data-sync-group="aboutCommit" data-sync-idx="${idx}" data-sync-field="desc" oninput="aboutPageObj.commitments[${idx}].desc = this.innerHTML" class="editable text-gray-800 text-base leading-relaxed text-justify">${cm.desc}</div>
                         </div>
                     </div>
                 `);
@@ -2540,8 +2541,8 @@
                         <div class="w-14 h-14 rounded-full bg-yellow-400 text-brand flex items-center justify-center mx-auto mb-4 text-2xl shadow-lg">
                             <i class="fa-solid ${idx === 0 ? 'fa-user-graduate' : (idx === 1 ? 'fa-heart' : 'fa-lightbulb')}"></i>
                         </div>
-                        <h3 oninput="teacherPageObj.highlights[${idx}].title = this.innerHTML" class="editable text-yellow-400 font-black text-lg md:text-xl uppercase mb-3">${hl.title}</h3>
-                        <div oninput="teacherPageObj.highlights[${idx}].desc = this.innerHTML" class="editable text-white/95 text-sm md:text-[15px] leading-relaxed">${hl.desc}</div>
+                        <h3 data-sync-group="teacherHighlight" data-sync-idx="${idx}" data-sync-field="title" oninput="teacherPageObj.highlights[${idx}].title = this.innerHTML" class="editable text-yellow-400 font-black text-lg md:text-xl uppercase mb-3">${hl.title}</h3>
+                        <div data-sync-group="teacherHighlight" data-sync-idx="${idx}" data-sync-field="desc" oninput="teacherPageObj.highlights[${idx}].desc = this.innerHTML" class="editable text-white/95 text-sm md:text-[15px] leading-relaxed">${hl.desc}</div>
                     </div>
                 `);
             });
@@ -2575,14 +2576,14 @@
 
                                 <div class="w-full md:w-7/12">
                                     <div class="teacher-bio-card p-6 md:p-8">
-                                        <h3 oninput="teachersArray[${idx}].name = this.innerHTML; renderTeachersSection();" class="editable text-xl md:text-2xl font-black text-brand uppercase mb-1">
+                                        <h3 data-sync-group="teacherDetail" data-sync-idx="${idx}" data-sync-field="name" oninput="teachersArray[${idx}].name = this.innerHTML; renderTeachersSection();" class="editable text-xl md:text-2xl font-black text-brand uppercase mb-1">
                                             ${t.name}
                                         </h3>
                                         <div class="flex flex-wrap items-center gap-2 mb-4 pb-3 border-b border-gray-200 text-xs font-bold text-gray-600">
-                                            <span oninput="teachersArray[${idx}].role = this.innerHTML; renderTeachersSection();" class="editable bg-blue-50 text-brand px-3 py-1 rounded-full">${t.role || 'Giảng viên STUDY BEE ENGLISH'}</span>
-                                            <span oninput="teachersArray[${idx}].exp = this.innerHTML; renderTeachersSection();" class="editable bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">${t.exp || 'Giảng viên giàu kinh nghiệm'}</span>
+                                            <span data-sync-group="teacherDetail" data-sync-idx="${idx}" data-sync-field="role" oninput="teachersArray[${idx}].role = this.innerHTML; renderTeachersSection();" class="editable bg-blue-50 text-brand px-3 py-1 rounded-full">${t.role || 'Giảng viên STUDY BEE ENGLISH'}</span>
+                                            <span data-sync-group="teacherDetail" data-sync-idx="${idx}" data-sync-field="exp" oninput="teachersArray[${idx}].exp = this.innerHTML; renderTeachersSection();" class="editable bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full">${t.exp || 'Giảng viên giàu kinh nghiệm'}</span>
                                         </div>
-                                        <div oninput="teachersArray[${idx}].bio = this.innerHTML" class="editable rich-content text-gray-800 text-sm md:text-[15px] leading-relaxed text-justify">
+                                        <div data-sync-group="teacherDetail" data-sync-idx="${idx}" data-sync-field="bio" oninput="teachersArray[${idx}].bio = this.innerHTML" class="editable rich-content text-gray-800 text-sm md:text-[15px] leading-relaxed text-justify">
                                             ${bioContent}
                                         </div>
                                     </div>
@@ -2730,7 +2731,7 @@
             await saveAllToGoogleSheet();
         }
 
-        // 5. Render Slideshow Banner Tràn Khung (Hiển thị trực tiếp ảnh, không phủ chữ)
+        // 5. Render Slideshow Banner Tràn Khung
         function renderBannersSlider() {
             if (bannerSwiperInstance) {
                 bannerSwiperInstance.destroy(true, true);
@@ -2776,29 +2777,32 @@
             });
         }
 
-        function addNewBannerSlide() {
+        async function addNewBannerSlide() {
             bannersArray.push({
                 img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1920&q=80",
                 link: "#tu-van"
             });
             renderBannersSlider();
             checkAuth();
+            await saveAllToGoogleSheet(true);
         }
 
-        function editBannerLink(idx) {
+        async function editBannerLink(idx) {
             const url = prompt("Nhập đường dẫn khi học viên bấm vào Banner này:", bannersArray[idx].link || "#tu-van");
             if (url !== null) {
                 bannersArray[idx].link = url.trim();
                 renderBannersSlider();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
-        function deleteBannerSlide(idx) {
+        async function deleteBannerSlide(idx) {
             if (confirm("Xóa Banner này?")) {
                 bannersArray.splice(idx, 1);
                 renderBannersSlider();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
@@ -2857,16 +2861,17 @@
             return true;
         }
 
-        function editEventLink(idx) {
+        async function editEventLink(idx) {
             const newUrl = prompt("Nhập đường dẫn (URL) khi bấm vào sự kiện này:", eventsArray[idx].link || "https://");
             if (newUrl !== null && newUrl.trim() !== "") {
                 eventsArray[idx].link = newUrl.trim();
                 renderEventsSlider();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
-        function addEventSlide() {
+        async function addEventSlide() {
             eventsArray.push({
                 img: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&q=80",
                 link: "#tu-van",
@@ -2874,13 +2879,15 @@
             });
             renderEventsSlider();
             checkAuth();
+            await saveAllToGoogleSheet(true);
         }
 
-        function deleteEventSlide(idx) {
+        async function deleteEventSlide(idx) {
             if (confirm("Xóa sự kiện này?")) {
                 eventsArray.splice(idx, 1);
                 renderEventsSlider();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
@@ -2896,8 +2903,8 @@
                             <i class="${item.icon}"></i>
                             <span class="admin-only hidden absolute -top-2 -right-6 bg-yellow-400 text-black text-[10px] font-bold px-1.5 py-0.5 rounded shadow">Đổi Icon</span>
                         </div>
-                        <h3 oninput="reasonsArray[${idx}].title = this.innerHTML" class="editable text-lg font-bold mb-3 text-brand">${item.title}</h3>
-                        <div oninput="reasonsArray[${idx}].desc = this.innerHTML" class="editable text-gray-700 text-sm leading-relaxed">${item.desc}</div>
+                        <h3 data-sync-group="reason" data-sync-idx="${idx}" data-sync-field="title" oninput="reasonsArray[${idx}].title = this.innerHTML" class="editable text-lg font-bold mb-3 text-brand">${item.title}</h3>
+                        <div data-sync-group="reason" data-sync-idx="${idx}" data-sync-field="desc" oninput="reasonsArray[${idx}].desc = this.innerHTML" class="editable text-gray-700 text-sm leading-relaxed">${item.desc}</div>
                     </div>
                 `);
             });
@@ -2924,13 +2931,14 @@
             });
         }
 
-        function selectReasonIcon(iconClass) {
+        async function selectReasonIcon(iconClass) {
             if (activeReasonIconIndex === null) return;
             reasonsArray[activeReasonIconIndex].icon = iconClass;
             reasonsArray[activeReasonIconIndex].color = document.getElementById('iconColorPicker').value;
             document.getElementById('iconPickerModal').classList.add('hidden');
             renderReasonsSection();
             checkAuth();
+            await saveAllToGoogleSheet(true);
         }
 
         // 8. Render KHÓA HỌC TIẾNG ANH ONLINE VIP
@@ -2971,11 +2979,11 @@
                                 <div class="motto-badge px-6 py-3 rounded">
                                     <span class="motto-pin left-3"></span>
                                     <span class="motto-pin right-3"></span>
-                                    <h3 oninput="coursesArray[${idx}].title = this.innerHTML; syncCourseDropdown();" class="editable font-black text-base md:text-lg uppercase tracking-wide text-yellow-400">${course.title}</h3>
+                                    <h3 data-sync-group="course" data-sync-idx="${idx}" data-sync-field="title" oninput="coursesArray[${idx}].title = this.innerHTML; syncCourseDropdown();" class="editable font-black text-base md:text-lg uppercase tracking-wide text-yellow-400">${course.title}</h3>
                                 </div>
                             </div>
 
-                            <div oninput="coursesArray[${idx}].desc = this.innerHTML" class="editable rich-content text-gray-800 mb-6 text-justify leading-relaxed text-[15px] md:text-base">${course.desc}</div>
+                            <div data-sync-group="course" data-sync-idx="${idx}" data-sync-field="desc" oninput="coursesArray[${idx}].desc = this.innerHTML" class="editable rich-content text-gray-800 mb-6 text-justify leading-relaxed text-[15px] md:text-base">${course.desc}</div>
                             
                             <div class="flex flex-wrap items-center gap-4">
                                 <button type="button" onclick="toggleCourseDetail(${idx})" id="btnToggleDetail_${idx}" class="border border-brand text-brand bg-white font-bold py-2.5 px-8 rounded-full hover:bg-brand hover:text-white transition text-sm shadow-sm">
@@ -2987,7 +2995,7 @@
                                 <div class="admin-only hidden text-xs text-purple-700 font-bold mb-1">
                                     <i class="fa fa-pen"></i> Nội dung chi tiết (Học viên bấm "Xem chi tiết" sẽ hiển thị phần này):
                                 </div>
-                                <div oninput="coursesArray[${idx}].detailDesc = this.innerHTML" class="editable rich-content bg-white p-5 rounded-xl border border-blue-200 text-gray-700 text-sm leading-relaxed shadow-sm">${detailText}</div>
+                                <div data-sync-group="course" data-sync-idx="${idx}" data-sync-field="detailDesc" oninput="coursesArray[${idx}].detailDesc = this.innerHTML" class="editable rich-content bg-white p-5 rounded-xl border border-blue-200 text-gray-700 text-sm leading-relaxed shadow-sm">${detailText}</div>
                                 <div class="mt-3">
                                     <a href="#tu-van" onclick="selectCourseInForm(${idx})" class="inline-block bg-yellow-400 text-brand font-extrabold py-2 px-6 rounded-full hover:bg-yellow-500 transition text-xs shadow">
                                         Đăng ký tư vấn lộ trình này <i class="fa fa-arrow-right ml-1"></i>
@@ -3035,7 +3043,7 @@
             }
         }
 
-        function addNewCourse() {
+        async function addNewCourse() {
             coursesArray.push({
                 title: "KHÓA HỌC TIẾNG ANH VIP MỚI",
                 desc: "♦ <b>Mô tả khóa học:</b> Nhập thông tin giới thiệu khóa học tại đây.<br>♦ Đầu ra cam kết theo chuẩn quốc tế.",
@@ -3044,17 +3052,19 @@
             });
             renderCoursesList();
             checkAuth();
+            await saveAllToGoogleSheet(true);
         }
 
-        function deleteCourse(idx) {
+        async function deleteCourse(idx) {
             if (confirm("Xóa khóa học này?")) {
                 coursesArray.splice(idx, 1);
                 renderCoursesList();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
-        // 9. Render GIẢNG VIÊN TÀI NĂNG – TÂM HUYẾT (Đồng bộ trực tiếp với Trang Đội ngũ giáo viên)
+        // 9. Render GIẢNG VIÊN TÀI NĂNG – TÂM HUYẾT
         function renderTeachersSection() {
             const container = document.getElementById('teachersContainer');
             if (!container) return;
@@ -3071,8 +3081,8 @@
                                 <i class="fa-solid fa-star text-brand"></i>
                             </div>
                             <div>
-                                <div oninput="teachersArray[${idx}].name = this.innerHTML; renderTeachersPage();" class="editable font-black text-brand text-sm uppercase leading-tight">${t.name}</div>
-                                <div oninput="teachersArray[${idx}].role = this.innerHTML; renderTeachersPage();" class="editable text-xs text-gray-600">${t.role || 'Giảng viên STUDY BEE ENGLISH'}</div>
+                                <div data-sync-group="teacherHome" data-sync-idx="${idx}" data-sync-field="name" oninput="teachersArray[${idx}].name = this.innerHTML; renderTeachersPage();" class="editable font-black text-brand text-sm uppercase leading-tight">${t.name}</div>
+                                <div data-sync-group="teacherHome" data-sync-idx="${idx}" data-sync-field="role" oninput="teachersArray[${idx}].role = this.innerHTML; renderTeachersPage();" class="editable text-xs text-gray-600">${t.role || 'Giảng viên STUDY BEE ENGLISH'}</div>
                             </div>
                         </div>
 
@@ -3086,7 +3096,7 @@
                         </div>
 
                         <div class="-mt-4 relative z-10 mx-3">
-                            <div oninput="teachersArray[${idx}].exp = this.innerHTML; renderTeachersPage();" class="editable bg-brand text-white text-xs font-bold py-2.5 px-4 rounded-lg text-center shadow-[0_3px_0_#eab308]">
+                            <div data-sync-group="teacherHome" data-sync-idx="${idx}" data-sync-field="exp" oninput="teachersArray[${idx}].exp = this.innerHTML; renderTeachersPage();" class="editable bg-brand text-white text-xs font-bold py-2.5 px-4 rounded-lg text-center shadow-[0_3px_0_#eab308]">
                                 ${t.exp}
                             </div>
                         </div>
@@ -3095,7 +3105,7 @@
             });
         }
 
-        function addTeacherCard() {
+        async function addTeacherCard() {
             teachersArray.push({
                 name: "GIÁO VIÊN MỚI",
                 role: "Giảng viên STUDY BEE ENGLISH",
@@ -3106,14 +3116,16 @@
             renderTeachersSection();
             renderTeachersPage();
             checkAuth();
+            await saveAllToGoogleSheet(true);
         }
 
-        function deleteTeacherCard(idx) {
+        async function deleteTeacherCard(idx) {
             if (confirm("Xóa giảng viên này khỏi danh sách?")) {
                 teachersArray.splice(idx, 1);
                 renderTeachersSection();
                 renderTeachersPage();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
@@ -3131,9 +3143,9 @@
                     container.insertAdjacentHTML('beforeend', `
                         <div class="text-center">
                             <div class="achieve-card py-8 px-4 mb-4 flex items-center justify-center">
-                                <span oninput="achievementsArray[${idx}].number = this.innerHTML" class="editable text-4xl md:text-5xl font-black text-brand tracking-tight">${ach.number}</span>
+                                <span data-sync-group="achieve" data-sync-idx="${idx}" data-sync-field="number" oninput="achievementsArray[${idx}].number = this.innerHTML" class="editable text-4xl md:text-5xl font-black text-brand tracking-tight">${ach.number}</span>
                             </div>
-                            <div oninput="achievementsArray[${idx}].label = this.innerHTML" class="editable font-bold text-gray-900 text-base md:text-lg leading-snug">
+                            <div data-sync-group="achieve" data-sync-idx="${idx}" data-sync-field="label" oninput="achievementsArray[${idx}].label = this.innerHTML" class="editable font-bold text-gray-900 text-base md:text-lg leading-snug">
                                 ${ach.label}
                             </div>
                         </div>
@@ -3166,12 +3178,12 @@
                         <div class="student-review-box w-full pt-10 pb-7 px-6 md:px-8 mt-1 relative z-20">
                             <div class="absolute -top-6 left-1/2 -translate-x-1/2 z-30 whitespace-nowrap">
                                 <div class="student-name-badge text-base md:text-lg font-extrabold">
-                                    <span oninput="testimonialsArray[${idx}].prefix = this.innerHTML" class="editable text-white">${item.prefix || 'Học viên'}</span>
-                                    <span oninput="testimonialsArray[${idx}].name = this.innerHTML" class="editable text-yellow-400 ml-1">${item.name}</span>
+                                    <span data-sync-group="testimonial" data-sync-idx="${idx}" data-sync-field="prefix" oninput="testimonialsArray[${idx}].prefix = this.innerHTML" class="editable text-white">${item.prefix || 'Học viên'}</span>
+                                    <span data-sync-group="testimonial" data-sync-idx="${idx}" data-sync-field="name" oninput="testimonialsArray[${idx}].name = this.innerHTML" class="editable text-yellow-400 ml-1">${item.name}</span>
                                 </div>
                             </div>
 
-                            <div oninput="testimonialsArray[${idx}].content = this.innerHTML" class="editable text-gray-900 text-sm md:text-[15px] leading-relaxed text-justify mt-2">
+                            <div data-sync-group="testimonial" data-sync-idx="${idx}" data-sync-field="content" oninput="testimonialsArray[${idx}].content = this.innerHTML" class="editable text-gray-900 text-sm md:text-[15px] leading-relaxed text-justify mt-2">
                                 ${item.content}
                             </div>
                         </div>
@@ -3180,7 +3192,7 @@
             });
         }
 
-        function addTestimonialCard() {
+        async function addTestimonialCard() {
             testimonialsArray.push({
                 prefix: "Học viên",
                 name: "Tên Học Viên",
@@ -3189,13 +3201,15 @@
             });
             renderTestimonialsSection();
             checkAuth();
+            await saveAllToGoogleSheet(true);
         }
 
-        function deleteTestimonialCard(idx) {
+        async function deleteTestimonialCard(idx) {
             if (confirm("Xóa chia sẻ của học viên này?")) {
                 testimonialsArray.splice(idx, 1);
                 renderTestimonialsSection();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
@@ -3280,7 +3294,7 @@
             `;
         }
 
-        function editStudentVideoUrl(idx) {
+        async function editStudentVideoUrl(idx) {
             const currentUrl = studentVideosArray[idx].youtubeUrl || "https://youtu.be/";
             const newUrl = prompt("Dán đường dẫn Video YouTube (Watch, Share youtu.be hoặc Shorts):", currentUrl);
             if (newUrl !== null && newUrl.trim() !== "") {
@@ -3292,22 +3306,25 @@
                 studentVideosArray[idx].youtubeUrl = newUrl.trim();
                 renderStudentVideosSection();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
-        function addStudentVideo() {
+        async function addStudentVideo() {
             const url = prompt("Dán đường dẫn Video YouTube mới:", "https://youtu.be/XGm8vrJ7Kaw");
             if (!url) return;
             studentVideosArray.push({ youtubeUrl: url.trim(), thumb: "" });
             renderStudentVideosSection();
             checkAuth();
+            await saveAllToGoogleSheet(true);
         }
 
-        function deleteStudentVideo(idx) {
+        async function deleteStudentVideo(idx) {
             if (confirm("Xóa video này?")) {
                 studentVideosArray.splice(idx, 1);
                 renderStudentVideosSection();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
@@ -3343,16 +3360,16 @@
 
                         <div class="mb-3">
                             <span class="inline-flex items-center gap-2 bg-[#dfe5f2] text-gray-900 font-bold text-xs md:text-sm px-4 py-1.5 rounded-md">
-                                <span oninput="newsArray[${idx}].category = this.innerHTML" class="editable">${item.category}</span>
+                                <span data-sync-group="news" data-sync-idx="${idx}" data-sync-field="category" oninput="newsArray[${idx}].category = this.innerHTML" class="editable">${item.category}</span>
                                 <i class="fa-solid fa-chevron-right text-brand text-[10px]"></i>
                             </span>
                         </div>
 
-                        <h3 oninput="newsArray[${idx}].title = this.innerHTML" class="editable font-black text-gray-900 text-base md:text-lg uppercase leading-snug mb-2.5">
+                        <h3 data-sync-group="news" data-sync-idx="${idx}" data-sync-field="title" oninput="newsArray[${idx}].title = this.innerHTML" class="editable font-black text-gray-900 text-base md:text-lg uppercase leading-snug mb-2.5">
                             ${item.title}
                         </h3>
 
-                        <div oninput="newsArray[${idx}].desc = this.innerHTML" class="editable text-gray-700 text-sm md:text-[15px] leading-relaxed text-justify">
+                        <div data-sync-group="news" data-sync-idx="${idx}" data-sync-field="desc" oninput="newsArray[${idx}].desc = this.innerHTML" class="editable text-gray-700 text-sm md:text-[15px] leading-relaxed text-justify">
                             ${item.desc}
                         </div>
                     </div>
@@ -3369,16 +3386,17 @@
             return true;
         }
 
-        function editNewsLink(idx) {
+        async function editNewsLink(idx) {
             const url = prompt("Nhập đường dẫn (URL) cho bài viết này:", newsArray[idx].link || "#tu-van");
             if (url !== null && url.trim() !== "") {
                 newsArray[idx].link = url.trim();
                 renderNewsSection();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
-        function addNewsCard() {
+        async function addNewsCard() {
             newsArray.push({
                 category: "Blog",
                 title: "TIÊU ĐỀ BÀI VIẾT MỚI",
@@ -3388,13 +3406,15 @@
             });
             renderNewsSection();
             checkAuth();
+            await saveAllToGoogleSheet(true);
         }
 
-        function deleteNewsCard(idx) {
+        async function deleteNewsCard(idx) {
             if (confirm("Xóa bài viết tin tức này?")) {
                 newsArray.splice(idx, 1);
                 renderNewsSection();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
@@ -3422,7 +3442,7 @@
                                 <div class="w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center shadow">
                                     ${iconHtml}
                                 </div>
-                                <span oninput="communityArray[${idx}].handle = this.innerHTML" class="editable font-bold text-gray-800 text-sm">${item.handle}</span>
+                                <span data-sync-group="community" data-sync-idx="${idx}" data-sync-field="handle" oninput="communityArray[${idx}].handle = this.innerHTML" class="editable font-bold text-gray-800 text-sm">${item.handle}</span>
                             </div>
 
                             <div class="community-frame aspect-[16/10] mb-5 relative group">
@@ -3440,13 +3460,13 @@
                                 </div>
                             </div>
 
-                            <div oninput="communityArray[${idx}].bullets = this.innerHTML" class="editable rich-content text-gray-800 text-sm md:text-[15px] leading-relaxed mb-6 px-1">
+                            <div data-sync-group="community" data-sync-idx="${idx}" data-sync-field="bullets" oninput="communityArray[${idx}].bullets = this.innerHTML" class="editable rich-content text-gray-800 text-sm md:text-[15px] leading-relaxed mb-6 px-1">
                                 ${item.bullets}
                             </div>
                         </div>
 
                         <a href="${item.link || '#'}" target="_blank" onclick="return handleCommunityClick(event, ${idx})" class="block w-full border border-brand text-brand font-medium py-2.5 px-4 rounded-md text-center hover:bg-brand hover:text-white transition text-sm md:text-base">
-                            <span oninput="communityArray[${idx}].btnText = this.innerHTML" class="editable">${item.btnText || 'Đăng ký theo dõi'}</span>
+                            <span data-sync-group="community" data-sync-idx="${idx}" data-sync-field="btnText" oninput="communityArray[${idx}].btnText = this.innerHTML" class="editable">${item.btnText || 'Đăng ký theo dõi'}</span>
                             <i class="fa-solid fa-arrow-right-long ml-1.5 text-xs"></i>
                         </a>
                     </div>
@@ -3463,17 +3483,18 @@
             return true;
         }
 
-        function editCommunityLink(idx) {
+        async function editCommunityLink(idx) {
             const url = prompt("Nhập đường dẫn (URL) kênh mạng xã hội:", communityArray[idx].link || "https://");
             if (url !== null && url.trim() !== "") {
                 communityArray[idx].link = url.trim();
                 renderCommunitySection();
                 checkAuth();
+                await saveAllToGoogleSheet(true);
             }
         }
 
         // =========================================================================
-        // 14. CÔNG CỤ CẮT ẢNH ĐA TỶ LỆ CHO MỌI BANNER, OG:IMAGE & HÌNH ẢNH
+        // 14. CÔNG CỤ CẮT ẢNH ĐA TỶ LỆ & TỰ ĐỘNG ĐỒNG BỘ LÊN GOOGLE SHEETS
         // =========================================================================
         function openCropperModal(type, key, aspectRatio, width, height, titleText, isCircle = false) {
             cropJob = { type, key, aspectRatio, width, height, isCircle };
@@ -3558,7 +3579,7 @@
             }
             const btn = document.getElementById('confirmCropUploadBtn');
             const oldHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang cắt & tải lên Drive...';
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang cắt & đồng bộ lên Drive...';
             btn.disabled = true;
 
             try {
@@ -3590,6 +3611,8 @@
                     if (cropJob.type === 'avatar') {
                         document.getElementById('prof_avatar_preview').src = res.url;
                         document.getElementById('prof_avatar_preview').setAttribute('data-uploaded-url', res.url);
+                        closeCropperModal();
+                        return;
                     } else if (cropJob.type === 'config') {
                         currentConfig[cropJob.key] = res.url;
                         if (cropJob.key === 'og_image') {
@@ -3598,7 +3621,6 @@
                             if (ogInput) ogInput.value = res.url;
                             if (ogPrev) ogPrev.src = res.url;
                         }
-                        localStorage.setItem(CONFIG_CACHE_KEY, JSON.stringify(currentConfig));
                         applyConfigToDOM();
                     } else if (cropJob.type === 'aboutBanner') {
                         aboutPageObj.bannerImg = res.url;
@@ -3655,6 +3677,8 @@
                         checkAuth();
                     }
                     closeCropperModal();
+                    // Tự động lưu cấu hình ảnh mới lên Google Sheets để mọi trình duyệt khác nhận được ngay
+                    await saveAllToGoogleSheet(true);
                 } else {
                     alert("Lỗi từ Google Drive: " + res.message);
                 }
@@ -3886,7 +3910,7 @@ ${teachersText}
             await saveAllToGoogleSheet();
         }
 
-        // 17. Phân quyền Admin & Quản lý Tài khoản
+        // 17. Phân quyền Admin & Tự động đồng bộ khi sửa Link
         function checkAuth() {
             const role = localStorage.getItem('role');
             const user = localStorage.getItem('user');
@@ -3914,7 +3938,7 @@ ${teachersText}
                 
                 document.querySelectorAll('.admin-link').forEach(el => {
                     el.classList.add('is-admin');
-                    el.onclick = (e) => {
+                    el.onclick = async (e) => {
                         e.preventDefault();
                         const key = el.getAttribute('data-link-key');
                         const currentVal = String(currentConfig[key] || "");
@@ -3922,6 +3946,7 @@ ${teachersText}
                         if (newVal !== null && newVal.trim() !== "") {
                             currentConfig[key] = (key === 'link_phone') ? normalizePhoneString(newVal.trim()) : newVal.trim();
                             applyConfigToDOM();
+                            await saveAllToGoogleSheet(true);
                         }
                     };
                 });
@@ -3939,17 +3964,89 @@ ${teachersText}
             }
         }
 
-        // Lưu toàn bộ cấu hình lên Google Sheets & Cập nhật Cache ngay lập tức
-        async function saveAllToGoogleSheet() {
-            const btn = document.getElementById('saveChangesBtn');
-            const oldHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang lưu...';
-            btn.disabled = true;
-
+        // =========================================================================
+        // 17B. THU THẬP TOÀN BỘ NỘI DUNG TRÊN MÀN HÌNH & LƯU ĐỒNG BỘ 100% LÊN SHEET
+        // =========================================================================
+        function harvestAllLiveDomEdits() {
+            // 1. Gom tất cả thẻ [data-key]
             document.querySelectorAll('[data-key]').forEach(el => {
                 const k = el.getAttribute('data-key');
                 currentConfig[k] = k.startsWith('footer') ? stripWhiteBackgroundHtml(el.innerHTML) : el.innerHTML;
             });
+
+            // 2. Gom các trường tĩnh trên trang Về chúng tôi
+            const aboutMap = {
+                quoteTitle: 'about_quoteTitle_dom',
+                quoteDesc: 'about_quoteDesc_dom',
+                introTitle: 'about_introTitle_dom',
+                introText: 'about_introText_dom',
+                coreBrandTitle: 'about_coreBrandTitle_dom',
+                coreSectionSubtitle: 'about_coreSectionSubtitle_dom',
+                commitTitle: 'about_commitTitle_dom',
+                commitSubtitle: 'about_commitSubtitle_dom'
+            };
+            for (let prop in aboutMap) {
+                const domEl = document.getElementById(aboutMap[prop]);
+                if (domEl && aboutPageObj) {
+                    aboutPageObj[prop] = domEl.innerHTML;
+                }
+            }
+
+            // 3. Gom các trường tĩnh trên trang Đội ngũ giáo viên
+            const tListTitle = document.getElementById('teacherPage_listTitle_dom');
+            const tListSub = document.getElementById('teacherPage_listSubtitle_dom');
+            if (tListTitle && teacherPageObj) teacherPageObj.listTitle = tListTitle.innerHTML;
+            if (tListSub && teacherPageObj) teacherPageObj.listSubtitle = tListSub.innerHTML;
+
+            // 4. Gom toàn bộ các phần tử danh sách động có gắn data-sync-group
+            const isTeachersPageVisible = !document.getElementById('teachersPageView').classList.contains('hidden');
+            document.querySelectorAll('[data-sync-group]').forEach(el => {
+                const group = el.getAttribute('data-sync-group');
+                const idx = Number(el.getAttribute('data-sync-idx'));
+                const field = el.getAttribute('data-sync-field');
+                const val = el.innerHTML;
+
+                if (group === 'reason' && reasonsArray[idx]) reasonsArray[idx][field] = val;
+                else if (group === 'course' && coursesArray[idx]) coursesArray[idx][field] = val;
+                else if (group === 'achieve' && achievementsArray[idx]) achievementsArray[idx][field] = val;
+                else if (group === 'testimonial' && testimonialsArray[idx]) testimonialsArray[idx][field] = val;
+                else if (group === 'news' && newsArray[idx]) newsArray[idx][field] = val;
+                else if (group === 'community' && communityArray[idx]) communityArray[idx][field] = val;
+                else if (group === 'aboutPillar' && aboutPageObj?.pillars?.[idx]) aboutPageObj.pillars[idx][field] = val;
+                else if (group === 'aboutCommit' && aboutPageObj?.commitments?.[idx]) aboutPageObj.commitments[idx][field] = val;
+                else if (group === 'teacherHighlight' && teacherPageObj?.highlights?.[idx]) teacherPageObj.highlights[idx][field] = val;
+                else if (group === 'teacherDetail' && isTeachersPageVisible && teachersArray[idx]) teachersArray[idx][field] = val;
+                else if (group === 'teacherHome' && !isTeachersPageVisible && teachersArray[idx]) teachersArray[idx][field] = val;
+            });
+
+            // 5. Gom nội dung trang con tự soạn nếu đang mở
+            const subView = document.getElementById('subPageView');
+            if (subView && !subView.classList.contains('hidden') && activeSubPageIndices.parentIdx !== null) {
+                const contentArea = document.getElementById('subPageContentArea');
+                const pIdx = activeSubPageIndices.parentIdx;
+                const cIdx = activeSubPageIndices.childIdx;
+                const target = (cIdx !== null) ? menuArray[pIdx]?.children?.[cIdx] : menuArray[pIdx];
+                if (target && contentArea) {
+                    target.content = contentArea.innerHTML;
+                }
+            }
+        }
+
+        async function saveAllToGoogleSheet(isSilent = false) {
+            const btn = document.getElementById('saveChangesBtn');
+            const syncBadge = document.getElementById('syncStatusIndicator');
+            const oldHtml = btn ? btn.innerHTML : '';
+
+            if (!isSilent && btn) {
+                btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang lưu...';
+                btn.disabled = true;
+            } else if (syncBadge) {
+                syncBadge.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang đồng bộ...';
+                syncBadge.classList.remove('hidden');
+            }
+
+            // Thu thập toàn bộ nội dung vừa chỉnh sửa trên DOM
+            harvestAllLiveDomEdits();
 
             currentConfig.link_phone = normalizePhoneString(currentConfig.link_phone);
             currentConfig.menuData = JSON.stringify(menuArray);
@@ -3978,19 +4075,26 @@ ${teachersText}
                 }).then(r => r.json());
 
                 if (res.success) {
-                    alert("Đã lưu toàn bộ giao diện và dữ liệu thành công!");
+                    if (!isSilent) {
+                        alert("Đã lưu và đồng bộ toàn bộ dữ liệu lên Google Sheets thành công! Mọi trình duyệt khác đều đã được cập nhật.");
+                    } else if (syncBadge) {
+                        syncBadge.innerHTML = '<i class="fa fa-check-circle"></i> Đã đồng bộ';
+                        setTimeout(() => syncBadge.classList.add('hidden'), 3000);
+                    }
                 } else {
-                    alert("Lỗi khi lưu: " + res.message);
+                    if (!isSilent) alert("Lỗi khi lưu: " + res.message);
                 }
             } catch (err) {
-                alert("Lỗi kết nối khi lưu cấu hình!");
+                if (!isSilent) alert("Lỗi kết nối khi lưu cấu hình!");
             } finally {
-                btn.innerHTML = oldHtml;
-                btn.disabled = false;
+                if (!isSilent && btn) {
+                    btn.innerHTML = oldHtml;
+                    btn.disabled = false;
+                }
             }
         }
 
-        document.getElementById('saveChangesBtn').onclick = saveAllToGoogleSheet;
+        document.getElementById('saveChangesBtn').onclick = () => saveAllToGoogleSheet(false);
 
         // =========================================================================
         // 18. QUẢN LÝ DANH SÁCH KHÁCH ĐĂNG KÝ TƯ VẤN (LEADS) & TÙY CHỈNH TÌNH TRẠNG
@@ -4040,7 +4144,7 @@ ${teachersText}
                     leadStatusesArray.push(cleanSt);
                     renderLeadStatusBadgesAndFilter();
                     renderLeadsTable();
-                    await saveAllToGoogleSheet();
+                    await saveAllToGoogleSheet(true);
                 }
             }
         }
@@ -4050,7 +4154,7 @@ ${teachersText}
             leadStatusesArray.splice(idx, 1);
             renderLeadStatusBadgesAndFilter();
             renderLeadsTable();
-            await saveAllToGoogleSheet();
+            await saveAllToGoogleSheet(true);
         }
 
         async function fetchLeadsForAdmin() {
@@ -4104,7 +4208,6 @@ ${teachersText}
 
             tbody.innerHTML = '';
             filtered.forEach(lead => {
-                // Đảm bảo tình trạng hiện tại của dòng luôn có trong dropdown
                 const allOptions = [...leadStatusesArray];
                 if (lead.status && !allOptions.includes(lead.status)) {
                     allOptions.unshift(lead.status);
@@ -4502,3 +4605,4 @@ ${teachersText}
     </script>
 </body>
 </html>	
+	
